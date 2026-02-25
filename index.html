@@ -2,10 +2,75 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <meta http-equiv="refresh" content="0; url=docs/index.html">
-  <title>Redirecting...</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Prototype access</title>
+  <style>
+    * { box-sizing: border-box; }
+    body { font-family: system-ui, -apple-system, sans-serif; background: #f7f9fd; margin: 0; min-height: 100vh; display: flex; align-items: center; justify-content: center; padding: 1rem; }
+    .card { background: #fff; border-radius: 12px; box-shadow: 0 1px 3px rgba(0,0,0,.08); padding: 2rem; max-width: 400px; width: 100%; }
+    h1 { font-size: 1.25rem; color: #313b4d; margin: 0 0 0.5rem; }
+    p { color: #63708a; font-size: 0.875rem; margin: 0 0 1.25rem; }
+    input { width: 100%; padding: 0.625rem 0.75rem; border: 1px solid #dce2ec; border-radius: 8px; font-size: 1rem; margin-bottom: 1rem; }
+    input:focus { outline: none; border-color: #186ded; box-shadow: 0 0 0 2px rgba(24,109,237,.2); }
+    button { width: 100%; padding: 0.625rem 1rem; background: #186ded; color: #fff; border: none; border-radius: 8px; font-size: 0.9375rem; font-weight: 600; cursor: pointer; }
+    button:hover { background: #085fe2; }
+    .error { font-size: 0.8125rem; color: #d92d20; margin-top: -0.5rem; margin-bottom: 0.75rem; }
+    .links { margin-top: 1.5rem; padding-top: 1.5rem; border-top: 1px solid #f0f4fa; }
+    .links a { display: block; padding: 0.75rem 1rem; background: #f0f4fa; color: #186ded; text-decoration: none; border-radius: 8px; margin-bottom: 0.5rem; font-size: 0.9375rem; font-weight: 500; }
+    .links a:hover { background: #e6f8ff; }
+    .links a:last-child { margin-bottom: 0; }
+  </style>
 </head>
 <body>
-  <p>Redirecting to <a href="docs/index.html">Prototypes</a>…</p>
+  <div class="card" id="gate-card">
+    <h1>Prototype access</h1>
+    <p id="prompt-text">Enter the password shared with you to view the prototypes.</p>
+    <p class="error" id="error" style="display: none;">Incorrect password. Try again.</p>
+    <div id="password-form">
+      <input type="password" id="pw" placeholder="Password" autocomplete="off" aria-label="Access password">
+      <button type="button" id="submit">Continue</button>
+    </div>
+    <p id="expired-msg" style="display: none; color: #63708a;">This access link has expired. If you need to participate in testing, please contact the researcher.</p>
+  </div>
+  <script>
+    (function () {
+      var STORAGE_KEY = 'public_proto_ok';
+      var PASSWORD = 'febtest1';
+      var DASHBOARD_URL = 'docs/org-dashboard-m2.html';
+      // Expires end of day (UTC) two weeks from deploy: March 11, 2026
+      var EXPIRY_UTC = new Date(Date.UTC(2026, 2, 12, 0, 0, 0));
+
+      function isExpired() { return new Date() >= EXPIRY_UTC; }
+
+      if (sessionStorage.getItem(STORAGE_KEY)) {
+        if (isExpired()) {
+          sessionStorage.removeItem(STORAGE_KEY);
+        } else {
+          location.replace(DASHBOARD_URL);
+          return;
+        }
+      }
+
+      if (isExpired()) {
+        document.getElementById('prompt-text').style.display = 'none';
+        document.getElementById('password-form').style.display = 'none';
+        document.getElementById('expired-msg').style.display = 'block';
+        return;
+      }
+
+      document.getElementById('submit').addEventListener('click', function () {
+        var pw = document.getElementById('pw').value;
+        if (pw === PASSWORD) {
+          sessionStorage.setItem(STORAGE_KEY, '1');
+          location.replace(DASHBOARD_URL);
+        } else {
+          document.getElementById('error').style.display = 'block';
+        }
+      });
+      document.getElementById('pw').addEventListener('keydown', function (e) {
+        if (e.key === 'Enter') document.getElementById('submit').click();
+      });
+    })();
+  </script>
 </body>
 </html>

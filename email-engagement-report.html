@@ -251,6 +251,7 @@
   </style>
 </head>
 <body class="font-sans text-neutral-900 antialiased bg-white" id="body-el">
+<script>(function(){if(!sessionStorage.getItem("public_proto_ok"))location.replace("./");})();</script>
   <!-- Top Navigation Bar (V1.1) -->
   <nav class="bg-white border-b border-neutral-300 px-4 md:px-6 lg:px-8 py-3 flex items-center justify-between">
     <div class="flex items-center">
@@ -1930,49 +1931,7 @@
             </div>
           </section>
 
-          <hr class="border-neutral-200 my-6">
-          <div class="flex justify-center mb-6">
-            <button type="button" id="feedback-trigger" class="text-sm font-medium text-main-600 hover:underline">Provide feedback and help us improve</button>
-          </div>
-
-          <!-- Feedback modal -->
-          <div id="feedback-modal" class="fixed inset-0 z-[9998] hidden flex items-center justify-center p-4" aria-hidden="true" role="dialog" aria-modal="true" aria-labelledby="feedback-modal-title">
-            <div class="absolute inset-0 bg-black/40" id="feedback-modal-backdrop"></div>
-            <div class="relative w-full max-w-md rounded-2xl border border-neutral-200 bg-white shadow-2xl overflow-hidden">
-              <div class="p-6 pb-5">
-                <div class="flex items-start justify-between gap-4 mb-5">
-                  <h3 id="feedback-modal-title" class="text-xl font-semibold text-neutral-900">Give us your feedback</h3>
-                  <button type="button" id="feedback-modal-close" class="flex items-center justify-center w-9 h-9 rounded-lg text-neutral-400 hover:bg-neutral-100 hover:text-neutral-600 transition-colors shrink-0" aria-label="Close modal">
-                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/></svg>
-                  </button>
-                </div>
-                <p class="text-sm text-neutral-600 mb-4">What was your experience while using product?</p>
-                <div class="flex gap-2 mb-6" role="group" aria-label="Rate your experience">
-                  <button type="button" class="feedback-emoji flex-1 min-w-0 flex items-center justify-center min-h-[52px] py-2 px-2 rounded-xl bg-neutral-100 hover:bg-neutral-200 transition-all border-2 border-transparent focus:outline-none focus:ring-2 focus:ring-main-500 focus:ring-offset-2" data-rating="1" aria-pressed="false" title="Dissatisfied">
-                    <span class="text-2xl leading-none" aria-hidden="true">😭</span>
-                  </button>
-                  <button type="button" class="feedback-emoji flex-1 min-w-0 flex items-center justify-center min-h-[52px] py-2 px-2 rounded-xl bg-neutral-100 hover:bg-neutral-200 transition-all border-2 border-transparent focus:outline-none focus:ring-2 focus:ring-main-500 focus:ring-offset-2" data-rating="2" aria-pressed="false" title="Sad">
-                    <span class="text-2xl leading-none" aria-hidden="true">😞</span>
-                  </button>
-                  <button type="button" class="feedback-emoji flex-1 min-w-0 flex items-center justify-center min-h-[52px] py-2 px-2 rounded-xl bg-neutral-100 hover:bg-neutral-200 transition-all border-2 border-transparent focus:outline-none focus:ring-2 focus:ring-main-500 focus:ring-offset-2" data-rating="3" aria-pressed="false" title="Neutral">
-                    <span class="text-2xl leading-none" aria-hidden="true">😐</span>
-                  </button>
-                  <button type="button" class="feedback-emoji flex-1 min-w-0 flex items-center justify-center min-h-[52px] py-2 px-2 rounded-xl bg-neutral-100 hover:bg-neutral-200 transition-all border-2 border-transparent focus:outline-none focus:ring-2 focus:ring-main-500 focus:ring-offset-2" data-rating="4" aria-pressed="false" title="Okay">
-                    <span class="text-2xl leading-none" aria-hidden="true">🙂</span>
-                  </button>
-                  <button type="button" class="feedback-emoji flex-1 min-w-0 flex items-center justify-center min-h-[52px] py-2 px-2 rounded-xl bg-neutral-100 hover:bg-neutral-200 transition-all border-2 border-transparent focus:outline-none focus:ring-2 focus:ring-main-500 focus:ring-offset-2" data-rating="5" aria-pressed="false" title="Satisfied">
-                    <span class="text-2xl leading-none" aria-hidden="true">🤩</span>
-                  </button>
-                </div>
-                <label for="feedback-text" class="block text-sm font-semibold text-neutral-800 mb-1.5">Write your feedback <span class="font-normal text-neutral-500">(optional)</span></label>
-                <textarea id="feedback-text" rows="4" placeholder="Please write here" class="w-full rounded-xl border border-neutral-200 px-3 py-2.5 text-sm text-neutral-900 placeholder:text-neutral-400 focus:ring-2 focus:ring-main-500 focus:border-main-500 focus:outline-none resize-none min-h-[88px]"></textarea>
-              </div>
-              <div class="px-6 pb-6 pt-1">
-                <button type="button" id="feedback-submit" class="w-full rounded-xl bg-main-600 py-3 text-sm font-semibold text-white hover:bg-main-700 focus:outline-none focus:ring-2 focus:ring-main-500 focus:ring-offset-2 transition-colors">Submit</button>
-              </div>
-            </div>
-          </div>
-
+          
           <!-- Compare modal -->
           <div id="compare-modal" class="fixed inset-0 z-[9998] hidden" aria-hidden="true">
             <div class="absolute inset-0 bg-black/40" id="compare-modal-backdrop"></div>
@@ -2005,30 +1964,6 @@
       </div>
     </main>
   </div>
-
-  <!-- Milestone Bar (M0–M5, reusable component) -->
-  <div id="milestone-bar-root"></div>
-  <script src="components/milestone-bar.js"></script>
-  <script>
-    document.addEventListener('DOMContentLoaded', function () {
-      if (typeof renderMilestoneBar === 'function') {
-        var milestone = 'm1';
-        try {
-          var params = new URLSearchParams(window.location.search);
-          var fromUrl = params.get('milestone');
-          if (fromUrl && /^m[1-5]$/i.test(fromUrl)) {
-            milestone = fromUrl.toLowerCase();
-          } else {
-            var fromStorage = sessionStorage.getItem('emailReportMilestone');
-            if (fromStorage && /^m[1-5]$/.test(fromStorage)) milestone = fromStorage;
-            sessionStorage.removeItem('emailReportMilestone');
-          }
-        } catch (e) {}
-        renderMilestoneBar('milestone-bar-root', { active: milestone });
-      }
-    });
-  </script>
-
   <script>
     function toggleSidebar() {
       var sidebar = document.getElementById('sidebar');

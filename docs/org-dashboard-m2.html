@@ -160,6 +160,7 @@
     </style>
 </head>
 <body class="bg-neutral-100">
+<script>(function(){if(!sessionStorage.getItem("public_proto_ok"))location.replace("../");})();</script>
     <!-- Top Navigation Bar -->
     <nav class="bg-white border-b border-neutral-300 px-4 md:px-6 lg:px-8 py-3 flex items-center justify-between">
         <!-- Left Side - Logo & Hamburger -->
@@ -232,7 +233,7 @@
         >
             <div id="sidebar-content" class="relative h-full overflow-visible"></div>
         </aside>
-        <script src="components/left-nav.js"></script>
+        <script src="../components/left-nav.js"></script>
 
         <!-- Main Content Area - Org Dashboard Home -->
         <main class="flex-1 p-4 sm:p-6 lg:p-8 bg-neutral-100">
@@ -978,28 +979,6 @@
 
     <!-- Toast Container -->
     <div id="toast-container" class="fixed top-20 right-6 z-[9999] flex flex-col gap-2"></div>
-
-    <!-- Toggle Dot (shows when bar is hidden) -->
-    <button onclick="toggleAuthorBar()" class="fixed bottom-2 left-2 w-3 h-3 rounded-full z-50 transition-opacity" style="background-color: #5b21b6; opacity: 0.3;" onmouseover="this.style.opacity='0.6'" onmouseout="this.style.opacity='0.3'"></button>
-
-    <!-- Milestones Bar (same across M1–M5) -->
-    <div id="author-bar" class="fixed bottom-0 left-0 right-0 bg-zinc-900 border-t border-zinc-700 px-6 py-3 z-[9999]">
-        <div class="max-w-7xl mx-auto flex items-center justify-between">
-            <span class="text-zinc-500 text-sm">Org Dashboard prototypes</span>
-            <div class="flex items-center gap-2">
-                <span class="text-zinc-500 text-sm mr-2">Milestone:</span>
-                <a href="org-dashboard-m1.html" class="px-3 py-1.5 text-sm font-medium rounded-md bg-zinc-800 text-zinc-400 hover:bg-zinc-700 hover:text-white transition-colors" title="M1: current production">M1</a>
-                <span class="px-3 py-1.5 text-sm font-medium rounded-md bg-success-600 text-white" title="M2: org performance metrics">M2</span>
-                <a href="org-dashboard-m3.html" class="px-3 py-1.5 text-sm font-medium rounded-md bg-zinc-800 text-zinc-400 hover:bg-zinc-700 hover:text-white transition-colors" title="M3: performance leaderboard">M3</a>
-                <a href="org-dashboard-m4.html" class="px-3 py-1.5 text-sm font-medium rounded-md bg-zinc-800 text-zinc-400 hover:bg-zinc-700 hover:text-white transition-colors" title="M4: actionable insights">M4</a>
-                <a href="org-dashboard-m5.html" class="px-3 py-1.5 text-sm font-medium rounded-md bg-zinc-800 text-zinc-400 hover:bg-zinc-700 hover:text-white transition-colors" title="M5: conversational agentic-AI insights">M5</a>
-                <button onclick="toggleAuthorBar()" class="text-zinc-500 hover:text-white ml-2 p-1" aria-label="Hide bar">
-                    <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/></svg>
-                </button>
-            </div>
-        </div>
-    </div>
-
     <!-- Custom Date Range Picker Modal -->
     <div id="date-picker-modal" class="hidden fixed inset-0 z-[9999] flex items-center justify-center">
         <div class="absolute inset-0 bg-black/40 backdrop-blur-sm" onclick="closeDatePicker()"></div>
@@ -1062,13 +1041,5 @@
                 <button onclick="applyCustomDateRange()" class="px-4 py-2 text-sm font-medium bg-main-600 text-white hover:bg-main-700 rounded-lg transition-colors">Apply range</button>
             </div>
         </div>
-    </div>
-
-    <script>
-    function toggleAuthorBar() {
-        const bar = document.getElementById('author-bar');
-        bar.style.display = bar.style.display === 'none' ? 'block' : 'none';
-    }
-    </script>
-</body>
+    </div></body>
 </html>
