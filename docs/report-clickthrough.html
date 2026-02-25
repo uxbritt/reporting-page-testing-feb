@@ -1,0 +1,745 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>UX Research & Recommendations — CTCT for Teams</title>
+  <link rel="stylesheet" href="mobile-responsive.css">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://unpkg.com/lucide@0.263.1/dist/umd/lucide.js"></script>
+  <script>
+    // Safe lucide helper
+    function safeCreateIcons() {
+      if (typeof lucide !== 'undefined' && lucide.createIcons) {
+        lucide.createIcons();
+      }
+    }
+
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            main: {
+              50: '#f0f7ff', 100: '#e0f0ff', 200: '#b9e0fe', 300: '#7cc8fd', 400: '#36aaf8',
+              500: '#0c8ce9', 600: '#006fc7', 700: '#0059a1', 800: '#054b85', 900: '#0a406e'
+            },
+            accent: {
+              50: '#faf5ff', 100: '#f3e8ff', 200: '#e9d5ff', 300: '#d8b4fe', 400: '#c084fc',
+              500: '#a855f7', 600: '#9333ea', 700: '#7c3aed', 800: '#6b21a8', 900: '#581c87'
+            },
+            success: {
+              50: '#f0fdf4', 100: '#dcfce7', 200: '#bbf7d0', 300: '#86efac', 400: '#4ade80',
+              500: '#22c55e', 600: '#16a34a', 700: '#15803d', 800: '#166534', 900: '#14532d'
+            },
+            warning: {
+              50: '#fffbeb', 100: '#fef3c7', 200: '#fde68a', 300: '#fcd34d', 400: '#fbbf24',
+              500: '#f59e0b', 600: '#d97706', 700: '#b45309', 800: '#92400e', 900: '#78350f'
+            },
+            danger: {
+              400: '#f87171', 500: '#ef4444', 600: '#dc2626'
+            }
+          },
+          fontFamily: {
+            sans: ['CTSans', 'system-ui', 'sans-serif']
+          }
+        }
+      }
+    }
+  </script>
+  <style>
+    @font-face {
+      font-family: 'CTSans';
+      src: url('fonts/CTSans-Regular.woff2') format('woff2');
+      font-weight: 400;
+      font-style: normal;
+      font-display: swap;
+    }
+    @font-face {
+      font-family: 'CTSans';
+      src: url('fonts/CTSans-Semibold.woff2') format('woff2');
+      font-weight: 600;
+      font-style: normal;
+      font-display: swap;
+    }
+    @font-face {
+      font-family: 'CTSans';
+      src: url('fonts/CTSans-Bold.woff2') format('woff2');
+      font-weight: 700;
+      font-style: normal;
+      font-display: swap;
+    }
+
+    .slide {
+      display: none;
+      animation: fadeIn 0.4s ease-out;
+    }
+    .slide.active {
+      display: flex;
+    }
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    .gradient-text {
+      background: linear-gradient(135deg, #3B82F6 0%, #8B5CF6 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+    body {
+      background: linear-gradient(135deg, #0f0f1a 0%, #131825 25%, #0a0e17 50%, #0d1220 75%, #0f0f1a 100%);
+      background-attachment: fixed;
+    }
+  </style>
+</head>
+<body class="min-h-screen font-sans">
+
+  <!-- Slide Container -->
+  <div class="min-h-screen flex items-center justify-center pb-16 px-8">
+    
+    <!-- Slide 1: Title -->
+    <div id="slide-1" class="slide active flex-col items-center justify-center text-center max-w-5xl w-full">
+      <div class="mb-8">
+        <div class="flex items-center justify-center gap-3 mb-6">
+          <span class="inline-block px-4 py-1.5 bg-zinc-900 text-zinc-400 rounded-full text-sm font-medium">Teams</span>
+          <span class="inline-block px-3 py-1.5 bg-zinc-800 text-zinc-500 rounded-full text-xs font-medium">FML Market</span>
+        </div>
+        <h1 class="text-5xl font-bold text-white mb-6 leading-tight">Competitive<br><span class="gradient-text">Analysis</span></h1>
+        <p class="text-xl text-zinc-400 mb-8">9 platforms analyzed across 4 research focus areas</p>
+        <div class="flex items-center justify-center gap-6 text-zinc-500 text-sm">
+          <span>Navigation</span>
+          <span class="w-1 h-1 bg-zinc-600 rounded-full"></span>
+          <span>Reporting</span>
+          <span class="w-1 h-1 bg-zinc-600 rounded-full"></span>
+          <span>Brand Control</span>
+          <span class="w-1 h-1 bg-zinc-600 rounded-full"></span>
+          <span>AI</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Slide 2: Navigation Model Deep Dive -->
+    <div id="slide-2" class="slide flex-col items-center justify-center max-w-6xl w-full">
+      <div class="w-full">
+        <div class="flex items-center gap-2 mb-4">
+          <span class="text-zinc-500 text-sm">Focus 1 of 4</span>
+        </div>
+        <h2 class="text-4xl font-bold text-white mb-2">Navigation Model</h2>
+        <p class="text-lg text-zinc-400 mb-6">Flat vs. hierarchical — which scales for 50–500+ locations?</p>
+        
+        <div class="grid grid-cols-2 gap-6">
+          <!-- Key Insight -->
+          <div class="space-y-4">
+            <div class="bg-zinc-900/50 border border-zinc-800 rounded-xl p-5">
+              <h4 class="text-xs text-zinc-500 uppercase tracking-wide mb-3">Key Finding</h4>
+              <p class="text-white text-lg font-medium mb-2">Hierarchical wins at scale</p>
+              <p class="text-zinc-400 text-sm">Flat dropdowns break at ~50 accounts. Enterprise platforms use folder trees, breadcrumbs, and persistent sidebars.</p>
+            </div>
+            
+            <div class="bg-zinc-900/50 border border-zinc-800 rounded-xl p-5">
+              <h4 class="text-xs text-zinc-500 uppercase tracking-wide mb-3">Competitor Insights</h4>
+              <ul class="space-y-2 text-sm text-zinc-400">
+                <li class="flex items-start gap-2"><span class="text-white font-medium w-24 flex-shrink-0">FranConnect</span>Tree nav with folders, scales to 1000+ units</li>
+                <li class="flex items-start gap-2"><span class="text-white font-medium w-24 flex-shrink-0">ServiceTitan</span>Location tree with search + favorites</li>
+                <li class="flex items-start gap-2"><span class="text-white font-medium w-24 flex-shrink-0">Mailchimp</span>Flat dropdown — breaks at 50 accounts</li>
+                <li class="flex items-start gap-2"><span class="text-white font-medium w-24 flex-shrink-0">HubSpot</span>Portal switching — context loss on switch</li>
+              </ul>
+            </div>
+          </div>
+          
+          <!-- Leaders -->
+          <div class="bg-zinc-900/30 border border-zinc-800 rounded-xl p-5">
+            <h4 class="text-xs text-zinc-500 uppercase tracking-wide mb-4">Market Leaders</h4>
+            <div class="space-y-4">
+              <div class="flex items-center gap-4 p-3 bg-zinc-900/50 rounded-lg">
+                <div class="w-10 h-10 bg-zinc-800 rounded-lg flex items-center justify-center text-white font-bold text-sm">FC</div>
+                <div>
+                  <p class="text-white font-medium">FranConnect</p>
+                  <p class="text-zinc-500 text-xs">Best-in-class franchise hierarchy</p>
+                </div>
+              </div>
+              <div class="flex items-center gap-4 p-3 bg-zinc-900/50 rounded-lg">
+                <div class="w-10 h-10 bg-zinc-800 rounded-lg flex items-center justify-center text-white font-bold text-sm">ST</div>
+                <div>
+                  <p class="text-white font-medium">ServiceTitan</p>
+                  <p class="text-zinc-500 text-xs">Location tree + smart search</p>
+                </div>
+              </div>
+              <div class="flex items-center gap-4 p-3 bg-zinc-900/50 rounded-lg">
+                <div class="w-10 h-10 bg-zinc-800 rounded-lg flex items-center justify-center text-white font-bold text-sm">SO</div>
+                <div>
+                  <p class="text-white font-medium">SOCi</p>
+                  <p class="text-zinc-500 text-xs">Multi-level folder organization</p>
+                </div>
+              </div>
+            </div>
+            <div class="mt-4 pt-4 border-t border-zinc-800">
+              <p class="text-xs text-zinc-500">Recommendation: Parent → Region → Location tree structure</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Slide 3: Roll-up Reporting Deep Dive -->
+    <div id="slide-3" class="slide flex-col items-center justify-center max-w-6xl w-full">
+      <div class="w-full">
+        <div class="flex items-center gap-2 mb-4">
+          <span class="text-zinc-500 text-sm">Focus 2 of 4</span>
+        </div>
+        <h2 class="text-4xl font-bold text-white mb-2">Roll-up Reporting</h2>
+        <p class="text-lg text-zinc-400 mb-6">Aggregate metrics across locations without context switching</p>
+        
+        <div class="grid grid-cols-2 gap-6">
+          <!-- Key Insight -->
+          <div class="space-y-4">
+            <div class="bg-zinc-900/50 border border-zinc-800 rounded-xl p-5">
+              <h4 class="text-xs text-zinc-500 uppercase tracking-wide mb-3">Key Finding</h4>
+              <p class="text-white text-lg font-medium mb-2">Org-level dashboards are table stakes</p>
+              <p class="text-zinc-400 text-sm">Regional managers need performance comparisons without exporting to Excel. Real-time rollup with drill-down is expected.</p>
+            </div>
+            
+            <div class="bg-zinc-900/50 border border-zinc-800 rounded-xl p-5">
+              <h4 class="text-xs text-zinc-500 uppercase tracking-wide mb-3">Competitor Insights</h4>
+              <ul class="space-y-2 text-sm text-zinc-400">
+                <li class="flex items-start gap-2"><span class="text-white font-medium w-24 flex-shrink-0">FranConnect</span>Real-time rollup with location drill-down</li>
+                <li class="flex items-start gap-2"><span class="text-white font-medium w-24 flex-shrink-0">ServiceTitan</span>Performance leaderboards by region</li>
+                <li class="flex items-start gap-2"><span class="text-white font-medium w-24 flex-shrink-0">SOCi</span>Cross-location campaign analytics</li>
+                <li class="flex items-start gap-2"><span class="text-white font-medium w-24 flex-shrink-0">Braze</span>Enterprise dashboards with segments</li>
+              </ul>
+            </div>
+          </div>
+          
+          <!-- Leaders -->
+          <div class="bg-zinc-900/30 border border-zinc-800 rounded-xl p-5">
+            <h4 class="text-xs text-zinc-500 uppercase tracking-wide mb-4">Market Leaders</h4>
+            <div class="space-y-4">
+              <div class="flex items-center gap-4 p-3 bg-zinc-900/50 rounded-lg">
+                <div class="w-10 h-10 bg-zinc-800 rounded-lg flex items-center justify-center text-white font-bold text-sm">FC</div>
+                <div>
+                  <p class="text-white font-medium">FranConnect</p>
+                  <p class="text-zinc-500 text-xs">Franchise performance benchmarking</p>
+                </div>
+              </div>
+              <div class="flex items-center gap-4 p-3 bg-zinc-900/50 rounded-lg">
+                <div class="w-10 h-10 bg-zinc-800 rounded-lg flex items-center justify-center text-white font-bold text-sm">BZ</div>
+                <div>
+                  <p class="text-white font-medium">Braze</p>
+                  <p class="text-zinc-500 text-xs">Enterprise segment reporting</p>
+                </div>
+              </div>
+              <div class="flex items-center gap-4 p-3 bg-zinc-900/50 rounded-lg">
+                <div class="w-10 h-10 bg-zinc-800 rounded-lg flex items-center justify-center text-white font-bold text-sm">ST</div>
+                <div>
+                  <p class="text-white font-medium">ServiceTitan</p>
+                  <p class="text-zinc-500 text-xs">Multi-location KPI dashboards</p>
+                </div>
+              </div>
+            </div>
+            <div class="mt-4 pt-4 border-t border-zinc-800">
+              <p class="text-xs text-zinc-500">Recommendation: Org dashboard with location comparison + drill-down</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Slide 4: Brand & Access Control Deep Dive -->
+    <div id="slide-4" class="slide flex-col items-center justify-center max-w-6xl w-full">
+      <div class="w-full">
+        <div class="flex items-center gap-2 mb-4">
+          <span class="text-zinc-500 text-sm">Focus 3 of 4</span>
+        </div>
+        <h2 class="text-4xl font-bold text-white mb-2">Brand & Access Control</h2>
+        <p class="text-lg text-zinc-400 mb-6">Protect brand consistency while enabling local marketing</p>
+        
+        <div class="grid grid-cols-2 gap-6">
+          <!-- Key Insight -->
+          <div class="space-y-4">
+            <div class="bg-zinc-900/50 border border-zinc-800 rounded-xl p-5">
+              <h4 class="text-xs text-zinc-500 uppercase tracking-wide mb-3">Key Finding</h4>
+              <p class="text-white text-lg font-medium mb-2">Template locking + approval flows</p>
+              <p class="text-zinc-400 text-sm">Franchisors need to control what franchisees can edit. Leaders use locked templates with editable zones and pre-send approval.</p>
+            </div>
+            
+            <div class="bg-zinc-900/50 border border-zinc-800 rounded-xl p-5">
+              <h4 class="text-xs text-zinc-500 uppercase tracking-wide mb-3">Competitor Insights</h4>
+              <ul class="space-y-2 text-sm text-zinc-400">
+                <li class="flex items-start gap-2"><span class="text-white font-medium w-24 flex-shrink-0">Ansira</span>Locked templates, editable content zones</li>
+                <li class="flex items-start gap-2"><span class="text-white font-medium w-24 flex-shrink-0">BrandMuscle</span>Co-op marketing with approval workflows</li>
+                <li class="flex items-start gap-2"><span class="text-white font-medium w-24 flex-shrink-0">SOCi</span>Brand kit distribution to all locations</li>
+                <li class="flex items-start gap-2"><span class="text-white font-medium w-24 flex-shrink-0">Mailchimp</span>Basic brand kit — no locking</li>
+              </ul>
+            </div>
+          </div>
+          
+          <!-- Leaders -->
+          <div class="bg-zinc-900/30 border border-zinc-800 rounded-xl p-5">
+            <h4 class="text-xs text-zinc-500 uppercase tracking-wide mb-4">Market Leaders</h4>
+            <div class="space-y-4">
+              <div class="flex items-center gap-4 p-3 bg-zinc-900/50 rounded-lg">
+                <div class="w-10 h-10 bg-zinc-800 rounded-lg flex items-center justify-center text-white font-bold text-sm">AN</div>
+                <div>
+                  <p class="text-white font-medium">Ansira</p>
+                  <p class="text-zinc-500 text-xs">Best-in-class local marketing control</p>
+                </div>
+              </div>
+              <div class="flex items-center gap-4 p-3 bg-zinc-900/50 rounded-lg">
+                <div class="w-10 h-10 bg-zinc-800 rounded-lg flex items-center justify-center text-white font-bold text-sm">BM</div>
+                <div>
+                  <p class="text-white font-medium">BrandMuscle</p>
+                  <p class="text-zinc-500 text-xs">Co-op funds + approval workflows</p>
+                </div>
+              </div>
+              <div class="flex items-center gap-4 p-3 bg-zinc-900/50 rounded-lg">
+                <div class="w-10 h-10 bg-zinc-800 rounded-lg flex items-center justify-center text-white font-bold text-sm">SO</div>
+                <div>
+                  <p class="text-white font-medium">SOCi</p>
+                  <p class="text-zinc-500 text-xs">Multi-location brand management</p>
+                </div>
+              </div>
+            </div>
+            <div class="mt-4 pt-4 border-t border-zinc-800">
+              <p class="text-xs text-zinc-500">Recommendation: Template locking + optional approval workflow</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Slide 5: AI Capabilities Deep Dive -->
+    <div id="slide-5" class="slide flex-col items-center justify-center max-w-6xl w-full">
+      <div class="w-full">
+        <div class="flex items-center gap-2 mb-4">
+          <span class="text-zinc-500 text-sm">Focus 4 of 4</span>
+        </div>
+        <h2 class="text-4xl font-bold text-white mb-2">AI Capabilities</h2>
+        <p class="text-lg text-zinc-400 mb-6">Emerging differentiator for enterprise marketing platforms</p>
+        
+        <div class="grid grid-cols-2 gap-6">
+          <!-- Key Insight -->
+          <div class="space-y-4">
+            <div class="bg-zinc-900/50 border border-zinc-800 rounded-xl p-5">
+              <h4 class="text-xs text-zinc-500 uppercase tracking-wide mb-3">Key Finding</h4>
+              <p class="text-white text-lg font-medium mb-2">AI is the new competitive edge</p>
+              <p class="text-zinc-400 text-sm">Leaders offer predictive send times, generative content, and autonomous optimization. Essential for location managers with limited marketing skills.</p>
+            </div>
+            
+            <div class="bg-zinc-900/50 border border-zinc-800 rounded-xl p-5">
+              <h4 class="text-xs text-zinc-500 uppercase tracking-wide mb-3">Competitor Insights</h4>
+              <ul class="space-y-2 text-sm text-zinc-400">
+                <li class="flex items-start gap-2"><span class="text-white font-medium w-24 flex-shrink-0">Braze</span>Predictive + generative + autonomous</li>
+                <li class="flex items-start gap-2"><span class="text-white font-medium w-24 flex-shrink-0">SOCi</span>AI content generation for social</li>
+                <li class="flex items-start gap-2"><span class="text-white font-medium w-24 flex-shrink-0">Klaviyo</span>Predictive segments + send time</li>
+                <li class="flex items-start gap-2"><span class="text-white font-medium w-24 flex-shrink-0">Mailchimp</span>Basic AI subject lines</li>
+              </ul>
+            </div>
+          </div>
+          
+          <!-- Leaders -->
+          <div class="bg-zinc-900/30 border border-zinc-800 rounded-xl p-5">
+            <h4 class="text-xs text-zinc-500 uppercase tracking-wide mb-4">Market Leaders</h4>
+            <div class="space-y-4">
+              <div class="flex items-center gap-4 p-3 bg-zinc-900/50 rounded-lg">
+                <div class="w-10 h-10 bg-zinc-800 rounded-lg flex items-center justify-center text-white font-bold text-sm">BZ</div>
+                <div>
+                  <p class="text-white font-medium">Braze</p>
+                  <p class="text-zinc-500 text-xs">Sets the enterprise AI bar</p>
+                </div>
+              </div>
+              <div class="flex items-center gap-4 p-3 bg-zinc-900/50 rounded-lg">
+                <div class="w-10 h-10 bg-zinc-800 rounded-lg flex items-center justify-center text-white font-bold text-sm">SO</div>
+                <div>
+                  <p class="text-white font-medium">SOCi</p>
+                  <p class="text-zinc-500 text-xs">AI-powered local marketing</p>
+                </div>
+              </div>
+              <div class="flex items-center gap-4 p-3 bg-zinc-900/50 rounded-lg">
+                <div class="w-10 h-10 bg-zinc-800 rounded-lg flex items-center justify-center text-white font-bold text-sm">KL</div>
+                <div>
+                  <p class="text-white font-medium">Klaviyo</p>
+                  <p class="text-zinc-500 text-xs">Predictive analytics leader</p>
+                </div>
+              </div>
+            </div>
+            <div class="mt-4 pt-4 border-t border-zinc-800">
+              <p class="text-xs text-zinc-500">Recommendation: AI content assist + predictive send optimization</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Slide 6: User Personas Summary -->
+    <div id="slide-6" class="slide flex-col items-center justify-center max-w-5xl w-full">
+      <div class="w-full">
+        <span class="inline-block px-3 py-1 bg-zinc-900 text-zinc-400 rounded-full text-xs font-medium mb-4">User Personas</span>
+        <h2 class="text-4xl font-bold text-white mb-2">3 Key Personas</h2>
+        <p class="text-lg text-zinc-400 mb-8">FML market users with distinct needs at each hierarchy level</p>
+        
+        <div class="grid grid-cols-3 gap-4">
+          <!-- Super Admin -->
+          <div class="bg-zinc-900/50 border border-zinc-800 rounded-xl p-5">
+            <div class="flex items-center gap-3 mb-4">
+              <img src="https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=80&h=80&fit=crop&crop=face" class="w-12 h-12 rounded-full object-cover border border-zinc-700" alt="Super Admin">
+              <div>
+                <h3 class="text-white font-semibold">Super Admin</h3>
+                <p class="text-zinc-500 text-xs">Enterprise Marketing Chief</p>
+              </div>
+            </div>
+            <ul class="space-y-2 text-sm text-zinc-400">
+              <li class="flex items-start gap-2"><span class="w-1 h-1 bg-zinc-500 rounded-full mt-2 flex-shrink-0"></span>Manage all locations & permissions</li>
+              <li class="flex items-start gap-2"><span class="w-1 h-1 bg-zinc-500 rounded-full mt-2 flex-shrink-0"></span>Share brand-approved assets</li>
+              <li class="flex items-start gap-2"><span class="w-1 h-1 bg-zinc-500 rounded-full mt-2 flex-shrink-0"></span>View rollup reports & approvals</li>
+              <li class="flex items-start gap-2"><span class="w-1 h-1 bg-zinc-500 rounded-full mt-2 flex-shrink-0"></span>Send org-wide communications</li>
+            </ul>
+          </div>
+          
+          <!-- Regional Manager -->
+          <div class="bg-zinc-900/50 border border-zinc-800 rounded-xl p-5">
+            <div class="flex items-center gap-3 mb-4">
+              <img src="https://images.unsplash.com/photo-1560250097-0b93528c311a?w=80&h=80&fit=crop&crop=face" class="w-12 h-12 rounded-full object-cover border border-zinc-700" alt="Regional Manager">
+              <div>
+                <h3 class="text-white font-semibold">Regional Manager</h3>
+                <p class="text-zinc-500 text-xs">Oversees Multiple Locations</p>
+              </div>
+            </div>
+            <ul class="space-y-2 text-sm text-zinc-400">
+              <li class="flex items-start gap-2"><span class="w-1 h-1 bg-zinc-500 rounded-full mt-2 flex-shrink-0"></span>Access & share brand assets</li>
+              <li class="flex items-start gap-2"><span class="w-1 h-1 bg-zinc-500 rounded-full mt-2 flex-shrink-0"></span>Manage regional locations</li>
+              <li class="flex items-start gap-2"><span class="w-1 h-1 bg-zinc-500 rounded-full mt-2 flex-shrink-0"></span>Report on regional performance</li>
+              <li class="flex items-start gap-2"><span class="w-1 h-1 bg-zinc-500 rounded-full mt-2 flex-shrink-0"></span>Identify struggling locations</li>
+            </ul>
+          </div>
+          
+          <!-- Location Manager -->
+          <div class="bg-zinc-900/50 border border-zinc-800 rounded-xl p-5">
+            <div class="flex items-center gap-3 mb-4">
+              <img src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=80&h=80&fit=crop&crop=face" class="w-12 h-12 rounded-full object-cover border border-zinc-700" alt="Location Manager">
+              <div>
+                <h3 class="text-white font-semibold">Location Manager</h3>
+                <p class="text-zinc-500 text-xs">Operations Focused</p>
+              </div>
+            </div>
+            <ul class="space-y-2 text-sm text-zinc-400">
+              <li class="flex items-start gap-2"><span class="w-1 h-1 bg-zinc-500 rounded-full mt-2 flex-shrink-0"></span>Access brand assets & templates</li>
+              <li class="flex items-start gap-2"><span class="w-1 h-1 bg-zinc-500 rounded-full mt-2 flex-shrink-0"></span>Start campaigns quickly</li>
+              <li class="flex items-start gap-2"><span class="w-1 h-1 bg-zinc-500 rounded-full mt-2 flex-shrink-0"></span>View workspace reporting</li>
+              <li class="flex items-start gap-2"><span class="w-1 h-1 bg-zinc-500 rounded-full mt-2 flex-shrink-0"></span>Manage contacts</li>
+            </ul>
+          </div>
+        </div>
+        
+        <div class="bg-zinc-900/30 border border-zinc-800 rounded-lg p-4 mt-6 flex items-center gap-3">
+          <svg class="w-5 h-5 text-zinc-500 flex-shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4"/><path d="M12 8h.01"/></svg>
+          <p class="text-zinc-500 text-sm">All personas may need to <span class="text-zinc-300">manage their own marketing</span> — campaigns, contacts, and automation at their level.</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Slide 7: Competitive Landscape Summary -->
+    <div id="slide-7" class="slide flex-col items-center justify-center max-w-5xl w-full">
+      <div class="w-full text-center">
+        <span class="inline-block px-3 py-1 bg-zinc-900 text-zinc-400 rounded-full text-xs font-medium mb-4">Competitive Landscape</span>
+        <h2 class="text-4xl font-bold text-white mb-3">9 Platforms Analyzed</h2>
+        <p class="text-lg text-zinc-400 mb-10">Enterprise marketing automation & FML vertical leaders</p>
+        
+        <!-- Summary Grid -->
+        <div class="grid grid-cols-3 gap-4 mb-8">
+          <div class="bg-zinc-900/50 border border-zinc-800 rounded-xl p-5 text-left">
+            <p class="text-3xl font-bold text-white mb-1">9</p>
+            <p class="text-zinc-400 text-sm">Platforms compared</p>
+            <p class="text-zinc-600 text-xs mt-2">Salesforce, Marketo, HubSpot, Braze, Ansira, SOCi, Klaviyo, Mailchimp, Eloqua</p>
+          </div>
+          <div class="bg-zinc-900/50 border border-zinc-800 rounded-xl p-5 text-left">
+            <p class="text-3xl font-bold text-white mb-1">5</p>
+            <p class="text-zinc-400 text-sm">Vertical leaders</p>
+            <p class="text-zinc-600 text-xs mt-2">FranConnect, Ansira, SOCi, ServiceTitan, Crunchtime</p>
+          </div>
+          <div class="bg-zinc-900/50 border border-zinc-800 rounded-xl p-5 text-left">
+            <p class="text-3xl font-bold text-white mb-1">4</p>
+            <p class="text-zinc-400 text-sm">Focus areas</p>
+            <p class="text-zinc-600 text-xs mt-2">Navigation, Reporting, Brand Control, AI</p>
+          </div>
+        </div>
+        
+        <!-- Key Takeaways -->
+        <div class="bg-zinc-900/30 border border-zinc-800 rounded-xl p-6 text-left mb-6">
+          <h4 class="text-white font-semibold mb-4">Key Takeaways</h4>
+          <div class="grid grid-cols-2 gap-4 text-sm">
+            <div class="flex items-start gap-3">
+              <span class="w-1.5 h-1.5 bg-zinc-500 rounded-full mt-2 flex-shrink-0"></span>
+              <p class="text-zinc-300">All enterprise platforms use <span class="text-white">hierarchical structures</span> — flat dropdowns break at ~50 accounts</p>
+            </div>
+            <div class="flex items-start gap-3">
+              <span class="w-1.5 h-1.5 bg-zinc-500 rounded-full mt-2 flex-shrink-0"></span>
+              <p class="text-zinc-300"><span class="text-white">Braze & SOCi</span> lead in AI capabilities with predictive + generative features</p>
+            </div>
+            <div class="flex items-start gap-3">
+              <span class="w-1.5 h-1.5 bg-zinc-500 rounded-full mt-2 flex-shrink-0"></span>
+              <p class="text-zinc-300"><span class="text-white">Ansira & BrandMuscle</span> dominate brand control with locked templates + approval flows</p>
+            </div>
+            <div class="flex items-start gap-3">
+              <span class="w-1.5 h-1.5 bg-zinc-500 rounded-full mt-2 flex-shrink-0"></span>
+              <p class="text-zinc-300">Every vertical has a <span class="text-white">dominant "hub" platform</span> — email marketing is an opportunity</p>
+            </div>
+          </div>
+        </div>
+        
+        <!-- Deep Dive Link -->
+        <a href="competitor-deep-dive.html" class="inline-flex items-center gap-2 px-5 py-2.5 bg-zinc-800 hover:bg-zinc-700 text-white rounded-lg text-sm font-medium transition-colors">
+          View Full Comparison
+          <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
+        </a>
+      </div>
+    </div>
+
+    <!-- Slide 8: Navigation Models -->
+    <div id="slide-8" class="slide flex-col items-center justify-center max-w-4xl w-full">
+      <div class="w-full text-center">
+        <span class="inline-block px-3 py-1 bg-zinc-900 text-zinc-400 rounded-full text-xs font-medium mb-4">Key Recommendation</span>
+        <h2 class="text-5xl font-bold text-white mb-4">Flat vs. Hierarchical</h2>
+        <p class="text-xl text-zinc-400 mb-12">Two distinct navigation approaches</p>
+        
+        <div class="grid grid-cols-2 gap-8 mb-10">
+          <!-- Flat -->
+          <div class="bg-black border border-zinc-800 rounded-2xl p-8 text-left">
+            <div class="flex items-center gap-3 mb-4">
+              <svg class="w-8 h-8 text-zinc-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m12.83 2.18a2 2 0 0 0-1.66 0L2.6 6.08a1 1 0 0 0 0 1.83l8.58 3.91a2 2 0 0 0 1.66 0l8.58-3.9a1 1 0 0 0 0-1.83Z"/><path d="m22 17.65-9.17 4.16a2 2 0 0 1-1.66 0L2 17.65"/><path d="m22 12.65-9.17 4.16a2 2 0 0 1-1.66 0L2 12.65"/></svg>
+              <h3 class="text-2xl font-bold text-white">Flat</h3>
+            </div>
+            <p class="text-zinc-400 mb-4">Simple dropdown, 1–2 clicks</p>
+            <p class="text-zinc-400 text-sm">Breaks at ~50 business units</p>
+            <p class="text-zinc-400 text-xs mt-4">Mailchimp, ActiveCampaign</p>
+          </div>
+          
+          <!-- Hierarchical - RECOMMENDED -->
+          <div class="bg-black border-2 border-white rounded-2xl p-8 text-left relative">
+            <div class="absolute -top-3 right-4 flex items-center gap-1 px-3 py-1 bg-white text-black text-xs font-bold rounded-full">
+              <svg class="w-3 h-3" viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" stroke-width="2"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+              Recommended
+            </div>
+            <div class="flex items-center gap-3 mb-4">
+              <svg class="w-8 h-8 text-white" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="6" x2="6" y1="3" y2="15"/><circle cx="18" cy="6" r="3"/><circle cx="6" cy="18" r="3"/><path d="M18 9a9 9 0 0 1-9 9"/></svg>
+              <h3 class="text-2xl font-bold text-white">Hierarchical</h3>
+            </div>
+            <p class="text-zinc-300 mb-4">Parent → Region → Account tree</p>
+            <p class="text-white text-sm font-medium">Scales to 500+ with roll-up</p>
+            <p class="text-zinc-400 text-xs mt-4">Salesforce MC, Marketo, Eloqua</p>
+          </div>
+        </div>
+        
+        <div class="bg-black border border-zinc-800 rounded-xl p-6">
+          <p class="text-zinc-300 text-lg"><span class="text-white font-semibold">Recommendation:</span> Hierarchical navigation is required for enterprise scale</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Slide 9: Key UX Findings -->
+    <div id="slide-9" class="slide flex-col items-center justify-center max-w-4xl w-full">
+      <div class="w-full text-center">
+        <span class="inline-block px-3 py-1 bg-zinc-900 text-zinc-400 rounded-full text-xs font-medium mb-4">UX Insights</span>
+        <h2 class="text-5xl font-bold text-white mb-4">4 Key Findings</h2>
+        <p class="text-xl text-zinc-400 mb-10">What we learned from analyzing competitor UX</p>
+        
+        <div class="grid grid-cols-2 gap-6 mb-8">
+          <div class="bg-black border border-zinc-800 rounded-xl p-6 text-left">
+            <div class="text-3xl font-bold text-white mb-2">1</div>
+            <h3 class="text-white font-semibold mb-2">Hierarchy is essential</h3>
+            <p class="text-zinc-400 text-sm">Flat models break at ~50 units</p>
+          </div>
+          
+          <div class="bg-black border border-zinc-800 rounded-xl p-6 text-left">
+            <div class="text-3xl font-bold text-white mb-2">2</div>
+            <h3 class="text-white font-semibold mb-2">Fast context switching</h3>
+            <p class="text-zinc-400 text-sm">Persistent header switcher is best UX</p>
+          </div>
+          
+          <div class="bg-black border border-zinc-800 rounded-xl p-6 text-left">
+            <div class="text-3xl font-bold text-white mb-2">3</div>
+            <h3 class="text-white font-semibold mb-2">Roll-up reporting expected</h3>
+            <p class="text-zinc-400 text-sm">Aggregate views without switching</p>
+          </div>
+          
+          <div class="bg-zinc-900/50 border border-zinc-800 rounded-xl p-6 text-left">
+            <div class="text-3xl font-bold text-white mb-2 flex items-center gap-2"><svg class="w-6 h-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m12 3-1.912 5.813a2 2 0 0 1-1.275 1.275L3 12l5.813 1.912a2 2 0 0 1 1.275 1.275L12 21l1.912-5.813a2 2 0 0 1 1.275-1.275L21 12l-5.813-1.912a2 2 0 0 1-1.275-1.275L12 3Z"/></svg></div>
+            <h3 class="text-white font-semibold mb-2">AI is table stakes</h3>
+            <p class="text-zinc-400 text-sm">Braze sets the bar for engagement</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Slide 10: Explore Prototype -->
+    <div id="slide-10" class="slide flex-col items-center justify-center max-w-5xl w-full">
+      <div class="w-full text-center">
+        <span class="inline-block px-3 py-1 bg-zinc-900 text-zinc-400 rounded-full text-xs font-medium mb-4">See It In Action</span>
+        <h2 class="text-4xl font-bold text-white mb-4">Explore the Prototype</h2>
+        <p class="text-xl text-zinc-400 mb-8">Click each card to see how we implement these UX recommendations</p>
+        
+        <div class="grid grid-cols-3 gap-5">
+          <!-- Hierarchical Navigation -->
+          <a href="workspaces-list.html?view=tree" target="_blank" class="group bg-black border border-zinc-800 hover:border-zinc-600 rounded-xl overflow-hidden transition-all text-left">
+            <div class="aspect-video bg-zinc-900 overflow-hidden">
+              <img src="assets/Clear-heirarchy-preview.png" alt="Clear hierarchy preview" class="w-full h-full object-cover group-hover:scale-105 transition-transform">
+            </div>
+            <div class="p-4">
+              <p class="text-zinc-500 text-xs uppercase tracking-wide mb-1">UX Rec: Hierarchical</p>
+              <h3 class="text-white font-semibold mb-1">Workspace Navigation</h3>
+              <p class="text-zinc-400 text-sm">Fast access without impersonation</p>
+            </div>
+          </a>
+          
+          <!-- Workspace Detail -->
+          <a href="workspace-detail.html?workspace=UPS%20Foundation" target="_blank" class="group bg-black border border-zinc-700 hover:border-zinc-500 rounded-xl overflow-hidden transition-all text-left">
+            <div class="aspect-video bg-zinc-900 overflow-hidden">
+              <img src="assets/workspaces-preview.png" alt="Workspaces preview" class="w-full h-full object-cover group-hover:scale-105 transition-transform">
+            </div>
+            <div class="p-4">
+              <p class="text-zinc-500 text-xs uppercase tracking-wide mb-1">UX Rec: Context Switching</p>
+              <h3 class="text-white font-semibold mb-1">Workspace Detail</h3>
+              <p class="text-zinc-400 text-sm">Clear workspace context</p>
+            </div>
+          </a>
+          
+          <!-- Roll-up Reporting -->
+          <a href="folder-reporting.html" target="_blank" class="group bg-black border border-zinc-800 hover:border-zinc-600 rounded-xl overflow-hidden transition-all text-left">
+            <div class="aspect-video bg-zinc-900 overflow-hidden">
+              <img src="assets/flexible_reporting_preview.png" alt="Flexible reporting preview" class="w-full h-full object-cover group-hover:scale-105 transition-transform">
+            </div>
+            <div class="p-4">
+              <p class="text-zinc-500 text-xs uppercase tracking-wide mb-1">UX Rec: Roll-up Reporting</p>
+              <h3 class="text-white font-semibold mb-1">Org-Level Reports</h3>
+              <p class="text-zinc-400 text-sm">Cross-workspace analysis</p>
+            </div>
+          </a>
+        </div>
+      </div>
+    </div>
+
+    <!-- Slide 11: End -->
+    <div id="slide-11" class="slide flex-col items-center justify-center text-center max-w-4xl w-full">
+      <div class="w-20 h-20 bg-gradient-to-br from-zinc-800 to-zinc-900 rounded-2xl flex items-center justify-center mb-8">
+        <svg class="w-10 h-10 text-white" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 3h20"/><path d="M21 3v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V3"/><path d="m7 21 5-5 5 5"/></svg>
+      </div>
+      <h2 class="text-5xl font-bold text-white mb-4">UX Research Complete</h2>
+      <p class="text-xl text-zinc-400 mb-8">Ready to explore more?</p>
+      <div class="flex gap-4">
+        <button onclick="goToSlide(1)" class="px-6 py-3 bg-zinc-900 hover:bg-zinc-800 text-white rounded-xl font-medium transition-colors flex items-center gap-2">
+          <svg class="w-4 h-4 text-white" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/></svg>
+          Restart
+        </button>
+        <a href="product-overview-slides.html" class="px-6 py-3 bg-zinc-800 hover:bg-zinc-700 text-white rounded-xl font-medium transition-colors flex items-center gap-2">
+          <svg class="w-4 h-4 text-white" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4.5 16.5c-1.5 1.26-2 5-2 5s3.74-.5 5-2c.71-.84.7-2.13-.09-2.91a2.18 2.18 0 0 0-2.91-.09z"/><path d="m12 15-3-3a22 22 0 0 1 2-3.95A12.88 12.88 0 0 1 22 2c0 2.72-.78 7.5-6 11a22.35 22.35 0 0 1-4 2z"/></svg>
+          Product Overview
+        </a>
+        <a href="teams-signup-flow.html" class="px-6 py-3 border border-zinc-700 hover:bg-zinc-900 text-zinc-300 rounded-xl font-medium transition-colors flex items-center gap-2">
+          <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polygon points="10 8 16 12 10 16 10 8"/></svg>
+          Launch Prototype
+        </a>
+      </div>
+    </div>
+        
+  </div>
+
+  <!-- Navigation Footer -->
+  <!-- Big Left Arrow -->
+  <button onclick="prevSlide()" class="fixed left-6 top-1/2 -translate-y-1/2 w-14 h-14 bg-zinc-900/80 hover:bg-zinc-800 border border-zinc-700 rounded-full flex items-center justify-center text-zinc-400 hover:text-white transition-all z-50">
+    <svg class="w-8 h-8" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m15 18-6-6 6-6"/></svg>
+  </button>
+  
+  <!-- Big Right Arrow -->
+  <button onclick="nextSlide()" class="fixed right-6 top-1/2 -translate-y-1/2 w-14 h-14 bg-zinc-900/80 hover:bg-zinc-800 border border-zinc-700 rounded-full flex items-center justify-center text-zinc-400 hover:text-white transition-all z-50">
+    <svg class="w-8 h-8" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m9 18 6-6-6-6"/></svg>
+  </button>
+
+  <div class="fixed bottom-0 left-0 right-0 h-14 bg-black/90 backdrop-blur border-t border-zinc-800 flex items-center justify-between px-6">
+    <a href="research-dashboard.html" class="flex items-center gap-2 text-zinc-400 hover:text-white text-sm transition-colors">
+      <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m12 19-7-7 7-7"/><path d="M19 12H5"/></svg> Back to Research
+    </a>
+    
+    <!-- Dots -->
+    <div class="flex items-center gap-1.5">
+      <button onclick="goToSlide(1)" class="dot w-2.5 h-2.5 rounded-full bg-white transition-all"></button>
+      <button onclick="goToSlide(2)" class="dot w-2.5 h-2.5 rounded-full bg-zinc-700 hover:bg-zinc-600 transition-all"></button>
+      <button onclick="goToSlide(3)" class="dot w-2.5 h-2.5 rounded-full bg-zinc-700 hover:bg-zinc-600 transition-all"></button>
+      <button onclick="goToSlide(4)" class="dot w-2.5 h-2.5 rounded-full bg-zinc-700 hover:bg-zinc-600 transition-all"></button>
+      <button onclick="goToSlide(5)" class="dot w-2.5 h-2.5 rounded-full bg-zinc-700 hover:bg-zinc-600 transition-all"></button>
+      <button onclick="goToSlide(6)" class="dot w-2.5 h-2.5 rounded-full bg-zinc-700 hover:bg-zinc-600 transition-all"></button>
+      <button onclick="goToSlide(7)" class="dot w-2.5 h-2.5 rounded-full bg-zinc-700 hover:bg-zinc-600 transition-all"></button>
+      <button onclick="goToSlide(8)" class="dot w-2.5 h-2.5 rounded-full bg-zinc-700 hover:bg-zinc-600 transition-all"></button>
+      <button onclick="goToSlide(9)" class="dot w-2.5 h-2.5 rounded-full bg-zinc-700 hover:bg-zinc-600 transition-all"></button>
+      <button onclick="goToSlide(10)" class="dot w-2.5 h-2.5 rounded-full bg-zinc-700 hover:bg-zinc-600 transition-all"></button>
+      <button onclick="goToSlide(11)" class="dot w-2.5 h-2.5 rounded-full bg-zinc-700 hover:bg-zinc-600 transition-all"></button>
+    </div>
+    
+    <!-- Slide Counter -->
+    <div class="flex items-center gap-2">
+      <span class="text-sm text-zinc-400">Slide</span>
+      <span id="slide-counter" class="text-sm text-white font-medium">1 / 11</span>
+    </div>
+  </div>
+
+  <script>
+    // Safe lucide helper
+    function safeCreateIcons() {
+      if (typeof lucide !== 'undefined' && lucide.createIcons) {
+        lucide.createIcons();
+      }
+    }
+
+    // Initialize on DOM ready
+    document.addEventListener('DOMContentLoaded', function() {
+      safeCreateIcons();
+      if (currentSlide > 1) {
+        showSlide(currentSlide);
+      }
+      
+    });
+
+    const totalSlides = 11;
+    let currentSlide = parseInt(sessionStorage.getItem('uxResearchSlide')) || 1;
+    if (currentSlide > totalSlides) currentSlide = 1;
+
+    function showSlide(n) {
+      document.querySelectorAll('.slide').forEach(s => s.classList.remove('active'));
+      const slideEl = document.getElementById('slide-' + n);
+      if (!slideEl) {
+        n = 1;
+      }
+      document.getElementById('slide-' + n).classList.add('active');
+      document.getElementById('slide-counter').textContent = n + ' / ' + totalSlides;
+      
+      document.querySelectorAll('.dot').forEach((dot, i) => {
+        if (i + 1 === n) {
+          dot.classList.remove('bg-zinc-700');
+          dot.classList.add('bg-white');
+        } else {
+          dot.classList.remove('bg-white');
+          dot.classList.add('bg-zinc-700');
+        }
+      });
+      
+      currentSlide = n;
+      sessionStorage.setItem('uxResearchSlide', n);
+      safeCreateIcons();
+    }
+
+    function nextSlide() {
+      if (currentSlide < totalSlides) {
+        showSlide(currentSlide + 1);
+      }
+    }
+
+    function prevSlide() {
+      if (currentSlide > 1) {
+        showSlide(currentSlide - 1);
+      }
+    }
+
+    function goToSlide(n) {
+      showSlide(n);
+    }
+  </script>
+</body>
+</html>

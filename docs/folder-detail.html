@@ -1,0 +1,1576 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>CTCT for Teams — Folder Detail</title>
+  <link rel="stylesheet" href="mobile-responsive.css">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://unpkg.com/lucide@0.263.1/dist/umd/lucide.js"></script>
+  <script>
+    // Safe lucide helper
+    function safeCreateIcons() {
+      if (typeof lucide !== 'undefined' && lucide.createIcons) {
+        lucide.createIcons();
+      }
+    }
+
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            ctct: {
+              blue: '#4B7BF5',
+              'blue-light': '#EEF4FF',
+              orange: '#F5A623'
+            }
+          },
+          fontFamily: {
+            sans: ['CTSans', 'system-ui', 'sans-serif']
+          }
+        }
+      }
+    }
+  </script>
+  <style>
+    @font-face {
+      font-family: 'CTSans';
+      src: url('fonts/CTSans-Regular.woff2') format('woff2');
+      font-weight: 400;
+      font-style: normal;
+      font-display: swap;
+    }
+    @font-face {
+      font-family: 'CTSans';
+      src: url('fonts/CTSans-Semibold.woff2') format('woff2');
+      font-weight: 600;
+      font-style: normal;
+      font-display: swap;
+    }
+    @font-face {
+      font-family: 'CTSans';
+      src: url('fonts/CTSans-Bold.woff2') format('woff2');
+      font-weight: 700;
+      font-style: normal;
+      font-display: swap;
+    }
+    body { 
+      line-height: 1.5; 
+      background: #F8F9FB; 
+    }
+    .ai-gradient-text {
+      background: linear-gradient(90deg, #8B5CF6 0%, #3B82F6 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+    /* Modern chart styles - thin bars with teal gradient and opacity states */
+    .chart-bar {
+      background: linear-gradient(180deg, #14B8A6 0%, #6EE7B7 100%);
+      border-radius: 3px 3px 0 0;
+      width: 5px;
+      opacity: 0.4;
+      transition: opacity 0.2s, transform 0.2s;
+      cursor: pointer;
+      position: relative;
+    }
+    .chart-bar:hover {
+      opacity: 1;
+      transform: scaleY(1.05);
+    }
+    .chart-bar.active {
+      opacity: 1;
+    }
+    .chart-bar-teal {
+      background: linear-gradient(180deg, #14B8A6 0%, #6EE7B7 100%);
+      border-radius: 3px 3px 0 0;
+      width: 5px;
+      opacity: 0.4;
+      transition: opacity 0.2s, transform 0.2s;
+      cursor: pointer;
+    }
+    .chart-bar-teal:hover, .chart-bar-teal.active {
+      opacity: 1;
+    }
+    .chart-bar-green {
+      background: linear-gradient(180deg, #10B981 0%, #6EE7B7 100%);
+      border-radius: 3px 3px 0 0;
+      width: 5px;
+      opacity: 0.4;
+    }
+    .chart-bar-green:hover, .chart-bar-green.active {
+      opacity: 1;
+    }
+    .chart-bar-orange {
+      background: linear-gradient(180deg, #F59E0B 0%, #FCD34D 100%);
+      border-radius: 3px 3px 0 0;
+      width: 5px;
+      opacity: 0.4;
+    }
+    .chart-bar-orange:hover, .chart-bar-orange.active {
+      opacity: 1;
+    }
+    .mini-donut {
+      transform: rotate(-90deg);
+    }
+    .mini-donut-segment {
+      fill: none;
+      stroke-linecap: round;
+      transition: stroke-dasharray 0.5s ease;
+    }
+    .line-chart-path {
+      fill: none;
+      stroke-width: 2;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+    }
+    .area-gradient {
+      opacity: 0.2;
+    }
+    /* UI Kit styles */
+    .ring-progress {
+      transform: rotate(-90deg);
+    }
+    .ring-track {
+      fill: none;
+      stroke: #E5E7EB;
+    }
+    .ring-fill {
+      fill: none;
+      stroke-linecap: round;
+    }
+    .thin-progress-track {
+      height: 4px;
+      background: #E5E7EB;
+      border-radius: 999px;
+    }
+    .thin-progress-fill {
+      height: 4px;
+      background: linear-gradient(90deg, #14B8A6 0%, #0EA5E9 100%);
+      border-radius: 999px;
+    }
+  </style>
+</head>
+<body class="font-sans">
+  <!-- SVG Gradient Definition for AI icon -->
+  <svg width="0" height="0" class="hidden">
+    <defs>
+      <linearGradient id="ai-gradient" x1="0%" y1="0%" x2="100%" y2="0%">
+        <stop offset="0%" style="stop-color:#8B5CF6"/>
+        <stop offset="100%" style="stop-color:#3B82F6"/>
+      </linearGradient>
+    </defs>
+  </svg>
+
+  <!-- Bottom Footer Bar -->
+  <div class="fixed bottom-0 left-0 right-0 h-12 bg-gray-800 flex items-center justify-between px-6 z-40">
+    <a href="index.html" class="flex items-center gap-2 text-gray-400 hover:text-white text-sm">
+      <i data-lucide="arrow-left" class="w-4 h-4"></i> All Prototypes
+    </a>
+    <p class="text-sm text-gray-400">Folder Detail — Workspaces in Folder</p>
+    <div class="flex items-center gap-4">
+      <div class="flex items-center gap-2 bg-gray-700 rounded-lg px-3 py-1.5">
+        <span class="text-xs text-gray-400">data=</span>
+        <button id="toggle-empty" onclick="setDataMode('empty')" class="px-2.5 py-1 text-xs rounded text-gray-400 hover:text-white">empty</button>
+        <button id="toggle-filled" onclick="setDataMode('filled')" class="px-2.5 py-1 text-xs rounded bg-gray-600 text-white">filled</button>
+      </div>
+      <a href="teams-signup-flow.html" onclick="sessionStorage.clear()" class="flex items-center gap-2 text-gray-400 hover:text-white text-sm">
+        <i data-lucide="rotate-ccw" class="w-4 h-4"></i> Reset
+      </a>
+    </div>
+  </div>
+
+  <!-- TOP BAR -->
+  <header class="fixed top-0 left-0 right-0 h-16 bg-white border-b border-gray-100 flex items-center px-6 z-50">
+    <!-- Logo -->
+    <div class="flex items-center">
+      <img src="assets/ctctLogo.png" alt="Constant Contact" class="w-8 h-8 object-contain">
+    </div>
+
+    <!-- Center - Search and Create -->
+    <div class="flex items-center gap-3 mx-auto">
+      <div class="relative">
+        <input type="text" placeholder="Search" class="w-48 pl-4 pr-10 py-2 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-ctct-blue focus:border-transparent">
+        <i data-lucide="search" class="w-4 h-4 text-gray-400 absolute right-3 top-1/2 -translate-y-1/2"></i>
+      </div>
+      <button onclick="openCreateWorkspaceModal()" class="px-6 py-2 bg-ctct-blue hover:opacity-90 text-white rounded-lg font-medium text-sm">
+        Create
+      </button>
+    </div>
+
+    <!-- Right side -->
+    <div class="flex items-center gap-3">
+      <button class="flex items-center gap-2 px-4 py-2 hover:bg-blue-50 rounded-full text-sm">
+        <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="url(#ai-gradient)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="m12 3-1.912 5.813a2 2 0 0 1-1.275 1.275L3 12l5.813 1.912a2 2 0 0 1 1.275 1.275L12 21l1.912-5.813a2 2 0 0 1 1.275-1.275L21 12l-5.813-1.912a2 2 0 0 1-1.275-1.275L12 3Z"/>
+          <path d="M5 3v4"/><path d="M19 17v4"/><path d="M3 5h4"/><path d="M17 19h4"/>
+        </svg>
+        <span class="font-medium ai-gradient-text">AI assistant</span>
+      </button>
+      
+      <button class="flex items-center gap-2 px-2 py-1 hover:bg-gray-50 rounded-lg text-sm">
+        <div class="w-6 h-6 bg-amber-800 rounded flex items-center justify-center">
+          <span class="text-amber-400 text-xs font-bold">u</span>
+        </div>
+        <span class="text-gray-700">UPS Global</span>
+        <i data-lucide="chevron-down" class="w-4 h-4 text-gray-400"></i>
+      </button>
+      
+      <button class="p-2 text-gray-400 hover:text-gray-600">
+        <i data-lucide="help-circle" class="w-5 h-5"></i>
+      </button>
+    </div>
+  </header>
+
+  <div class="flex h-screen pt-16 pb-12">
+    <!-- Left Sidebar -->
+    <aside class="w-64 bg-white flex flex-col pt-3">
+      <!-- Navigation -->
+      <div class="flex-1 overflow-y-auto px-3">
+        <nav>
+          <!-- Org dashboard -->
+          <a href="option-b-northstar-empty.html" class="block py-3 px-4 text-sm text-slate-600 hover:bg-sky-50 rounded-xl mb-1 transition-colors">Org dashboard</a>
+
+          <!-- Workspaces -->
+          <a href="workspaces-list.html" class="block py-3 px-4 text-sm text-slate-600 hover:bg-sky-50 rounded-xl mb-1 transition-colors">Workspaces</a>
+
+
+          <!-- Central send -->
+          <a href="#" class="block py-3 px-4 text-sm text-slate-600 hover:bg-sky-50 rounded-xl mb-1 transition-colors">Central send</a>
+
+          <!-- Reporting (expandable) -->
+          <div class="mb-1">
+            <button onclick="toggleSection('reporting')" class="w-full flex items-center justify-between py-3 px-4 text-sm text-slate-600 hover:bg-sky-50 rounded-xl transition-colors focus:outline-none">
+              <span>Reporting</span>
+              <svg class="w-4 h-4 text-gray-400" id="reporting-chevron" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 15l7-7 7 7"></path></svg>
+            </button>
+            <div id="reporting-items" class="ml-4 mt-1">
+              <a href="#" class="block py-2.5 px-4 text-sm text-slate-500 hover:bg-sky-50 rounded-xl transition-colors">Campaign engagement</a>
+              <a href="#" class="block py-2.5 px-4 text-sm text-slate-500 hover:bg-sky-50 rounded-xl transition-colors">Brand asset usage</a>
+              <a href="#" class="block py-2.5 px-4 text-sm text-slate-500 hover:bg-sky-50 rounded-xl transition-colors">Activity log</a>
+            </div>
+          </div>
+
+          <!-- Assets (expandable) -->
+          <div class="mb-1">
+            <button onclick="toggleSection('assets')" class="w-full flex items-center justify-between py-3 px-4 text-sm text-slate-600 hover:bg-sky-50 rounded-xl transition-colors focus:outline-none">
+              <span>Assets</span>
+              <svg class="w-4 h-4 text-gray-400" id="assets-chevron" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 15l7-7 7 7"></path></svg>
+            </button>
+            <div id="assets-items" class="ml-4 mt-1">
+              <a href="#" class="block py-2.5 px-4 text-sm text-slate-500 hover:bg-sky-50 rounded-xl transition-colors">Templates</a>
+              <a href="#" class="block py-2.5 px-4 text-sm text-slate-500 hover:bg-sky-50 rounded-xl transition-colors">Brandkit</a>
+              <a href="#" class="block py-2.5 px-4 text-sm text-slate-500 hover:bg-sky-50 rounded-xl transition-colors">Image library</a>
+            </div>
+          </div>
+
+          <!-- Community -->
+          <a href="#" class="block py-3 px-4 text-sm text-slate-600 hover:bg-sky-50 rounded-xl mb-1 transition-colors">Community</a>
+
+          <!-- Billing & settings -->
+          <a href="#" class="block py-3 px-4 text-sm text-slate-600 hover:bg-sky-50 rounded-xl transition-colors">Billing & settings</a>
+        </nav>
+      </div>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="flex-1 overflow-y-auto px-8 py-6">
+      <div class="max-w-5xl">
+        <!-- Breadcrumb Header -->
+        <div class="flex items-center justify-between mb-8">
+          <div id="breadcrumb-container" class="flex items-center gap-2 text-sm relative">
+            <!-- Breadcrumbs will be dynamically generated -->
+          </div>
+          
+          <!-- Breadcrumb overflow menu -->
+          <div id="breadcrumb-overflow-menu" class="hidden absolute left-0 top-full mt-1 w-64 bg-white border border-gray-200 rounded-xl shadow-lg z-50 py-2">
+            <div class="px-3 py-1.5 text-xs font-medium text-gray-400 uppercase tracking-wide">Navigation</div>
+            <div id="breadcrumb-overflow-items" class="max-h-64 overflow-y-auto">
+              <!-- Dynamic overflow items -->
+            </div>
+          </div>
+          <div class="flex items-center gap-2">
+            <!-- Search -->
+            <div class="relative">
+              <button onclick="toggleFolderSearch()" id="folder-search-btn" class="p-2 text-gray-400 hover:text-gray-600 rounded-lg hover:bg-gray-100">
+                <i data-lucide="search" class="w-5 h-5"></i>
+              </button>
+              <div id="folder-search-container" class="hidden absolute right-0 top-0 flex items-center">
+                <input type="text" id="folder-search-input" placeholder="Search workspaces..." class="w-64 px-4 py-2 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500" onkeyup="searchWorkspaces(this.value)">
+                <button onclick="closeFolderSearch()" class="ml-2 p-2 text-gray-400 hover:text-gray-600">
+                  <i data-lucide="x" class="w-4 h-4"></i>
+                </button>
+              </div>
+            </div>
+            
+            <!-- Overflow Menu -->
+            <div class="relative">
+              <button onclick="toggleFolderMenu(event)" class="p-2 text-gray-400 hover:text-gray-600 rounded-lg hover:bg-gray-100">
+                <i data-lucide="more-vertical" class="w-5 h-5"></i>
+              </button>
+              <div id="folder-overflow-menu" class="hidden absolute right-0 top-10 w-52 bg-white border border-gray-200 rounded-xl shadow-lg z-50 py-1">
+                <button onclick="openAddWorkspaceToFolder()" class="w-full flex items-center gap-3 px-4 py-2.5 text-sm text-gray-700 hover:bg-gray-50">
+                  <i data-lucide="plus" class="w-4 h-4"></i>
+                  Add workspace
+                </button>
+                <button class="w-full flex items-center gap-3 px-4 py-2.5 text-sm text-gray-700 hover:bg-gray-50">
+                  <i data-lucide="users" class="w-4 h-4"></i>
+                  Members
+                </button>
+                <button class="w-full flex items-center gap-3 px-4 py-2.5 text-sm text-gray-700 hover:bg-gray-50">
+                  <i data-lucide="link" class="w-4 h-4"></i>
+                  Share invite link
+                </button>
+                <button class="w-full flex items-center gap-3 px-4 py-2.5 text-sm text-gray-700 hover:bg-gray-50">
+                  <i data-lucide="move" class="w-4 h-4"></i>
+                  Move...
+                </button>
+                <div class="border-t border-gray-100 my-1"></div>
+                <button class="w-full flex items-center gap-3 px-4 py-2.5 text-sm text-red-600 hover:bg-red-50">
+                  <i data-lucide="trash-2" class="w-4 h-4"></i>
+                  Delete folder
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Folder Header -->
+        <div class="bg-white rounded-2xl border border-gray-100 p-6 mb-6">
+          <div class="flex items-center justify-between">
+            <div class="flex items-center gap-4">
+              <div id="folder-avatar" class="w-14 h-14 bg-gray-100 rounded-xl flex items-center justify-center text-gray-500">
+                <i data-lucide="folder" class="w-7 h-7"></i>
+              </div>
+              <div>
+                <h1 id="folder-title" class="text-2xl font-bold text-gray-900">Folder Name</h1>
+                <p id="folder-subtitle" class="text-gray-500 text-sm">Folder • <span id="workspace-count-display">0</span> workspaces</p>
+              </div>
+            </div>
+            <a id="go-to-report-link" href="#" class="flex items-center gap-2 px-4 py-2 border border-blue-600 text-blue-600 rounded-lg text-sm font-medium hover:bg-blue-50 transition-colors">
+              <i data-lucide="bar-chart-2" class="w-4 h-4"></i>
+              Go to full report
+            </a>
+          </div>
+        </div>
+
+        <!-- Dashboard Widgets Slider -->
+        <div class="relative mb-8">
+          <!-- Slider Navigation -->
+          <div class="absolute -left-4 top-1/2 -translate-y-1/2 z-10">
+            <button onclick="slideCards('prev')" id="slider-prev" class="w-8 h-8 bg-white rounded-full shadow-md flex items-center justify-center text-gray-400 hover:text-gray-600 disabled:opacity-30 disabled:cursor-not-allowed" disabled>
+              <i data-lucide="chevron-left" class="w-5 h-5"></i>
+            </button>
+          </div>
+          <div class="absolute -right-4 top-1/2 -translate-y-1/2 z-10">
+            <button onclick="slideCards('next')" id="slider-next" class="w-8 h-8 bg-white rounded-full shadow-md flex items-center justify-center text-gray-400 hover:text-gray-600 disabled:opacity-30 disabled:cursor-not-allowed">
+              <i data-lucide="chevron-right" class="w-5 h-5"></i>
+            </button>
+          </div>
+
+          <!-- Slider Container -->
+          <div class="overflow-hidden">
+            <div id="cards-slider" class="flex transition-transform duration-300 ease-in-out" style="transform: translateX(0);">
+              <!-- Card 1: Workspaces & Members Combined -->
+              <div class="flex-shrink-0 w-1/3 px-2">
+                <div class="bg-white rounded-2xl border border-gray-100 p-5 h-full">
+                  <div class="flex items-start justify-between gap-6">
+                    <!-- Workspaces -->
+                    <div>
+                      <div class="flex items-center justify-between mb-2">
+                        <h3 class="text-sm text-gray-500">Total workspaces</h3>
+                        <i data-lucide="shapes" class="w-5 h-5 text-gray-300"></i>
+                      </div>
+                      <p id="workspace-count-stat" class="text-3xl font-bold text-gray-900 mb-1">0</p>
+                      <p class="text-xs text-gray-400">Active in this folder</p>
+                    </div>
+                    <!-- Divider -->
+                    <div class="w-px bg-gray-100 self-stretch"></div>
+                    <!-- Members -->
+                    <div>
+                      <div class="flex items-center justify-between mb-2">
+                        <h3 class="text-sm text-gray-500">Total members</h3>
+                        <i data-lucide="users" class="w-5 h-5 text-gray-300"></i>
+                      </div>
+                      <div class="flex items-center gap-2 mb-1">
+                        <p id="member-count" class="text-3xl font-bold text-gray-300">—</p>
+                        <div id="member-avatars" class="flex -space-x-1"></div>
+                      </div>
+                      <p class="text-xs text-gray-400">Team members</p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Card 3: Shared Assets -->
+              <div class="flex-shrink-0 w-1/3 px-2">
+                <div class="bg-gradient-to-br from-purple-50 via-white to-blue-50 rounded-2xl border border-gray-100 p-5 h-full">
+                  <div class="flex items-center justify-between mb-4">
+                    <div class="flex items-center gap-2">
+                      <div class="w-8 h-8 bg-gradient-to-br from-purple-500 to-blue-500 rounded-lg flex items-center justify-center">
+                        <i data-lucide="palette" class="w-4 h-4 text-white"></i>
+                      </div>
+                      <h3 class="text-sm font-medium text-gray-900">Shared assets</h3>
+                    </div>
+                    <span id="assets-count" class="text-xs text-purple-600 bg-purple-100 px-2 py-0.5 rounded-full font-medium">6 assets</span>
+                  </div>
+                  <!-- Asset previews grid -->
+                  <div id="assets-previews" class="grid grid-cols-4 gap-2">
+                    <div class="aspect-square bg-gray-100 rounded-xl"></div>
+                    <div class="aspect-square bg-gray-100 rounded-xl"></div>
+                    <div class="aspect-square bg-gray-100 rounded-xl"></div>
+                    <div class="aspect-square bg-gray-50 rounded-xl flex items-center justify-center text-sm font-medium text-gray-400 border border-gray-200">+3</div>
+                  </div>
+                  <a href="folder-reporting.html" class="flex items-center gap-1 text-xs text-purple-600 hover:text-purple-700 mt-3 font-medium">
+                    View all assets <i data-lucide="arrow-right" class="w-3 h-3"></i>
+                  </a>
+                </div>
+              </div>
+
+              <!-- Card 4: Email Engagement -->
+              <div class="flex-shrink-0 w-1/3 px-2">
+                <div class="bg-white rounded-2xl border border-gray-100 p-5 h-full">
+                  <div class="flex items-center justify-between mb-3">
+                    <h3 class="text-sm text-gray-500">Email engagement</h3>
+                    <div class="relative">
+                      <button onclick="toggleCardMenu('email-card-menu')" class="p-1 hover:bg-gray-100 rounded-full">
+                        <i data-lucide="more-vertical" class="w-4 h-4 text-gray-400"></i>
+                      </button>
+                      <div id="email-card-menu" class="hidden absolute right-0 top-full mt-1 w-44 bg-white rounded-xl shadow-lg border border-gray-100 py-1 z-20">
+                        <button onclick="openWidgetCustomize('email')" class="w-full flex items-center gap-2 px-4 py-2 text-sm text-gray-700 hover:bg-gray-50">
+                          <i data-lucide="settings-2" class="w-4 h-4"></i>
+                          Customize
+                        </button>
+                        <a id="email-report-link" href="folder-reporting.html?channel=email" class="flex items-center gap-2 px-4 py-2 text-sm text-gray-700 hover:bg-gray-50">
+                          <i data-lucide="bar-chart-2" class="w-4 h-4"></i>
+                          View full report
+                        </a>
+                      </div>
+                    </div>
+                  </div>
+                  <!-- Mini bar chart -->
+                  <div id="email-chart-mini-empty" class="flex items-end gap-1 h-12 mb-3">
+                    <div class="flex-1 h-2 bg-gray-100 rounded-t"></div>
+                    <div class="flex-1 h-3 bg-gray-100 rounded-t"></div>
+                    <div class="flex-1 h-4 bg-gray-100 rounded-t"></div>
+                    <div class="flex-1 h-5 bg-gray-100 rounded-t"></div>
+                    <div class="flex-1 h-4 bg-gray-100 rounded-t"></div>
+                    <div class="flex-1 h-6 bg-gray-100 rounded-t"></div>
+                    <div class="flex-1 h-5 bg-gray-100 rounded-t"></div>
+                    <div class="flex-1 h-3 bg-gray-100 rounded-t"></div>
+                  </div>
+                  <div id="email-chart-mini-filled" class="hidden flex items-end justify-around gap-1 h-12 mb-3">
+                    <div class="chart-bar" style="height: 16px;" title="Jul: 8.2k"></div>
+                    <div class="chart-bar" style="height: 24px;" title="Aug: 9.4k"></div>
+                    <div class="chart-bar" style="height: 32px;" title="Sep: 10.1k"></div>
+                    <div class="chart-bar" style="height: 40px;" title="Oct: 11.3k"></div>
+                    <div class="chart-bar" style="height: 28px;" title="Nov: 9.8k"></div>
+                    <div class="chart-bar active" style="height: 48px;" title="Dec: 12.4k"></div>
+                  </div>
+                  <div class="flex items-center justify-between">
+                    <div>
+                      <p id="email-sends" class="text-lg font-bold text-gray-300">—</p>
+                      <p class="text-xs text-gray-400">Total sends</p>
+                    </div>
+                    <div class="text-right">
+                      <p id="email-opens" class="text-lg font-bold text-gray-300">—</p>
+                      <p class="text-xs text-gray-400">Open rate</p>
+                    </div>
+                  </div>
+                  <a id="email-report-link" href="#" class="text-xs text-blue-600 hover:text-blue-700 font-medium flex items-center gap-1 mt-3">
+                    View report <i data-lucide="arrow-right" class="w-3 h-3"></i>
+                  </a>
+                </div>
+              </div>
+
+              <!-- Card 5: Contact Growth -->
+              <div class="flex-shrink-0 w-1/3 px-2">
+                <div class="bg-white rounded-2xl border border-gray-100 p-5 h-full">
+                  <div class="flex items-center justify-between mb-3">
+                    <h3 class="text-sm text-gray-500">Contact growth</h3>
+                    <div class="relative">
+                      <button onclick="toggleCardMenu('contact-card-menu')" class="p-1 hover:bg-gray-100 rounded-full">
+                        <i data-lucide="more-vertical" class="w-4 h-4 text-gray-400"></i>
+                      </button>
+                      <div id="contact-card-menu" class="hidden absolute right-0 top-full mt-1 w-44 bg-white rounded-xl shadow-lg border border-gray-100 py-1 z-20">
+                        <button onclick="openWidgetCustomize('contacts')" class="w-full flex items-center gap-2 px-4 py-2 text-sm text-gray-700 hover:bg-gray-50">
+                          <i data-lucide="settings-2" class="w-4 h-4"></i>
+                          Customize
+                        </button>
+                        <a id="contacts-report-link" href="folder-reporting.html?channel=contacts" class="flex items-center gap-2 px-4 py-2 text-sm text-gray-700 hover:bg-gray-50">
+                          <i data-lucide="bar-chart-2" class="w-4 h-4"></i>
+                          View full report
+                        </a>
+                      </div>
+                    </div>
+                  </div>
+                  <!-- Mini line chart -->
+                  <div id="contact-chart-mini-empty" class="h-12 mb-3 flex items-end">
+                    <svg class="w-full h-12" viewBox="0 0 200 50" preserveAspectRatio="none">
+                      <path d="M0,40 Q50,35 100,38 T200,42" stroke="#E5E7EB" stroke-width="2" fill="none" stroke-linecap="round"/>
+                    </svg>
+                  </div>
+                  <div id="contact-chart-mini-filled" class="hidden h-12 mb-3">
+                    <svg class="w-full h-12" viewBox="0 0 200 50" preserveAspectRatio="none">
+                      <defs>
+                        <linearGradient id="line-gradient" x1="0%" y1="0%" x2="100%" y2="0%">
+                          <stop offset="0%" style="stop-color:#14B8A6"/>
+                          <stop offset="50%" style="stop-color:#3B82F6"/>
+                          <stop offset="100%" style="stop-color:#8B5CF6"/>
+                        </linearGradient>
+                        <linearGradient id="area-gradient" x1="0%" y1="0%" x2="0%" y2="100%">
+                          <stop offset="0%" style="stop-color:#14B8A6;stop-opacity:0.3"/>
+                          <stop offset="100%" style="stop-color:#14B8A6;stop-opacity:0"/>
+                        </linearGradient>
+                      </defs>
+                      <path d="M0,35 Q25,30 50,25 T100,20 T150,15 T200,8 L200,50 L0,50 Z" fill="url(#area-gradient)"/>
+                      <path d="M0,35 Q25,30 50,25 T100,20 T150,15 T200,8" stroke="url(#line-gradient)" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+                    </svg>
+                  </div>
+                  <div class="flex items-center justify-between">
+                    <div>
+                      <p id="contact-total" class="text-lg font-bold text-gray-300">—</p>
+                      <p class="text-xs text-gray-400">Total</p>
+                    </div>
+                    <div id="contact-growth-badge" class="hidden">
+                      <span class="text-xs text-teal-600 bg-teal-50 px-2 py-1 rounded-full flex items-center gap-1">
+                        <i data-lucide="arrow-up-right" class="w-3 h-3"></i> +0 this month
+                      </span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Card 6: Social Engagement -->
+              <div class="flex-shrink-0 w-1/3 px-2">
+                <div class="bg-white rounded-2xl border border-gray-100 p-5 h-full">
+                  <div class="flex items-center justify-between mb-3">
+                    <h3 class="text-sm text-gray-500">Social engagement</h3>
+                    <div class="relative">
+                      <button onclick="toggleCardMenu('social-card-menu')" class="p-1 hover:bg-gray-100 rounded-full">
+                        <i data-lucide="more-vertical" class="w-4 h-4 text-gray-400"></i>
+                      </button>
+                      <div id="social-card-menu" class="hidden absolute right-0 top-full mt-1 w-44 bg-white rounded-xl shadow-lg border border-gray-100 py-1 z-20">
+                        <button onclick="openWidgetCustomize('social')" class="w-full flex items-center gap-2 px-4 py-2 text-sm text-gray-700 hover:bg-gray-50">
+                          <i data-lucide="settings-2" class="w-4 h-4"></i>
+                          Customize
+                        </button>
+                        <a id="social-report-link" href="folder-reporting.html?channel=social" class="flex items-center gap-2 px-4 py-2 text-sm text-gray-700 hover:bg-gray-50">
+                          <i data-lucide="bar-chart-2" class="w-4 h-4"></i>
+                          View full report
+                        </a>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="flex items-center gap-4 mb-3">
+                    <!-- Mini donut chart -->
+                    <div id="social-chart-mini-empty" class="relative w-14 h-14">
+                      <svg class="mini-donut w-14 h-14" viewBox="0 0 60 60">
+                        <circle cx="30" cy="30" r="22" fill="none" stroke="#E5E7EB" stroke-width="8" stroke-linecap="round"/>
+                      </svg>
+                      <span class="absolute inset-0 flex items-center justify-center text-sm font-bold text-gray-300">—</span>
+                    </div>
+                    <div id="social-chart-mini-filled" class="hidden relative w-14 h-14">
+                      <svg class="mini-donut w-14 h-14" viewBox="0 0 60 60">
+                        <defs>
+                          <linearGradient id="social-donut-grad" x1="0%" y1="0%" x2="100%" y2="0%">
+                            <stop offset="0%" style="stop-color:#8B5CF6"/>
+                            <stop offset="100%" style="stop-color:#EC4899"/>
+                          </linearGradient>
+                        </defs>
+                        <circle cx="30" cy="30" r="22" fill="none" stroke="#E5E7EB" stroke-width="8"/>
+                        <circle class="mini-donut-segment" cx="30" cy="30" r="22" stroke="url(#social-donut-grad)" stroke-width="8" stroke-dasharray="100 38"/>
+                      </svg>
+                      <span class="absolute inset-0 flex items-center justify-center text-sm font-bold text-gray-700">72%</span>
+                    </div>
+                    <div class="flex-1">
+                      <p id="social-views" class="text-lg font-bold text-gray-300">—</p>
+                      <p class="text-xs text-gray-400">Views</p>
+                      <p id="social-likes" class="text-lg font-bold text-gray-300 mt-1">—</p>
+                      <p class="text-xs text-gray-400">Engagement</p>
+                    </div>
+                  </div>
+                  <a id="social-report-link" href="#" class="text-xs text-blue-600 hover:text-blue-700 font-medium flex items-center gap-1">
+                    View report <i data-lucide="arrow-right" class="w-3 h-3"></i>
+                  </a>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Slider Dots -->
+          <div class="flex justify-center gap-2 mt-4">
+            <button onclick="goToSlide(0)" id="dot-0" class="w-2 h-2 rounded-full bg-blue-600"></button>
+            <button onclick="goToSlide(1)" id="dot-1" class="w-2 h-2 rounded-full bg-gray-300"></button>
+          </div>
+        </div>
+
+        <!-- NESTED FOLDERS Section (for parent folders) -->
+        <div id="nested-folders-section" class="hidden mb-8">
+          <div class="flex items-center gap-2 mb-4">
+            <h2 class="text-sm font-semibold text-gray-500 uppercase tracking-wide">Sub-folders</h2>
+            <span id="nested-folder-count" class="text-sm text-gray-400">0</span>
+          </div>
+          
+          <div id="nested-folders-container" class="grid grid-cols-3 gap-4">
+            <!-- Nested folder cards will be dynamically inserted here -->
+          </div>
+        </div>
+
+        <!-- WORKSPACES Section -->
+        <div id="workspaces-section">
+          <div class="flex items-center gap-2 mb-4">
+            <h2 class="text-sm font-semibold text-gray-500 uppercase tracking-wide">Workspaces in this Folder</h2>
+            <span id="workspace-count-label" class="text-sm text-gray-400">0</span>
+          </div>
+
+          <!-- Table Header -->
+          <div class="bg-gray-50 rounded-t-2xl border border-gray-100 border-b-0 px-5 py-3 grid grid-cols-12 gap-4 text-xs font-medium text-gray-500 uppercase tracking-wide">
+            <div class="col-span-3">Workspace</div>
+            <div class="col-span-2">Last active</div>
+            <div class="col-span-2">Last campaign</div>
+            <div class="col-span-1 text-right">Contacts</div>
+            <div class="col-span-1 text-right">Campaigns</div>
+            <div class="col-span-1 text-right">Opens</div>
+            <div class="col-span-1 text-right">Clicks</div>
+            <div class="col-span-1"></div>
+          </div>
+
+          <div id="workspaces-container" class="bg-white rounded-b-2xl border border-gray-100 divide-y divide-gray-50">
+            <!-- Workspace rows will be dynamically inserted here -->
+          </div>
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <script>
+    // Safe lucide helper
+    function safeCreateIcons() {
+      if (typeof lucide !== 'undefined' && lucide.createIcons) {
+        lucide.createIcons();
+      }
+    }
+
+    // Parse URL parameters
+    const urlParams = new URLSearchParams(window.location.search);
+    const folderNameParam = urlParams.get('folder');
+    
+    // Try to get folder data from sessionStorage first
+    const folders = JSON.parse(sessionStorage.getItem('folders') || '[]');
+    let folderDataFromStorage = folders.find(h => h.name === folderNameParam);
+    
+    // Fallback to URL params
+    let folderName = folderNameParam || 'Folder Name';
+    let workspaces = [];
+    
+    if (folderDataFromStorage) {
+      workspaces = folderDataFromStorage.workspaces || [];
+    } else {
+      const workspacesParam = urlParams.get('workspaces');
+      if (workspacesParam) {
+        workspaces = workspacesParam.split(',').map(w => decodeURIComponent(w.trim())).filter(w => w);
+      }
+    }
+    
+    // Debug: Log folder name to verify it's being read
+    console.log('Folder name from URL:', folderNameParam, 'Final folderName:', folderName);
+    
+    // Get initials from name
+    function getInitials(name) {
+      const words = name.split(' ').filter(w => w);
+      if (words.length >= 2) {
+        return (words[0][0] + words[1][0]).toUpperCase();
+      }
+      return name.substring(0, 2).toUpperCase();
+    }
+    
+    // Generate a color based on name
+    function getColor(name) {
+      const colors = ['bg-green-500', 'bg-blue-500', 'bg-purple-500', 'bg-orange-500', 'bg-teal-500', 'bg-pink-500'];
+      let hash = 0;
+      for (let i = 0; i < name.length; i++) {
+        hash = name.charCodeAt(i) + ((hash << 5) - hash);
+      }
+      return colors[Math.abs(hash) % colors.length];
+    }
+    
+    // Render breadcrumbs with truncation (show last 2 items, ... at start for overflow)
+    function renderBreadcrumbs(path) {
+      const container = document.getElementById('breadcrumb-container');
+      const overflowMenu = document.getElementById('breadcrumb-overflow-menu');
+      const overflowItems = document.getElementById('breadcrumb-overflow-items');
+      
+      // If 3 or fewer items, show all without truncation
+      if (path.length <= 3) {
+        container.innerHTML = path.map((item, i) => {
+          const isLast = i === path.length - 1;
+          const separator = i > 0 ? '<span class="text-gray-400">/</span>' : '';
+          
+          if (item.isCurrent) {
+            // Current item (not a link)
+            if (item.isFolder) {
+              return `${separator}<span class="flex items-center gap-1.5 text-gray-900 font-medium"><i data-lucide="folder" class="w-4 h-4 text-gray-400"></i>${item.name}</span>`;
+            }
+            return `${separator}<span class="text-gray-900 font-medium">${item.name}</span>`;
+          }
+          
+          // Clickable item
+          if (item.isFolder) {
+            return `${separator}<a href="${item.href}" class="flex items-center gap-1.5 text-gray-500 hover:text-blue-600"><i data-lucide="folder" class="w-4 h-4"></i>${item.name}</a>`;
+          }
+          return `${separator}<a href="${item.href}" class="text-gray-500 hover:text-gray-700">${item.name}</a>`;
+        }).join('');
+      } else {
+        // Truncate: show ... then last 2 items
+        const hiddenItems = path.slice(0, -2);
+        const visibleItems = path.slice(-2);
+        
+        // Build overflow menu content
+        overflowItems.innerHTML = hiddenItems.map(item => {
+          const icon = item.isFolder 
+            ? '<i data-lucide="folder" class="w-4 h-4 text-gray-400"></i>'
+            : '<i data-lucide="home" class="w-4 h-4 text-gray-400"></i>';
+          return `
+            <a href="${item.href}" class="flex items-center gap-2.5 px-3 py-2 hover:bg-gray-50 text-sm text-gray-700">
+              ${icon}
+              <span>${item.name}</span>
+            </a>
+          `;
+        }).join('');
+        
+        // Build visible breadcrumb with ellipsis
+        let html = `
+          <button onclick="toggleBreadcrumbMenu(event)" class="flex items-center gap-1 text-gray-400 hover:text-gray-600 px-1 py-0.5 rounded hover:bg-gray-100">
+            <i data-lucide="more-horizontal" class="w-4 h-4"></i>
+          </button>
+        `;
+        
+        visibleItems.forEach((item, i) => {
+          html += '<span class="text-gray-400">/</span>';
+          
+          if (item.isCurrent) {
+            if (item.isFolder) {
+              html += `<span class="flex items-center gap-1.5 text-gray-900 font-medium"><i data-lucide="folder" class="w-4 h-4 text-gray-400"></i>${item.name}</span>`;
+            } else {
+              html += `<span class="text-gray-900 font-medium">${item.name}</span>`;
+            }
+          } else {
+            if (item.isFolder) {
+              html += `<a href="${item.href}" class="flex items-center gap-1.5 text-gray-500 hover:text-blue-600"><i data-lucide="folder" class="w-4 h-4"></i>${item.name}</a>`;
+            } else {
+              html += `<a href="${item.href}" class="text-gray-500 hover:text-gray-700">${item.name}</a>`;
+            }
+          }
+        });
+        
+        container.innerHTML = html;
+      }
+      
+      safeCreateIcons();
+    }
+    
+    // Toggle breadcrumb overflow menu
+    function toggleBreadcrumbMenu(e) {
+      e.stopPropagation();
+      const menu = document.getElementById('breadcrumb-overflow-menu');
+      menu.classList.toggle('hidden');
+      safeCreateIcons();
+    }
+    
+    // Close breadcrumb menu on outside click
+    document.addEventListener('click', function(e) {
+      const menu = document.getElementById('breadcrumb-overflow-menu');
+      if (menu && !menu.contains(e.target)) {
+        menu.classList.add('hidden');
+      }
+    });
+    
+    // Update folder header
+    document.getElementById('folder-title').textContent = folderName;
+    
+    // Build breadcrumb path
+    const parentFolder = urlParams.get('parentFolder');
+    const breadcrumbPath = [
+      { name: 'Org dashboard', href: 'option-b-northstar-empty.html', isFolder: false },
+      { name: 'Workspaces', href: 'workspaces-list.html', isFolder: false }
+    ];
+    
+    // Add parent folder if present
+    if (parentFolder) {
+      breadcrumbPath.push({ 
+        name: parentFolder, 
+        href: `folder-detail.html?folder=${encodeURIComponent(parentFolder)}`, 
+        isFolder: true 
+      });
+    }
+    
+    // Add current folder (not a link)
+    breadcrumbPath.push({ name: folderName, href: null, isFolder: true, isCurrent: true });
+    
+    // Render breadcrumbs with truncation
+    renderBreadcrumbs(breadcrumbPath);
+    // Folder avatar uses folder icon, not initials
+    document.getElementById('folder-avatar').innerHTML = '<i data-lucide="folder" class="w-7 h-7"></i>';
+    document.getElementById('folder-avatar').className = `w-14 h-14 bg-gray-100 rounded-xl flex items-center justify-center text-gray-500`;
+    document.getElementById('workspace-count-display').textContent = workspaces.length;
+    document.getElementById('workspace-count-stat').textContent = workspaces.length;
+    document.getElementById('workspace-count-label').textContent = workspaces.length;
+    
+    // Set report link
+    document.getElementById('go-to-report-link').href = `folder-reporting.html?folder=${encodeURIComponent(folderName)}&workspaces=${encodeURIComponent(workspaces.join(','))}`;
+    
+    // Update workspaces link - no params needed, data is in sessionStorage
+    document.getElementById('workspaces-link').href = 'workspaces-list.html';
+    
+    // Folder data - regional folders with their workspaces
+    const folderData = {
+      'UPS Northeast': { workspaces: ['UPS New York', 'UPS Connecticut', 'UPS Massachusetts', 'UPS New Jersey', 'UPS Pennsylvania'], contacts: '12.4k', campaigns: 45 },
+      'UPS Southeast': { workspaces: ['UPS Florida', 'UPS Georgia', 'UPS North Carolina', 'UPS South Carolina', 'UPS Virginia'], contacts: '9.8k', campaigns: 38 },
+      'UPS Southwest': { workspaces: ['UPS Texas', 'UPS Arizona', 'UPS New Mexico', 'UPS Oklahoma'], contacts: '7.5k', campaigns: 28 },
+      'UPS Northwest': { workspaces: ['UPS Washington', 'UPS Oregon', 'UPS Idaho', 'UPS Montana'], contacts: '5.2k', campaigns: 22 },
+      'UPS UK & Ireland': { workspaces: ['UPS London', 'UPS Manchester', 'UPS Dublin', 'UPS Edinburgh'], contacts: '8.2k', campaigns: 34 },
+      'UPS DACH': { workspaces: ['UPS Germany', 'UPS Austria', 'UPS Switzerland'], contacts: '6.5k', campaigns: 28 },
+      'UPS Nordics': { workspaces: ['UPS Sweden', 'UPS Norway', 'UPS Denmark', 'UPS Finland'], contacts: '4.8k', campaigns: 22 },
+      'UPS Southern Europe': { workspaces: ['UPS Spain', 'UPS Italy', 'UPS Portugal'], contacts: '3.3k', campaigns: 14 }
+    };
+    
+    // Parent folder data - UPS US and UPS EU contain child folders
+    const parentFolderData = {
+      'UPS US': {
+        childFolders: [
+          { name: 'UPS Northeast', workspaces: ['UPS New York', 'UPS Connecticut', 'UPS Massachusetts', 'UPS New Jersey', 'UPS Pennsylvania'], contacts: '12.4k', campaigns: 45 },
+          { name: 'UPS Southeast', workspaces: ['UPS Florida', 'UPS Georgia', 'UPS North Carolina', 'UPS South Carolina', 'UPS Virginia'], contacts: '9.8k', campaigns: 38 },
+          { name: 'UPS Southwest', workspaces: ['UPS Texas', 'UPS Arizona', 'UPS New Mexico', 'UPS Oklahoma'], contacts: '7.5k', campaigns: 28 },
+          { name: 'UPS Northwest', workspaces: ['UPS Washington', 'UPS Oregon', 'UPS Idaho', 'UPS Montana'], contacts: '5.2k', campaigns: 22 }
+        ]
+      },
+      'UPS EU': {
+        childFolders: [
+          { name: 'UPS UK & Ireland', workspaces: ['UPS London', 'UPS Manchester', 'UPS Dublin', 'UPS Edinburgh'], contacts: '8.2k', campaigns: 34 },
+          { name: 'UPS DACH', workspaces: ['UPS Germany', 'UPS Austria', 'UPS Switzerland'], contacts: '6.5k', campaigns: 28 },
+          { name: 'UPS Nordics', workspaces: ['UPS Sweden', 'UPS Norway', 'UPS Denmark', 'UPS Finland'], contacts: '4.8k', campaigns: 22 },
+          { name: 'UPS Southern Europe', workspaces: ['UPS Spain', 'UPS Italy', 'UPS Portugal'], contacts: '3.3k', campaigns: 14 }
+        ]
+      }
+    };
+    
+    const isParentFolder = parentFolderData[folderName] !== undefined;
+    const nestedFoldersSection = document.getElementById('nested-folders-section');
+    const nestedFoldersContainer = document.getElementById('nested-folders-container');
+    const workspacesSection = document.getElementById('workspaces-section');
+    const workspacesContainer = document.getElementById('workspaces-container');
+    
+    // Store parent folder data for use in renderFilledState
+    let parentFolderStats = null;
+    
+    if (isParentFolder) {
+      // Show nested folders section
+      nestedFoldersSection.classList.remove('hidden');
+      const childFolders = parentFolderData[folderName].childFolders;
+      document.getElementById('nested-folder-count').textContent = childFolders.length;
+      
+      // Calculate totals for parent folder
+      const totalWorkspaces = childFolders.reduce((sum, h) => sum + h.workspaces.length, 0);
+      const totalContacts = childFolders.reduce((sum, h) => {
+        const num = parseFloat(h.contacts.replace('k', '')) * (h.contacts.includes('k') ? 1000 : 1);
+        return sum + num;
+      }, 0);
+      const totalCampaigns = childFolders.reduce((sum, h) => sum + h.campaigns, 0);
+      const totalMembers = Math.floor(totalWorkspaces * 1.5); // Approximate members
+      
+      parentFolderStats = {
+        folders: childFolders.length,
+        workspaces: totalWorkspaces,
+        members: totalMembers,
+        contacts: totalContacts,
+        campaigns: totalCampaigns
+      };
+      
+      // Update subtitle to reflect this is a parent folder
+      document.getElementById('folder-subtitle').innerHTML = `<i data-lucide="layers" class="w-3.5 h-3.5 inline mr-1"></i>Parent Folder • ${childFolders.length} nested folders`;
+      
+      // Render nested folder cards with more detailed metrics
+      const folderCards = childFolders.map(folder => {
+        const folderUrl = `folder-detail.html?folder=${encodeURIComponent(folder.name)}&workspaces=${encodeURIComponent(folder.workspaces.join(','))}&parentFolder=${encodeURIComponent(folderName)}`;
+        const members = Math.floor(folder.workspaces.length * 1.5); // Approximate members per folder
+        return `
+        <a href="${folderUrl}" class="block bg-white rounded-2xl border border-gray-200 p-5 hover:shadow-md hover:border-gray-300 transition-all cursor-pointer group shadow-sm">
+          <div class="flex items-center gap-3 mb-3">
+            <div class="w-10 h-10 bg-gray-100 rounded-xl flex items-center justify-center text-gray-500 group-hover:bg-gray-200 transition-colors">
+              <i data-lucide="folder" class="w-5 h-5"></i>
+            </div>
+            <div class="flex-1 min-w-0">
+              <span class="font-medium text-gray-900 block truncate group-hover:text-blue-600 transition-colors">${folder.name}</span>
+              <span class="text-xs text-gray-500">${folder.workspaces.length} workspaces · ${members} members</span>
+            </div>
+            <i data-lucide="chevron-right" class="w-5 h-5 text-gray-300 group-hover:text-blue-500 transition-colors"></i>
+          </div>
+          <div class="grid grid-cols-3 gap-2 text-center">
+            <div class="bg-gray-50 rounded-lg p-2">
+              <p class="text-sm font-bold text-gray-900">${folder.workspaces.length}</p>
+              <p class="text-xs text-gray-400">workspaces</p>
+            </div>
+            <div class="bg-gray-50 rounded-lg p-2">
+              <p class="text-sm font-bold text-gray-900">${folder.contacts}</p>
+              <p class="text-xs text-gray-400">contacts</p>
+            </div>
+            <div class="bg-gray-50 rounded-lg p-2">
+              <p class="text-sm font-bold text-gray-900">${folder.campaigns}</p>
+              <p class="text-xs text-gray-400">campaigns</p>
+            </div>
+          </div>
+        </a>
+      `}).join('');
+      
+      nestedFoldersContainer.innerHTML = folderCards;
+      
+      // Hide workspaces section for parent folders (they don't have direct workspaces)
+      workspacesSection.classList.add('hidden');
+      
+      // Update total counts to reflect all child folder data
+      document.getElementById('workspace-count-display').textContent = totalWorkspaces;
+      document.getElementById('workspace-count-stat').textContent = totalWorkspaces;
+      
+    } else {
+      // Regular folder with workspaces
+      if (workspaces.length > 0) {
+        const workspaceRows = workspaces.map(name => {
+          const workspaceUrl = `workspace-detail.html?workspace=${encodeURIComponent(name)}&folder=${encodeURIComponent(folderName)}`;
+          return `
+          <a href="${workspaceUrl}" class="grid grid-cols-12 gap-4 px-5 py-4 hover:bg-gray-50 transition-colors cursor-pointer items-center">
+            <div class="col-span-3 flex items-center gap-3">
+              <div class="w-10 h-10 ${getColor(name)} rounded-full flex items-center justify-center text-white text-sm font-bold flex-shrink-0">${getInitials(name)}</div>
+              <div>
+                <span class="font-medium text-gray-900 block">${name}</span>
+                <span class="text-xs text-gray-400">Active</span>
+              </div>
+            </div>
+            <div class="col-span-2 text-sm text-gray-400">—</div>
+            <div class="col-span-2 text-sm text-gray-400">—</div>
+            <div class="col-span-1 text-sm text-gray-400 text-right">—</div>
+            <div class="col-span-1 text-sm text-gray-400 text-right">—</div>
+            <div class="col-span-1 text-sm text-gray-400 text-right">—</div>
+            <div class="col-span-1 text-sm text-gray-400 text-right">—</div>
+            <div class="col-span-1 flex justify-end">
+              <i data-lucide="chevron-right" class="w-5 h-5 text-gray-400"></i>
+            </div>
+          </a>
+        `}).join('');
+        
+        workspacesContainer.innerHTML = workspaceRows;
+      } else {
+        workspacesContainer.innerHTML = `
+          <div class="p-8 text-center text-gray-500">
+            <p>No workspaces in this folder yet</p>
+          </div>
+        `;
+      }
+    }
+    
+    // Initialize Lucide icons
+    safeCreateIcons();
+
+    // Slider functionality
+    let currentSlide = 0;
+    const totalSlides = 2;
+
+    function slideCards(direction) {
+      if (direction === 'next' && currentSlide < totalSlides - 1) {
+        currentSlide++;
+      } else if (direction === 'prev' && currentSlide > 0) {
+        currentSlide--;
+      }
+      updateSlider();
+    }
+
+    function goToSlide(index) {
+      currentSlide = index;
+      updateSlider();
+    }
+
+    function updateSlider() {
+      const slider = document.getElementById('cards-slider');
+      const translateX = currentSlide * -100;
+      slider.style.transform = `translateX(${translateX}%)`;
+
+      // Update buttons
+      document.getElementById('slider-prev').disabled = currentSlide === 0;
+      document.getElementById('slider-next').disabled = currentSlide === totalSlides - 1;
+
+      // Update dots
+      for (let i = 0; i < totalSlides; i++) {
+        const dot = document.getElementById(`dot-${i}`);
+        if (dot) {
+          dot.className = i === currentSlide ? 'w-2 h-2 rounded-full bg-blue-600' : 'w-2 h-2 rounded-full bg-gray-300';
+        }
+      }
+    }
+
+    // Set up report links with workspace filters
+    function updateReportLinks() {
+      const workspaceFilter = workspaces.map(w => encodeURIComponent(w)).join(',');
+      const folderFilter = encodeURIComponent(folderName);
+      
+      // Store folder context in sessionStorage for report pages
+      sessionStorage.setItem('reportFolderName', folderName);
+      sessionStorage.setItem('reportWorkspaces', JSON.stringify(workspaces));
+      
+      const mainReportLink = document.getElementById('go-to-report-link');
+      if (mainReportLink) {
+        mainReportLink.href = `folder-reporting.html?folder=${folderFilter}&workspaces=${workspaceFilter}`;
+      }
+      
+      const assetsLink = document.getElementById('assets-report-link');
+      if (assetsLink) {
+        assetsLink.href = `folder-reporting.html?folder=${folderFilter}&workspaces=${workspaceFilter}&tab=assets`;
+      }
+      
+      const emailLink = document.getElementById('email-report-link');
+      if (emailLink) {
+        emailLink.href = `folder-reporting.html?folder=${folderFilter}&workspaces=${workspaceFilter}&tab=campaigns`;
+      }
+      
+      const socialLink = document.getElementById('social-report-link');
+      if (socialLink) {
+        socialLink.href = `folder-reporting.html?folder=${folderFilter}&workspaces=${workspaceFilter}&tab=campaigns`;
+      }
+    }
+    
+    updateReportLinks();
+
+    // Folder search functionality
+    function toggleFolderSearch() {
+      const btn = document.getElementById('folder-search-btn');
+      const container = document.getElementById('folder-search-container');
+      const input = document.getElementById('folder-search-input');
+      
+      btn.classList.add('hidden');
+      container.classList.remove('hidden');
+      input.focus();
+    }
+    
+    function closeFolderSearch() {
+      const btn = document.getElementById('folder-search-btn');
+      const container = document.getElementById('folder-search-container');
+      const input = document.getElementById('folder-search-input');
+      
+      btn.classList.remove('hidden');
+      container.classList.add('hidden');
+      input.value = '';
+      searchWorkspaces(''); // Reset search
+    }
+    
+    function searchWorkspaces(query) {
+      const rows = document.querySelectorAll('#workspaces-container > a, #workspaces-container > div');
+      const lowerQuery = query.toLowerCase();
+      
+      rows.forEach(row => {
+        const text = row.textContent.toLowerCase();
+        if (lowerQuery === '' || text.includes(lowerQuery)) {
+          row.style.display = '';
+        } else {
+          row.style.display = 'none';
+        }
+      });
+    }
+    
+    // Folder overflow menu
+    let folderMenuOpen = false;
+    
+    function toggleFolderMenu(event) {
+      event.stopPropagation();
+      const menu = document.getElementById('folder-overflow-menu');
+      folderMenuOpen = !folderMenuOpen;
+      menu.classList.toggle('hidden', !folderMenuOpen);
+    }
+    
+    function openAddWorkspaceToFolder() {
+      document.getElementById('folder-overflow-menu').classList.add('hidden');
+      folderMenuOpen = false;
+      openCreateWorkspaceModal();
+    }
+    
+    // Close menu when clicking outside
+    document.addEventListener('click', () => {
+      if (folderMenuOpen) {
+        document.getElementById('folder-overflow-menu').classList.add('hidden');
+        folderMenuOpen = false;
+      }
+    });
+
+    function toggleSection(section) {
+      const items = document.getElementById(section + '-items');
+      const chevron = document.getElementById(section + '-chevron');
+      
+      if (items.classList.contains('hidden')) {
+        items.classList.remove('hidden');
+        chevron.style.transform = 'rotate(0deg)';
+      } else {
+        items.classList.add('hidden');
+        chevron.style.transform = 'rotate(180deg)';
+      }
+    }
+
+    // Toggle card overflow menus
+    function toggleCardMenu(menuId) {
+      const menu = document.getElementById(menuId);
+      const allMenus = document.querySelectorAll('[id$="-card-menu"]');
+      
+      // Close all other menus
+      allMenus.forEach(m => {
+        if (m.id !== menuId) {
+          m.classList.add('hidden');
+        }
+      });
+      
+      // Toggle this menu
+      menu.classList.toggle('hidden');
+    }
+    
+    // Open widget customize dialog (placeholder)
+    function openWidgetCustomize(widgetType) {
+      // Close menu
+      document.querySelectorAll('[id$="-card-menu"]').forEach(m => m.classList.add('hidden'));
+      alert(`Customize ${widgetType} widget settings coming soon!`);
+    }
+    
+    // Close menus when clicking outside
+    document.addEventListener('click', function(e) {
+      if (!e.target.closest('[id$="-card-menu"]') && !e.target.closest('button')) {
+        document.querySelectorAll('[id$="-card-menu"]').forEach(m => m.classList.add('hidden'));
+      }
+    });
+
+    // Modal functions
+    let modalWorkspaceCount = 1;
+
+    function openCreateWorkspaceModal() {
+      document.getElementById('create-workspace-modal').classList.remove('hidden');
+      document.body.style.overflow = 'hidden';
+      safeCreateIcons();
+    }
+
+    function closeCreateWorkspaceModal() {
+      document.getElementById('create-workspace-modal').classList.add('hidden');
+      document.body.style.overflow = '';
+    }
+
+    function addModalWorkspace() {
+      modalWorkspaceCount++;
+      const workspaceList = document.getElementById('modal-workspace-list');
+      const newItem = document.createElement('div');
+      newItem.className = 'modal-workspace-item flex items-center gap-3';
+      newItem.innerHTML = `
+        <div class="w-10 h-10 bg-blue-50 rounded-xl flex items-center justify-center text-blue-600 text-sm font-semibold">${modalWorkspaceCount}</div>
+        <input type="text" placeholder="e.g., Connecticut location" class="flex-1 px-4 py-3 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-blue-600 focus:border-transparent modal-workspace-input">
+        <button onclick="removeModalWorkspace(this)" class="text-gray-400 hover:text-red-500 p-1">
+          <i data-lucide="x" class="w-4 h-4"></i>
+        </button>
+      `;
+      workspaceList.appendChild(newItem);
+      safeCreateIcons();
+      updateModalWorkspaceNumbers();
+    }
+
+    function removeModalWorkspace(btn) {
+      if (document.querySelectorAll('.modal-workspace-item').length > 1) {
+        btn.closest('.modal-workspace-item').remove();
+        modalWorkspaceCount--;
+        updateModalWorkspaceNumbers();
+      }
+    }
+
+    function updateModalWorkspaceNumbers() {
+      const items = document.querySelectorAll('.modal-workspace-item');
+      items.forEach((item, index) => {
+        const numberDiv = item.querySelector('.w-10');
+        numberDiv.textContent = index + 1;
+      });
+    }
+
+    // Folder checkbox toggle - wait for DOM to be ready
+    document.addEventListener('DOMContentLoaded', function() {
+      document.getElementById('modal-create-folder').addEventListener('change', function() {
+        const folderContainer = document.getElementById('modal-folder-name-container');
+        if (this.checked) {
+          folderContainer.classList.remove('hidden');
+        } else {
+          folderContainer.classList.add('hidden');
+        }
+      });
+    });
+
+    function createWorkspacesFromModal() {
+      // Get all workspace names
+      const inputs = document.querySelectorAll('#modal-workspace-list input');
+      const newWorkspaces = [];
+      inputs.forEach(input => {
+        if (input.value.trim()) {
+          newWorkspaces.push(input.value.trim());
+        }
+      });
+
+      const newFolderNameInput = document.getElementById('modal-folder-name-input').value.trim();
+      const createNewFolder = document.getElementById('modal-create-folder').checked && newFolderNameInput;
+
+      // Save to sessionStorage
+      const existingFolders = JSON.parse(sessionStorage.getItem('folders') || '[]');
+      
+      if (createNewFolder) {
+        // Creating a new folder
+        existingFolders.push({ name: newFolderNameInput, workspaces: newWorkspaces });
+      } else {
+        // Adding workspaces to current folder
+        const currentFolderIndex = existingFolders.findIndex(h => h.name === folderName);
+        if (currentFolderIndex >= 0) {
+          existingFolders[currentFolderIndex].workspaces = [...existingFolders[currentFolderIndex].workspaces, ...newWorkspaces];
+        }
+      }
+      
+      sessionStorage.setItem('folders', JSON.stringify(existingFolders));
+      
+      // Reload current page to show new workspaces
+      window.location.href = `folder-detail.html?folder=${encodeURIComponent(folderName)}`;
+    }
+    
+    // Data mode toggle
+    let currentDataMode = sessionStorage.getItem('dataMode') || 'filled';
+    
+    function setDataMode(mode) {
+      sessionStorage.setItem('dataMode', mode);
+      currentDataMode = mode;
+      
+      // Update toggle buttons
+      const emptyBtn = document.getElementById('toggle-empty');
+      const filledBtn = document.getElementById('toggle-filled');
+      
+      if (mode === 'empty') {
+        emptyBtn.className = 'px-2.5 py-1 text-xs rounded bg-gray-600 text-white';
+        filledBtn.className = 'px-2.5 py-1 text-xs rounded text-gray-400 hover:text-white';
+        renderEmptyState();
+      } else {
+        filledBtn.className = 'px-2.5 py-1 text-xs rounded bg-gray-600 text-white';
+        emptyBtn.className = 'px-2.5 py-1 text-xs rounded text-gray-400 hover:text-white';
+        renderFilledState();
+      }
+      
+      safeCreateIcons();
+    }
+    
+    function renderEmptyState() {
+      // Reset ring progress fills
+      const assetsRing = document.getElementById('assets-ring-fill');
+      if (assetsRing) assetsRing.setAttribute('stroke-dasharray', '0 138');
+      
+      // Reset member count and avatars
+      const memberCount = document.getElementById('member-count');
+      if (memberCount) {
+        memberCount.textContent = '—';
+        memberCount.className = 'text-3xl font-bold text-gray-300';
+      }
+      
+      const memberAvatars = document.getElementById('member-avatars');
+      if (memberAvatars) {
+        memberAvatars.innerHTML = '';
+      }
+      
+      // Reset assets previews
+      const assetsPreviews = document.getElementById('assets-previews');
+      if (assetsPreviews) {
+        assetsPreviews.innerHTML = `
+          <div class="w-12 h-12 bg-gray-100 rounded-lg"></div>
+          <div class="w-12 h-12 bg-gray-100 rounded-lg"></div>
+          <div class="w-12 h-12 bg-gray-100 rounded-lg"></div>
+          <div class="w-12 h-12 bg-gray-100 rounded-lg flex items-center justify-center text-sm text-gray-400">+3</div>
+        `;
+      }
+
+      // Reset email engagement with mini chart
+      const emailChartEmpty = document.getElementById('email-chart-mini-empty');
+      const emailChartFilled = document.getElementById('email-chart-mini-filled');
+      if (emailChartEmpty) emailChartEmpty.classList.remove('hidden');
+      if (emailChartFilled) emailChartFilled.classList.add('hidden');
+      
+      const emailSends = document.getElementById('email-sends');
+      const emailOpens = document.getElementById('email-opens');
+      if (emailSends) {
+        emailSends.textContent = '—';
+        emailSends.className = 'text-lg font-bold text-gray-300';
+      }
+      if (emailOpens) {
+        emailOpens.textContent = '—';
+        emailOpens.className = 'text-lg font-bold text-gray-300';
+      }
+
+      // Reset contact growth with mini line chart
+      const contactChartEmpty = document.getElementById('contact-chart-mini-empty');
+      const contactChartFilled = document.getElementById('contact-chart-mini-filled');
+      if (contactChartEmpty) contactChartEmpty.classList.remove('hidden');
+      if (contactChartFilled) contactChartFilled.classList.add('hidden');
+      
+      const contactTotal = document.getElementById('contact-total');
+      if (contactTotal) {
+        contactTotal.textContent = '—';
+        contactTotal.className = 'text-lg font-bold text-gray-300';
+      }
+      const contactBadge = document.getElementById('contact-growth-badge');
+      if (contactBadge) contactBadge.classList.add('hidden');
+
+      // Reset social engagement with mini donut
+      const socialChartEmpty = document.getElementById('social-chart-mini-empty');
+      const socialChartFilled = document.getElementById('social-chart-mini-filled');
+      if (socialChartEmpty) socialChartEmpty.classList.remove('hidden');
+      if (socialChartFilled) socialChartFilled.classList.add('hidden');
+      
+      const socialViews = document.getElementById('social-views');
+      const socialLikes = document.getElementById('social-likes');
+      if (socialViews) {
+        socialViews.textContent = '—';
+        socialViews.className = 'text-lg font-bold text-gray-300';
+      }
+      if (socialLikes) {
+        socialLikes.textContent = '—';
+        socialLikes.className = 'text-lg font-bold text-gray-300';
+      }
+      
+      // Reset workspace rows to empty
+      if (workspaces.length > 0) {
+        const workspaceRows = workspaces.map(name => {
+          const workspaceUrl = `workspace-detail.html?workspace=${encodeURIComponent(name)}&folder=${encodeURIComponent(folderName)}`;
+          return `
+          <a href="${workspaceUrl}" class="grid grid-cols-12 gap-4 px-5 py-4 hover:bg-gray-50 transition-colors cursor-pointer items-center">
+            <div class="col-span-3 flex items-center gap-3">
+              <div class="w-10 h-10 ${getColor(name)} rounded-full flex items-center justify-center text-white text-sm font-bold flex-shrink-0">${getInitials(name)}</div>
+              <div>
+                <span class="font-medium text-gray-900 block">${name}</span>
+                <span class="text-xs text-gray-400">Active</span>
+              </div>
+            </div>
+            <div class="col-span-2 text-sm text-gray-400">—</div>
+            <div class="col-span-2 text-sm text-gray-400">—</div>
+            <div class="col-span-1 text-sm text-gray-400 text-right">—</div>
+            <div class="col-span-1 text-sm text-gray-400 text-right">—</div>
+            <div class="col-span-1 text-sm text-gray-400 text-right">—</div>
+            <div class="col-span-1 text-sm text-gray-400 text-right">—</div>
+            <div class="col-span-1 flex justify-end">
+              <i data-lucide="chevron-right" class="w-5 h-5 text-gray-400"></i>
+            </div>
+          </a>
+        `}).join('');
+        
+        workspacesContainer.innerHTML = workspaceRows;
+      }
+      safeCreateIcons();
+    }
+    
+    function renderFilledState() {
+      const circumference = 2 * Math.PI * 22; // r=22
+      
+      // Update workspace count stat
+      const workspaceCountStat = document.getElementById('workspace-count-stat');
+      if (workspaceCountStat) {
+        if (parentFolderStats) {
+          workspaceCountStat.textContent = parentFolderStats.workspaces;
+          workspaceCountStat.className = 'text-3xl font-bold text-gray-900';
+        } else if (workspaces.length > 0) {
+          workspaceCountStat.textContent = workspaces.length;
+          workspaceCountStat.className = 'text-3xl font-bold text-gray-900';
+        }
+      }
+      
+      // Fill member count and avatars
+      const memberCount = document.getElementById('member-count');
+      if (memberCount) {
+        const members = parentFolderStats ? parentFolderStats.members : (workspaces.length > 0 ? Math.floor(workspaces.length * 1.5) : 8);
+        memberCount.textContent = members;
+        memberCount.className = 'text-3xl font-bold text-gray-900';
+      }
+      
+      const memberAvatars = document.getElementById('member-avatars');
+      if (memberAvatars) {
+        memberAvatars.innerHTML = `
+          <img src="https://i.pravatar.cc/24?img=1" class="w-6 h-6 rounded-full border-2 border-white">
+          <img src="https://i.pravatar.cc/24?img=2" class="w-6 h-6 rounded-full border-2 border-white">
+          <img src="https://i.pravatar.cc/24?img=3" class="w-6 h-6 rounded-full border-2 border-white">
+          <div class="w-6 h-6 rounded-full bg-gray-200 border-2 border-white flex items-center justify-center text-gray-600 text-[10px]">+5</div>
+        `;
+      }
+      
+      // Fill assets previews
+      const assetsPreviews = document.getElementById('assets-previews');
+      if (assetsPreviews) {
+        assetsPreviews.innerHTML = `
+          <div class="aspect-square rounded-xl border border-gray-200 overflow-hidden bg-white shadow-sm">
+            <img src="assets/cactus-theme1.png" class="w-full h-full object-cover">
+          </div>
+          <div class="aspect-square rounded-xl bg-white border border-gray-200 flex items-center justify-center shadow-sm p-1.5">
+            <div class="grid grid-cols-2 gap-0.5 w-full h-full">
+              <div class="rounded-tl-md" style="background-color: #3d3935;"></div>
+              <div class="rounded-tr-md" style="background-color: #59797a;"></div>
+              <div class="rounded-bl-md" style="background-color: #ea7833;"></div>
+              <div class="rounded-br-md" style="background-color: #c7aa9b;"></div>
+            </div>
+          </div>
+          <div class="aspect-square rounded-xl border border-gray-200 overflow-hidden bg-white shadow-sm">
+            <img src="assets/recCardGraphic_03_480x480.png" class="w-full h-full object-cover">
+          </div>
+          <div class="aspect-square rounded-xl bg-gradient-to-br from-gray-50 to-gray-100 border border-gray-200 flex items-center justify-center text-sm font-bold text-gray-500">+3</div>
+        `;
+      }
+      
+      // Update assets count
+      const assetsCount = document.getElementById('assets-count');
+      if (assetsCount) {
+        assetsCount.textContent = '6 assets';
+      }
+
+      // Fill email engagement with mini chart
+      const emailChartEmpty = document.getElementById('email-chart-mini-empty');
+      const emailChartFilled = document.getElementById('email-chart-mini-filled');
+      if (emailChartEmpty) emailChartEmpty.classList.add('hidden');
+      if (emailChartFilled) emailChartFilled.classList.remove('hidden');
+      
+      const emailSends = document.getElementById('email-sends');
+      const emailOpens = document.getElementById('email-opens');
+      if (emailSends) {
+        emailSends.textContent = '12.4k';
+        emailSends.className = 'text-lg font-bold text-gray-900';
+      }
+      if (emailOpens) {
+        emailOpens.textContent = '74%';
+        emailOpens.className = 'text-lg font-bold text-teal-600';
+      }
+
+      // Fill contact growth with mini line chart
+      const contactChartEmpty = document.getElementById('contact-chart-mini-empty');
+      const contactChartFilled = document.getElementById('contact-chart-mini-filled');
+      if (contactChartEmpty) contactChartEmpty.classList.add('hidden');
+      if (contactChartFilled) contactChartFilled.classList.remove('hidden');
+      
+      const contactTotal = document.getElementById('contact-total');
+      if (contactTotal) {
+        contactTotal.textContent = '2,847';
+        contactTotal.className = 'text-lg font-bold text-gray-900';
+      }
+      const contactBadge = document.getElementById('contact-growth-badge');
+      if (contactBadge) {
+        contactBadge.classList.remove('hidden');
+        contactBadge.innerHTML = '<span class="text-xs text-teal-600 bg-teal-50 px-2 py-1 rounded-full flex items-center gap-1"><i data-lucide="arrow-up-right" class="w-3 h-3"></i> +124 this month</span>';
+      }
+
+      // Fill social engagement with mini donut
+      const socialChartEmpty = document.getElementById('social-chart-mini-empty');
+      const socialChartFilled = document.getElementById('social-chart-mini-filled');
+      if (socialChartEmpty) socialChartEmpty.classList.add('hidden');
+      if (socialChartFilled) socialChartFilled.classList.remove('hidden');
+      
+      const socialViews = document.getElementById('social-views');
+      const socialLikes = document.getElementById('social-likes');
+      if (socialViews) {
+        socialViews.textContent = '45.2k';
+        socialViews.className = 'text-lg font-bold text-gray-900';
+      }
+      if (socialLikes) {
+        socialLikes.textContent = '1.8k';
+        socialLikes.className = 'text-lg font-bold text-purple-600';
+      }
+      
+      // Fill workspace rows with dummy data
+      if (workspaces.length > 0) {
+        const workspaceData = [
+          { lastActive: 'Apr 9, 2025', lastCampaign: 'Apr 7, 2025', contacts: '800', campaigns: 10, openRate: '28%', clicks: '8%' },
+          { lastActive: 'Apr 8, 2025', lastCampaign: 'Apr 5, 2025', contacts: '1.2k', campaigns: 8, openRate: '32%', clicks: '12%' },
+          { lastActive: 'Apr 6, 2025', lastCampaign: 'Apr 3, 2025', contacts: '450', campaigns: 5, openRate: '24%', clicks: '6%' },
+        ];
+        
+        const workspaceRows = workspaces.map((name, i) => {
+          const data = workspaceData[i % workspaceData.length];
+          const workspaceUrl = `workspace-detail.html?workspace=${encodeURIComponent(name)}&folder=${encodeURIComponent(folderName)}`;
+          return `
+          <a href="${workspaceUrl}" class="grid grid-cols-12 gap-4 px-5 py-4 hover:bg-gray-50 transition-colors cursor-pointer items-center">
+            <div class="col-span-3 flex items-center gap-3">
+              <div class="w-10 h-10 ${getColor(name)} rounded-full flex items-center justify-center text-white text-sm font-bold flex-shrink-0">${getInitials(name)}</div>
+              <div>
+                <span class="font-medium text-gray-900 block">${name}</span>
+                <span class="text-xs text-green-600 bg-green-50 px-2 py-0.5 rounded-full">Active</span>
+              </div>
+            </div>
+            <div class="col-span-2 text-sm text-gray-600">${data.lastActive}</div>
+            <div class="col-span-2 text-sm text-gray-600">${data.lastCampaign}</div>
+            <div class="col-span-1 text-sm text-gray-900 font-medium text-right">${data.contacts}</div>
+            <div class="col-span-1 text-sm text-gray-900 font-medium text-right">${data.campaigns}</div>
+            <div class="col-span-1 text-sm text-gray-900 font-medium text-right">${data.openRate}</div>
+            <div class="col-span-1 text-sm text-gray-900 font-medium text-right">${data.clicks}</div>
+            <div class="col-span-1 flex justify-end">
+              <i data-lucide="chevron-right" class="w-5 h-5 text-gray-400"></i>
+            </div>
+          </a>
+        `}).join('');
+        
+        workspacesContainer.innerHTML = workspaceRows;
+      }
+      safeCreateIcons();
+    }
+    
+    // Apply persisted data mode on page load
+    setDataMode(currentDataMode);
+  </script>
+
+  <!-- Create Workspace Modal -->
+  <div id="create-workspace-modal" class="fixed inset-0 z-[100] hidden">
+    <!-- Backdrop -->
+    <div class="absolute inset-0 bg-gradient-to-br from-sky-400/80 via-teal-300/70 to-green-200/80 backdrop-blur-sm" onclick="closeCreateWorkspaceModal()"></div>
+    
+    <!-- Modal Content -->
+    <div class="absolute inset-0 flex items-center justify-center p-8">
+      <div class="bg-white rounded-3xl shadow-2xl p-8 max-w-lg w-full max-h-[90vh] overflow-y-auto">
+        <!-- Header with back button -->
+        <div class="flex items-center gap-3 mb-6">
+          <button onclick="closeCreateWorkspaceModal()" class="text-gray-400 hover:text-gray-600">
+            <i data-lucide="arrow-left" class="w-5 h-5"></i>
+          </button>
+          <h2 class="text-xl font-bold text-gray-900">Set up your workspaces</h2>
+        </div>
+
+        <p class="text-gray-600 mb-6">Add the workspaces you need to get started. You can always add more later.</p>
+
+        <!-- Workspace inputs -->
+        <div id="modal-workspace-list" class="space-y-3 mb-4">
+          <div class="modal-workspace-item flex items-center gap-3">
+            <div class="w-10 h-10 bg-blue-50 rounded-xl flex items-center justify-center text-blue-600 text-sm font-semibold">1</div>
+            <input type="text" placeholder="e.g., New Jersey location" class="flex-1 px-4 py-3 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-blue-600 focus:border-transparent modal-workspace-input">
+          </div>
+        </div>
+
+        <button onclick="addModalWorkspace()" class="flex items-center gap-2 text-blue-600 hover:text-blue-700 font-medium text-sm mb-6">
+          <i data-lucide="plus" class="w-4 h-4"></i>
+          Add another workspace
+        </button>
+
+        <!-- Folder grouping option -->
+        <div class="bg-gray-50 rounded-2xl p-5 mb-6">
+          <label class="flex items-start gap-3 cursor-pointer">
+            <input type="checkbox" id="modal-create-folder" class="w-5 h-5 mt-0.5 text-blue-600 border-gray-300 rounded focus:ring-blue-500">
+            <div>
+              <span class="font-semibold text-gray-900 block">Group these workspaces in a Folder</span>
+              <span class="text-sm text-gray-500">Folders let you see rolled-up reporting across workspaces and manage shared assets.</span>
+            </div>
+          </label>
+          
+          <!-- Folder Name Input (shown when checkbox is checked) -->
+          <div id="modal-folder-name-container" class="mt-4 hidden">
+            <label class="block text-sm font-medium text-gray-700 mb-1.5">Folder name</label>
+            <input type="text" id="modal-folder-name-input" placeholder="e.g., Northeast region" class="w-full px-4 py-3 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-blue-600 focus:border-transparent bg-white">
+          </div>
+        </div>
+
+        <button onclick="createWorkspacesFromModal()" class="w-full py-4 bg-blue-600 text-white rounded-2xl font-semibold text-sm hover:bg-blue-700 transition-colors">
+          Create workspaces
+        </button>
+      </div>
+    </div>
+  </div>
+  <script src="mobile-nav.js"></script>
+</body>
+</html>

@@ -1,0 +1,3413 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>CTCT for Teams — Folder Reporting</title>
+  <link rel="stylesheet" href="mobile-responsive.css">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://unpkg.com/lucide@0.263.1/dist/umd/lucide.js"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            ctct: {
+              blue: '#4B7BF5',
+              'blue-light': '#EEF4FF',
+              orange: '#F5A623'
+            }
+          },
+          fontFamily: {
+            sans: ['CTSans', 'system-ui', 'sans-serif']
+          }
+        }
+      }
+    }
+  </script>
+  <style>
+    @font-face {
+      font-family: 'CTSans';
+      src: url('fonts/CTSans-Regular.woff2') format('woff2');
+      font-weight: 400;
+      font-style: normal;
+      font-display: swap;
+    }
+    @font-face {
+      font-family: 'CTSans';
+      src: url('fonts/CTSans-Semibold.woff2') format('woff2');
+      font-weight: 600;
+      font-style: normal;
+      font-display: swap;
+    }
+    @font-face {
+      font-family: 'CTSans';
+      src: url('fonts/CTSans-Bold.woff2') format('woff2');
+      font-weight: 700;
+      font-style: normal;
+      font-display: swap;
+    }
+    body { 
+      line-height: 1.5; 
+      background: #F8F9FB; 
+    }
+    
+    /* Color Variables - Matching Org Dashboard */
+    :root {
+      /* Main blues (dark to light) */
+      --main-950: #0b3c85;
+      --main-800: #1357be;
+      --main-500: #468af1;
+      --main-300: #a6d3fd;
+      --main-100: #e6f8ff;
+      
+      /* Success greens (dark to light) */
+      --success-800: #067647;
+      --success-700: #079455;
+      --success-600: #17b26a;
+      --success-400: #75e0a7;
+      --success-300: #a9efc5;
+      --success-100: #ecfdf3;
+    }
+    
+    .bg-success-800 { background-color: var(--success-800); }
+    .bg-success-700 { background-color: var(--success-700); }
+    .bg-success-600 { background-color: var(--success-600); }
+    .bg-success-400 { background-color: var(--success-400); }
+    .bg-success-300 { background-color: var(--success-300); }
+    .bg-main-950 { background-color: var(--main-950); }
+    .bg-main-500 { background-color: var(--main-500); }
+    .bg-main-300 { background-color: var(--main-300); }
+    .text-success-600 { color: var(--success-600); }
+    .text-success-400 { color: var(--success-400); }
+    
+    .ai-gradient-text {
+      background: linear-gradient(90deg, #8B5CF6 0%, #3B82F6 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+    /* Modern chart styles - thin bars with blue/teal/green gradients */
+    .chart-bar {
+      background: linear-gradient(180deg, #3B82F6 0%, #14B8A6 100%);
+      border-radius: 4px 4px 0 0;
+      transition: height 0.3s ease;
+      width: 6px;
+    }
+    .chart-bar-teal {
+      background: linear-gradient(180deg, #14B8A6 0%, #6EE7B7 100%);
+      border-radius: 4px 4px 0 0;
+      width: 6px;
+    }
+    .chart-bar-green {
+      background: linear-gradient(180deg, #10B981 0%, #A7F3D0 100%);
+      border-radius: 4px 4px 0 0;
+      width: 6px;
+    }
+    .chart-bar-orange {
+      background: linear-gradient(180deg, #F59E0B 0%, #FCD34D 100%);
+      border-radius: 4px 4px 0 0;
+      width: 6px;
+    }
+    .chart-bar-blue {
+      background: linear-gradient(180deg, #0EA5E9 0%, #67E8F9 100%);
+      border-radius: 4px 4px 0 0;
+      width: 6px;
+    }
+    .donut-chart {
+      transform: rotate(-90deg);
+    }
+    .donut-segment {
+      fill: none;
+      stroke-linecap: round;
+      transition: stroke-dasharray 0.5s ease;
+    }
+    .line-chart-path {
+      fill: none;
+      stroke-width: 2;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+    }
+    .area-fill {
+      opacity: 0.2;
+    }
+    .progress-bar {
+      background: linear-gradient(90deg, #14B8A6 0%, #3B82F6 50%, #8B5CF6 100%);
+      border-radius: 999px;
+    }
+    .progress-bar-blue {
+      background: linear-gradient(90deg, #3B82F6 0%, #6366F1 100%);
+      border-radius: 999px;
+    }
+    .progress-bar-teal {
+      background: linear-gradient(90deg, #14B8A6 0%, #0EA5E9 100%);
+      border-radius: 999px;
+    }
+    .progress-bar-purple {
+      background: linear-gradient(90deg, #8B5CF6 0%, #A855F7 100%);
+      border-radius: 999px;
+    }
+    /* UI Kit style - thin horizontal progress */
+    .thin-progress-track {
+      height: 4px;
+      background: #E5E7EB;
+      border-radius: 999px;
+    }
+    .thin-progress-fill {
+      height: 4px;
+      background: linear-gradient(90deg, #14B8A6 0%, #0EA5E9 100%);
+      border-radius: 999px;
+      transition: width 0.3s ease;
+    }
+    /* Ring progress indicator */
+    .ring-progress {
+      transform: rotate(-90deg);
+    }
+    .ring-track {
+      fill: none;
+      stroke: #E5E7EB;
+    }
+    .ring-fill {
+      fill: none;
+      stroke-linecap: round;
+      transition: stroke-dasharray 0.5s ease;
+    }
+  </style>
+</head>
+<body class="font-sans">
+  <!-- SVG Gradient Definition for AI icon -->
+  <svg width="0" height="0" class="hidden">
+    <defs>
+      <linearGradient id="ai-gradient" x1="0%" y1="0%" x2="100%" y2="0%">
+        <stop offset="0%" style="stop-color:#8B5CF6"/>
+        <stop offset="100%" style="stop-color:#3B82F6"/>
+      </linearGradient>
+    </defs>
+  </svg>
+
+  <!-- Bottom Footer Bar -->
+  <div class="fixed bottom-0 left-0 right-0 h-12 bg-gray-800 flex items-center justify-between px-6 z-40">
+    <a href="index.html" class="flex items-center gap-2 text-gray-400 hover:text-white text-sm">
+      <i data-lucide="arrow-left" class="w-4 h-4"></i> All Prototypes
+    </a>
+    <p class="text-sm text-gray-400">Folder Reporting — Filtered by Folder Workspaces</p>
+    <div class="flex items-center gap-4">
+      <div class="flex items-center gap-2 bg-gray-700 rounded-lg px-3 py-1.5">
+        <span class="text-xs text-gray-400">data=</span>
+        <button id="toggle-empty" onclick="setDataMode('empty')" class="px-2.5 py-1 text-xs rounded text-gray-400 hover:text-white">empty</button>
+        <button id="toggle-filled" onclick="setDataMode('filled')" class="px-2.5 py-1 text-xs rounded bg-gray-600 text-white">filled</button>
+      </div>
+      <a href="teams-signup-flow.html" onclick="sessionStorage.clear()" class="flex items-center gap-2 text-gray-400 hover:text-white text-sm">
+        <i data-lucide="rotate-ccw" class="w-4 h-4"></i> Reset
+      </a>
+    </div>
+  </div>
+
+  <!-- Filter Drawer (Right Side Sheet) -->
+  <div id="filter-drawer-overlay" class="hidden fixed inset-0 bg-black/20 z-40" onclick="toggleFilterDrawer()"></div>
+  <div id="filter-drawer" class="hidden fixed top-0 right-0 bottom-12 w-80 bg-white border-l border-neutral-200 z-50 transform transition-transform duration-300 shadow-xl overflow-hidden flex flex-col">
+    <!-- Drawer Header -->
+    <div class="bg-white border-b border-neutral-100 px-5 py-4 flex items-center justify-between">
+      <h3 class="text-base font-semibold text-neutral-800">Filters</h3>
+      <button onclick="toggleFilterDrawer()" class="p-1.5 text-neutral-400 hover:text-neutral-600 hover:bg-neutral-100 rounded-lg transition-colors">
+        <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+      </button>
+    </div>
+    
+    <!-- Drawer Content -->
+    <div class="flex-1 overflow-y-auto p-5 space-y-6">
+      
+      <!-- Date Range Section -->
+      <div>
+        <label class="block text-xs font-semibold text-neutral-500 uppercase tracking-wide mb-3">Date Range</label>
+        <div class="grid grid-cols-3 gap-2 mb-3">
+          <button onclick="setDateRange('7D')" class="date-range-btn px-3 py-2 border border-neutral-200 rounded-lg text-sm text-neutral-600 hover:border-ctct-blue hover:text-ctct-blue transition-colors">7D</button>
+          <button onclick="setDateRange('1M')" class="date-range-btn px-3 py-2 border border-ctct-blue bg-ctct-blue/5 rounded-lg text-sm text-ctct-blue font-medium">1M</button>
+          <button onclick="setDateRange('3M')" class="date-range-btn px-3 py-2 border border-neutral-200 rounded-lg text-sm text-neutral-600 hover:border-ctct-blue hover:text-ctct-blue transition-colors">3M</button>
+          <button onclick="setDateRange('6M')" class="date-range-btn px-3 py-2 border border-neutral-200 rounded-lg text-sm text-neutral-600 hover:border-ctct-blue hover:text-ctct-blue transition-colors">6M</button>
+          <button onclick="setDateRange('1Y')" class="date-range-btn px-3 py-2 border border-neutral-200 rounded-lg text-sm text-neutral-600 hover:border-ctct-blue hover:text-ctct-blue transition-colors">1Y</button>
+          <button onclick="setDateRange('All')" class="date-range-btn px-3 py-2 border border-neutral-200 rounded-lg text-sm text-neutral-600 hover:border-ctct-blue hover:text-ctct-blue transition-colors">All</button>
+        </div>
+        <button class="w-full px-3 py-2 border border-neutral-200 rounded-lg text-sm text-neutral-600 hover:bg-neutral-50 flex items-center justify-center gap-2">
+          <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/></svg>
+          Custom Range
+        </button>
+      </div>
+      
+      <!-- Folders Section -->
+      <div>
+        <label class="block text-xs font-semibold text-neutral-500 uppercase tracking-wide mb-3">Folders</label>
+        <div class="relative mb-2">
+          <svg class="w-4 h-4 text-neutral-400 absolute left-3 top-1/2 -translate-y-1/2" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+          <input type="text" placeholder="Search folders..." class="w-full pl-9 pr-3 py-2 border border-neutral-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-ctct-blue focus:border-transparent">
+        </div>
+        <div class="space-y-1 max-h-32 overflow-y-auto">
+          <label class="flex items-center gap-3 px-3 py-2 hover:bg-neutral-50 rounded-lg cursor-pointer">
+            <input type="checkbox" id="folder-all" checked class="rounded text-ctct-blue w-4 h-4" onchange="handleFilterChange('folder', 'all')">
+            <span class="text-sm text-neutral-700 font-medium">All Folders</span>
+          </label>
+          <label class="flex items-center gap-3 px-3 py-2 hover:bg-neutral-50 rounded-lg cursor-pointer">
+            <input type="checkbox" class="folder-checkbox rounded text-ctct-blue w-4 h-4" data-name="UPS Northeast" onchange="handleFilterChange('folder', 'northeast')">
+            <span class="text-sm text-neutral-700">UPS Northeast</span>
+          </label>
+          <label class="flex items-center gap-3 px-3 py-2 hover:bg-neutral-50 rounded-lg cursor-pointer">
+            <input type="checkbox" class="folder-checkbox rounded text-ctct-blue w-4 h-4" data-name="UPS Southeast" onchange="handleFilterChange('folder', 'southeast')">
+            <span class="text-sm text-neutral-700">UPS Southeast</span>
+          </label>
+        </div>
+      </div>
+      
+      <!-- Workspaces Section -->
+      <div>
+        <label class="block text-xs font-semibold text-neutral-500 uppercase tracking-wide mb-3">Workspaces</label>
+        <div class="relative mb-2">
+          <svg class="w-4 h-4 text-neutral-400 absolute left-3 top-1/2 -translate-y-1/2" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+          <input type="text" placeholder="Search workspaces..." class="w-full pl-9 pr-3 py-2 border border-neutral-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-ctct-blue focus:border-transparent">
+        </div>
+        <div class="space-y-1 max-h-40 overflow-y-auto">
+          <label class="flex items-center gap-3 px-3 py-2 hover:bg-neutral-50 rounded-lg cursor-pointer">
+            <input type="checkbox" id="workspace-all" checked class="rounded text-ctct-blue w-4 h-4" onchange="handleFilterChange('workspace', 'all')">
+            <span class="text-sm text-neutral-700 font-medium">All Workspaces</span>
+            <span class="text-xs text-neutral-400 ml-auto">18</span>
+          </label>
+          <label class="flex items-center gap-3 px-3 py-2 hover:bg-neutral-50 rounded-lg cursor-pointer">
+            <input type="checkbox" id="workspace-ny" class="workspace-checkbox rounded text-ctct-blue w-4 h-4" data-name="UPS New York" onchange="handleFilterChange('workspace', 'ny')">
+            <span class="text-sm text-neutral-700">UPS New York</span>
+          </label>
+          <label class="flex items-center gap-3 px-3 py-2 hover:bg-neutral-50 rounded-lg cursor-pointer">
+            <input type="checkbox" id="workspace-ct" class="workspace-checkbox rounded text-ctct-blue w-4 h-4" data-name="UPS Connecticut" onchange="handleFilterChange('workspace', 'ct')">
+            <span class="text-sm text-neutral-700">UPS Connecticut</span>
+          </label>
+          <label class="flex items-center gap-3 px-3 py-2 hover:bg-neutral-50 rounded-lg cursor-pointer">
+            <input type="checkbox" id="workspace-ma" class="workspace-checkbox rounded text-ctct-blue w-4 h-4" data-name="UPS Massachusetts" onchange="handleFilterChange('workspace', 'ma')">
+            <span class="text-sm text-neutral-700">UPS Massachusetts</span>
+          </label>
+          <label class="flex items-center gap-3 px-3 py-2 hover:bg-neutral-50 rounded-lg cursor-pointer">
+            <input type="checkbox" id="workspace-nj" class="workspace-checkbox rounded text-ctct-blue w-4 h-4" data-name="UPS New Jersey" onchange="handleFilterChange('workspace', 'nj')">
+            <span class="text-sm text-neutral-700">UPS New Jersey</span>
+          </label>
+          <label class="flex items-center gap-3 px-3 py-2 hover:bg-neutral-50 rounded-lg cursor-pointer">
+            <input type="checkbox" id="workspace-pa" class="workspace-checkbox rounded text-ctct-blue w-4 h-4" data-name="UPS Pennsylvania" onchange="handleFilterChange('workspace', 'pa')">
+            <span class="text-sm text-neutral-700">UPS Pennsylvania</span>
+          </label>
+        </div>
+      </div>
+      
+      <!-- Asset Types Section (Brand Usage specific) -->
+      <div id="filter-asset-types">
+        <label class="block text-xs font-semibold text-neutral-500 uppercase tracking-wide mb-3">Asset Types</label>
+        <div class="space-y-1">
+          <label class="flex items-center gap-3 px-3 py-2 hover:bg-neutral-50 rounded-lg cursor-pointer">
+            <input type="checkbox" id="asset-all" checked class="rounded text-ctct-blue w-4 h-4" onchange="handleAssetFilterChange('all')">
+            <span class="text-sm text-neutral-700 font-medium">All Assets</span>
+          </label>
+          <label class="flex items-center gap-3 px-3 py-2 hover:bg-neutral-50 rounded-lg cursor-pointer">
+            <input type="checkbox" id="asset-templates" class="asset-type-checkbox rounded text-ctct-blue w-4 h-4" onchange="handleAssetFilterChange('templates')">
+            <span class="w-2 h-2 bg-blue-500 rounded-full"></span>
+            <span class="text-sm text-neutral-700">Email Templates</span>
+          </label>
+          <label class="flex items-center gap-3 px-3 py-2 hover:bg-neutral-50 rounded-lg cursor-pointer">
+            <input type="checkbox" id="asset-images" class="asset-type-checkbox rounded text-ctct-blue w-4 h-4" onchange="handleAssetFilterChange('images')">
+            <span class="w-2 h-2 bg-amber-500 rounded-full"></span>
+            <span class="text-sm text-neutral-700">Images</span>
+          </label>
+          <label class="flex items-center gap-3 px-3 py-2 hover:bg-neutral-50 rounded-lg cursor-pointer">
+            <input type="checkbox" id="asset-logos" class="asset-type-checkbox rounded text-ctct-blue w-4 h-4" onchange="handleAssetFilterChange('logos')">
+            <span class="w-2 h-2 bg-purple-500 rounded-full"></span>
+            <span class="text-sm text-neutral-700">Logos</span>
+          </label>
+          <label class="flex items-center gap-3 px-3 py-2 hover:bg-neutral-50 rounded-lg cursor-pointer">
+            <input type="checkbox" id="asset-colors" class="asset-type-checkbox rounded text-ctct-blue w-4 h-4" onchange="handleAssetFilterChange('colors')">
+            <span class="w-2 h-2 bg-teal-500 rounded-full"></span>
+            <span class="text-sm text-neutral-700">Brand Colors</span>
+          </label>
+        </div>
+      </div>
+      
+      <!-- Channels Section (hidden on Brand Usage) -->
+      <div id="filter-channels" class="hidden">
+        <label class="block text-xs font-semibold text-neutral-500 uppercase tracking-wide mb-3">Channels</label>
+        <div class="space-y-1">
+          <label class="flex items-center gap-3 px-3 py-2 hover:bg-neutral-50 rounded-lg cursor-pointer">
+            <input type="checkbox" checked class="rounded text-ctct-blue w-4 h-4">
+            <span class="text-sm text-neutral-700">All Channels</span>
+          </label>
+          <label class="flex items-center gap-3 px-3 py-2 hover:bg-neutral-50 rounded-lg cursor-pointer">
+            <input type="checkbox" class="rounded text-ctct-blue w-4 h-4">
+            <span class="w-2 h-2 bg-purple-500 rounded-full"></span>
+            <span class="text-sm text-neutral-700">Email</span>
+          </label>
+          <label class="flex items-center gap-3 px-3 py-2 hover:bg-neutral-50 rounded-lg cursor-pointer">
+            <input type="checkbox" class="rounded text-ctct-blue w-4 h-4">
+            <span class="w-2 h-2 bg-green-500 rounded-full"></span>
+            <span class="text-sm text-neutral-700">SMS</span>
+          </label>
+          <label class="flex items-center gap-3 px-3 py-2 hover:bg-neutral-50 rounded-lg cursor-pointer">
+            <input type="checkbox" class="rounded text-ctct-blue w-4 h-4">
+            <span class="w-2 h-2 bg-blue-500 rounded-full"></span>
+            <span class="text-sm text-neutral-700">Social</span>
+          </label>
+          <label class="flex items-center gap-3 px-3 py-2 hover:bg-neutral-50 rounded-lg cursor-pointer">
+            <input type="checkbox" class="rounded text-ctct-blue w-4 h-4">
+            <span class="w-2 h-2 bg-orange-500 rounded-full"></span>
+            <span class="text-sm text-neutral-700">Automations</span>
+          </label>
+        </div>
+      </div>
+      
+      <!-- Performance Section -->
+      <div>
+        <label class="block text-xs font-semibold text-neutral-500 uppercase tracking-wide mb-3">Performance</label>
+        <div class="space-y-1">
+          <label class="flex items-center gap-3 px-3 py-2 hover:bg-neutral-50 rounded-lg cursor-pointer">
+            <input type="radio" name="performance" checked class="text-ctct-blue w-4 h-4">
+            <span class="text-sm text-neutral-700">All Performance</span>
+          </label>
+          <label class="flex items-center gap-3 px-3 py-2 hover:bg-neutral-50 rounded-lg cursor-pointer">
+            <input type="radio" name="performance" class="text-ctct-blue w-4 h-4">
+            <span class="w-2 h-2 bg-green-500 rounded-full"></span>
+            <span class="text-sm text-neutral-700">High (&gt;25% open)</span>
+          </label>
+          <label class="flex items-center gap-3 px-3 py-2 hover:bg-neutral-50 rounded-lg cursor-pointer">
+            <input type="radio" name="performance" class="text-ctct-blue w-4 h-4">
+            <span class="w-2 h-2 bg-amber-500 rounded-full"></span>
+            <span class="text-sm text-neutral-700">Medium (15-25%)</span>
+          </label>
+          <label class="flex items-center gap-3 px-3 py-2 hover:bg-neutral-50 rounded-lg cursor-pointer">
+            <input type="radio" name="performance" class="text-ctct-blue w-4 h-4">
+            <span class="w-2 h-2 bg-red-500 rounded-full"></span>
+            <span class="text-sm text-neutral-700">Low (&lt;15% open)</span>
+          </label>
+        </div>
+      </div>
+    </div>
+    
+    <!-- Drawer Footer -->
+    <div class="bg-white border-t border-neutral-100 px-5 py-4 flex items-center gap-3">
+      <button onclick="resetFilters()" class="flex-1 px-4 py-2.5 border border-neutral-200 rounded-lg text-sm text-neutral-600 hover:bg-neutral-50 transition-colors">
+        Reset
+      </button>
+      <button onclick="applyFilters(); toggleFilterDrawer();" class="flex-1 px-4 py-2.5 bg-ctct-blue text-white rounded-lg text-sm font-medium hover:opacity-90 transition-colors">
+        Apply Filters
+      </button>
+    </div>
+  </div>
+
+  <div class="flex h-screen pb-10">
+    <!-- Left Sidebar (Reporting Nav) -->
+    <aside class="w-56 bg-white border-r border-neutral-100 flex flex-col pt-6">
+      <div class="px-4 mb-6">
+        <a href="option-b-northstar-empty.html" class="flex items-center gap-2 text-neutral-500 hover:text-neutral-700 text-sm">
+          <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m12 19-7-7 7-7"/><path d="M19 12H5"/></svg>
+          <span>Back to Org</span>
+        </a>
+      </div>
+      
+      <!-- Navigation -->
+      <div class="flex-1 overflow-y-auto px-3">
+        <nav>
+          <!-- Brand Usage Report -->
+          <button onclick="switchTab('workspaces')" id="nav-workspaces" class="w-full flex items-center gap-3 py-3 px-4 text-sm font-medium text-ctct-blue bg-sky-50 rounded-xl mb-1 transition-colors text-left">
+            <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/></svg>
+            Brand Usage
+          </button>
+          
+          <!-- Campaigns Report -->
+          <button onclick="switchTab('campaigns')" id="nav-campaigns" class="w-full flex items-center gap-3 py-3 px-4 text-sm text-slate-600 hover:bg-sky-50 rounded-xl mb-1 transition-colors text-left">
+            <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+            Campaigns
+          </button>
+          
+          <!-- Comparison Report -->
+          <button onclick="switchTab('comparison')" id="nav-comparison" class="w-full flex items-center gap-3 py-3 px-4 text-sm text-slate-600 hover:bg-sky-50 rounded-xl mb-1 transition-colors text-left">
+            <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
+            Comparison
+          </button>
+        </nav>
+        
+        <!-- Divider -->
+        <div class="border-t border-neutral-100 my-4"></div>
+        
+        <!-- Saved Reports -->
+        <div class="px-1">
+          <h3 class="text-xs font-semibold text-neutral-400 uppercase tracking-wide mb-2 px-3">Saved Reports</h3>
+          <div id="saved-reports-list">
+            <a href="#" class="flex items-center gap-3 py-2 px-3 text-sm text-slate-500 hover:bg-sky-50 rounded-lg">
+              <svg class="w-4 h-4 text-neutral-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/></svg>
+              Q4 Email Performance
+            </a>
+            <a href="#" class="flex items-center gap-3 py-2 px-3 text-sm text-slate-500 hover:bg-sky-50 rounded-lg">
+              <svg class="w-4 h-4 text-neutral-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/></svg>
+              Northeast Monthly
+            </a>
+          </div>
+        </div>
+      </div>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="flex-1 overflow-y-auto">
+      <!-- Header Bar -->
+      <div class="bg-white border-b border-neutral-100">
+        <!-- Top Row: Title + Primary Actions -->
+        <div class="px-8 py-4 flex items-center justify-between">
+          <h1 id="report-page-title" class="text-xl font-semibold text-neutral-800">Brand Usage</h1>
+          
+          <!-- Primary Actions -->
+          <div class="flex items-center gap-2">
+            <button onclick="toggleFilterDrawer()" id="filter-drawer-toggle" class="flex items-center gap-2 px-4 py-2 border border-neutral-200 rounded-lg text-sm text-neutral-600 hover:bg-neutral-50 hover:border-neutral-300 transition-colors">
+              <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3"/></svg>
+              Filters
+            </button>
+            <div class="relative">
+              <button onclick="toggleExportMenu()" class="px-4 py-2 bg-ctct-blue text-white rounded-lg text-sm font-medium hover:opacity-90 flex items-center gap-2">
+                <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+                Export
+              </button>
+              <div id="export-menu" class="hidden absolute right-0 top-full mt-2 w-56 bg-white rounded-xl shadow-xl border border-neutral-100 py-2 z-30">
+                <button onclick="exportReport('csv')" class="w-full px-4 py-2.5 text-left text-sm text-neutral-700 hover:bg-neutral-50 flex items-center gap-3">
+                  <svg class="w-4 h-4 text-green-600" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+                  Export as CSV
+                </button>
+                <button onclick="exportReport('pdf')" class="w-full px-4 py-2.5 text-left text-sm text-neutral-700 hover:bg-neutral-50 flex items-center gap-3">
+                  <svg class="w-4 h-4 text-red-600" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+                  Export as PDF
+                </button>
+                <button onclick="exportReport('excel')" class="w-full px-4 py-2.5 text-left text-sm text-neutral-700 hover:bg-neutral-50 flex items-center gap-3">
+                  <svg class="w-4 h-4 text-emerald-600" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><line x1="3" y1="9" x2="21" y2="9"/><line x1="3" y1="15" x2="21" y2="15"/><line x1="9" y1="3" x2="9" y2="21"/><line x1="15" y1="3" x2="15" y2="21"/></svg>
+                  Export as Excel
+                </button>
+                <div class="border-t border-neutral-100 my-2"></div>
+                <button onclick="scheduleReport()" class="w-full px-4 py-2.5 text-left text-sm text-neutral-700 hover:bg-neutral-50 flex items-center gap-3">
+                  <svg class="w-4 h-4 text-blue-600" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+                  Schedule Report
+                </button>
+                <button onclick="shareReport()" class="w-full px-4 py-2.5 text-left text-sm text-neutral-700 hover:bg-neutral-50 flex items-center gap-3">
+                  <svg class="w-4 h-4 text-purple-600" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg>
+                  Share Report Link
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+        
+        <!-- Filter Bar Row -->
+        <div class="px-8 py-2.5 bg-neutral-50 flex items-center justify-between">
+          <!-- Applied Filters -->
+          <div id="filter-summary" class="flex items-center gap-2">
+            <span class="text-xs text-neutral-400 uppercase tracking-wide mr-1">Showing:</span>
+            <button id="filter-date-tag" onclick="toggleFilterDrawer()" class="inline-flex items-center gap-1.5 px-2.5 py-1 bg-white border border-neutral-200 text-neutral-600 text-xs rounded-full hover:border-neutral-300 transition-colors">
+              <svg class="w-3 h-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/></svg>
+              <span class="filter-tag-text">Last 30 days</span>
+            </button>
+            <button id="filter-workspace-tag" onclick="toggleFilterDrawer()" class="inline-flex items-center gap-1.5 px-2.5 py-1 bg-white border border-neutral-200 text-neutral-600 text-xs rounded-full hover:border-neutral-300 transition-colors">
+              <svg class="w-3 h-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/></svg>
+              <span class="filter-tag-text">All 18 workspaces</span>
+            </button>
+            <button id="filter-assets-tag" onclick="toggleFilterDrawer()" class="inline-flex items-center gap-1.5 px-2.5 py-1 bg-white border border-neutral-200 text-neutral-600 text-xs rounded-full hover:border-neutral-300 transition-colors">
+              <svg class="w-3 h-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
+              <span class="filter-tag-text">All assets</span>
+            </button>
+          </div>
+          
+          <!-- Tertiary Actions -->
+          <div class="flex items-center gap-4">
+            <button onclick="clearAllFilters()" class="text-xs text-neutral-500 hover:text-neutral-700 transition-colors">Clear all</button>
+            <span class="text-neutral-300">|</span>
+            <button onclick="saveReport()" class="text-xs text-ctct-blue hover:underline transition-colors">Save report</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Report Content -->
+      <div class="p-8 bg-neutral-50">
+        <!-- BRAND USAGE TAB CONTENT -->
+        <div id="content-workspaces">
+          <!-- Summary Stats Row - Matching Dashboard Style -->
+          <div class="grid grid-cols-4 gap-5 mb-6">
+            <div class="bg-white rounded-2xl border border-neutral-100 p-5 shadow-sm">
+              <div class="flex items-center justify-between mb-3">
+                <h3 class="text-sm text-neutral-500">Email templates</h3>
+                <button class="p-1 text-neutral-400 hover:text-neutral-600">
+                  <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="1"/><circle cx="12" cy="5" r="1"/><circle cx="12" cy="19" r="1"/></svg>
+                </button>
+              </div>
+              <div class="flex items-baseline gap-2">
+                <p class="text-3xl font-normal text-neutral-900">14</p>
+                <div class="relative group cursor-help">
+                  <svg class="w-4 h-4 text-success-600" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m5 12 7-7 7 7"/><path d="M12 19V5"/></svg>
+                  <div class="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 px-2 py-1 bg-neutral-800 text-white text-xs rounded whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none z-50">
+                    Previous: 11 <span class="text-success-400">(+27%)</span>
+                  </div>
+                </div>
+              </div>
+              <p class="text-xs text-neutral-400 mt-1">active templates</p>
+            </div>
+            
+            <div class="bg-white rounded-2xl border border-neutral-100 p-5 shadow-sm">
+              <div class="flex items-center justify-between mb-3">
+                <h3 class="text-sm text-neutral-500">Brand colors</h3>
+                <button class="p-1 text-neutral-400 hover:text-neutral-600">
+                  <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="1"/><circle cx="12" cy="5" r="1"/><circle cx="12" cy="19" r="1"/></svg>
+                </button>
+              </div>
+              <div class="flex items-baseline gap-2">
+                <p class="text-3xl font-normal text-neutral-900">6</p>
+                <div class="relative group cursor-help">
+                  <svg class="w-4 h-4 text-neutral-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="5" y1="12" x2="19" y2="12"/></svg>
+                  <div class="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 px-2 py-1 bg-neutral-800 text-white text-xs rounded whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none z-50">
+                    Previous: 6 <span class="text-neutral-400">(no change)</span>
+                  </div>
+                </div>
+              </div>
+              <div class="flex gap-1 mt-2">
+                <div class="w-4 h-4 rounded-full bg-[#351C15]" title="UPS Brown"></div>
+                <div class="w-4 h-4 rounded-full bg-[#FFB500]" title="UPS Gold"></div>
+                <div class="w-4 h-4 rounded-full bg-[#00205B]" title="UPS Navy"></div>
+                <div class="w-4 h-4 rounded-full bg-white border border-neutral-200" title="White"></div>
+                <div class="w-4 h-4 rounded-full bg-[#333333]" title="Dark Gray"></div>
+                <div class="w-4 h-4 rounded-full bg-[#F5F5F5] border border-neutral-200" title="Light Gray"></div>
+              </div>
+            </div>
+            
+            <div class="bg-white rounded-2xl border border-neutral-100 p-5 shadow-sm">
+              <div class="flex items-center justify-between mb-3">
+                <h3 class="text-sm text-neutral-500">Image assets</h3>
+                <button class="p-1 text-neutral-400 hover:text-neutral-600">
+                  <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="1"/><circle cx="12" cy="5" r="1"/><circle cx="12" cy="19" r="1"/></svg>
+                </button>
+              </div>
+              <div class="flex items-baseline gap-2">
+                <p class="text-3xl font-normal text-neutral-900">247</p>
+                <div class="relative group cursor-help">
+                  <svg class="w-4 h-4 text-success-600" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m5 12 7-7 7 7"/><path d="M12 19V5"/></svg>
+                  <div class="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 px-2 py-1 bg-neutral-800 text-white text-xs rounded whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none z-50">
+                    Previous: 195 <span class="text-success-400">(+27%)</span>
+                  </div>
+                </div>
+              </div>
+              <p class="text-xs text-neutral-400 mt-1">total used this month</p>
+            </div>
+            
+            <div class="bg-white rounded-2xl border border-neutral-100 p-5 shadow-sm">
+              <div class="flex items-center justify-between mb-3">
+                <h3 class="text-sm text-neutral-500">Workspaces</h3>
+                <button class="p-1 text-neutral-400 hover:text-neutral-600">
+                  <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="1"/><circle cx="12" cy="5" r="1"/><circle cx="12" cy="19" r="1"/></svg>
+                </button>
+              </div>
+              <div class="flex items-baseline gap-2">
+                <p class="text-3xl font-normal text-neutral-900">18</p>
+                <div class="relative group cursor-help">
+                  <svg class="w-4 h-4 text-success-600" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m5 12 7-7 7 7"/><path d="M12 19V5"/></svg>
+                  <div class="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 px-2 py-1 bg-neutral-800 text-white text-xs rounded whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none z-50">
+                    Previous: 16 <span class="text-success-400">(+12.5%)</span>
+                  </div>
+                </div>
+              </div>
+              <p class="text-xs text-neutral-400 mt-1">using brand assets</p>
+            </div>
+          </div>
+
+          <!-- Widgets Row - Matching Org Dashboard Style -->
+          <div class="grid grid-cols-3 gap-5 mb-6">
+            
+            <!-- Brand Usage Workspace Leaderboard - Matching dashboard style -->
+            <div class="bg-white rounded-2xl border border-neutral-100 p-5 shadow-sm">
+              <div class="flex items-center justify-between mb-5">
+                <h3 class="text-sm text-neutral-500">Brand usage by workspace</h3>
+                <button class="p-1 text-neutral-400 hover:text-neutral-600">
+                  <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="1"/><circle cx="12" cy="5" r="1"/><circle cx="12" cy="19" r="1"/></svg>
+                </button>
+              </div>
+              <div class="space-y-4">
+                <!-- Workspace 1 -->
+                <a href="workspace-detail.html?workspace=UPS%20New%20York" class="flex items-center gap-3 group hover:bg-neutral-50 -mx-2 px-2 py-1 rounded-lg transition-colors cursor-pointer">
+                  <div class="flex items-center gap-2 w-28 flex-shrink-0">
+                    <div class="w-2 h-2 rounded-full flex-shrink-0 bg-success-800"></div>
+                    <span class="text-sm text-neutral-700 truncate group-hover:text-neutral-900">NY Location</span>
+                  </div>
+                  <div class="flex-1 h-1.5 bg-neutral-100 rounded-full relative">
+                    <div class="absolute left-0 top-0 h-full rounded-full transition-all bg-success-800" style="width: 95%"></div>
+                    <span class="absolute right-0 top-1/2 -translate-y-1/2 px-2 py-0.5 bg-neutral-800 text-white text-xs rounded opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none">95%</span>
+                  </div>
+                </a>
+                <!-- Workspace 2 -->
+                <a href="workspace-detail.html?workspace=UPS%20Connecticut" class="flex items-center gap-3 group hover:bg-neutral-50 -mx-2 px-2 py-1 rounded-lg transition-colors cursor-pointer">
+                  <div class="flex items-center gap-2 w-28 flex-shrink-0">
+                    <div class="w-2 h-2 rounded-full flex-shrink-0 bg-success-700"></div>
+                    <span class="text-sm text-neutral-700 truncate group-hover:text-neutral-900">CT Location</span>
+                  </div>
+                  <div class="flex-1 h-1.5 bg-neutral-100 rounded-full relative">
+                    <div class="absolute left-0 top-0 h-full rounded-full transition-all bg-success-700" style="width: 82%"></div>
+                    <span class="absolute right-0 top-1/2 -translate-y-1/2 px-2 py-0.5 bg-neutral-800 text-white text-xs rounded opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none">82%</span>
+                  </div>
+                </a>
+                <!-- Workspace 3 -->
+                <a href="workspace-detail.html?workspace=UPS%20Massachusetts" class="flex items-center gap-3 group hover:bg-neutral-50 -mx-2 px-2 py-1 rounded-lg transition-colors cursor-pointer">
+                  <div class="flex items-center gap-2 w-28 flex-shrink-0">
+                    <div class="w-2 h-2 rounded-full flex-shrink-0 bg-success-600"></div>
+                    <span class="text-sm text-neutral-700 truncate group-hover:text-neutral-900">MA Location</span>
+                  </div>
+                  <div class="flex-1 h-1.5 bg-neutral-100 rounded-full relative">
+                    <div class="absolute left-0 top-0 h-full rounded-full transition-all bg-success-600" style="width: 68%"></div>
+                    <span class="absolute right-0 top-1/2 -translate-y-1/2 px-2 py-0.5 bg-neutral-800 text-white text-xs rounded opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none">68%</span>
+                  </div>
+                </a>
+                <!-- Workspace 4 -->
+                <a href="workspace-detail.html?workspace=UPS%20New%20Jersey" class="flex items-center gap-3 group hover:bg-neutral-50 -mx-2 px-2 py-1 rounded-lg transition-colors cursor-pointer">
+                  <div class="flex items-center gap-2 w-28 flex-shrink-0">
+                    <div class="w-2 h-2 rounded-full flex-shrink-0 bg-success-400"></div>
+                    <span class="text-sm text-neutral-700 truncate group-hover:text-neutral-900">NJ Location</span>
+                  </div>
+                  <div class="flex-1 h-1.5 bg-neutral-100 rounded-full relative">
+                    <div class="absolute left-0 top-0 h-full rounded-full transition-all bg-success-400" style="width: 54%"></div>
+                    <span class="absolute right-0 top-1/2 -translate-y-1/2 px-2 py-0.5 bg-neutral-800 text-white text-xs rounded opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none">54%</span>
+                  </div>
+                </a>
+                <!-- Workspace 5 -->
+                <a href="workspace-detail.html?workspace=UPS%20Pennsylvania" class="flex items-center gap-3 group hover:bg-neutral-50 -mx-2 px-2 py-1 rounded-lg transition-colors cursor-pointer">
+                  <div class="flex items-center gap-2 w-28 flex-shrink-0">
+                    <div class="w-2 h-2 rounded-full flex-shrink-0 bg-success-300"></div>
+                    <span class="text-sm text-neutral-700 truncate group-hover:text-neutral-900">PA Location</span>
+                  </div>
+                  <div class="flex-1 h-1.5 bg-neutral-100 rounded-full relative">
+                    <div class="absolute left-0 top-0 h-full rounded-full transition-all bg-success-300" style="width: 41%"></div>
+                    <span class="absolute right-0 top-1/2 -translate-y-1/2 px-2 py-0.5 bg-neutral-800 text-white text-xs rounded opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none">41%</span>
+                  </div>
+                </a>
+              </div>
+            </div>
+            
+            <!-- Template Adoption - Matching dashboard metric style -->
+            <div class="bg-white rounded-2xl border border-neutral-100 p-5 shadow-sm">
+              <div class="flex items-center justify-between mb-5">
+                <h3 class="text-sm text-neutral-500">Template adoption</h3>
+                <button class="p-1 text-neutral-400 hover:text-neutral-600">
+                  <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="1"/><circle cx="12" cy="5" r="1"/><circle cx="12" cy="19" r="1"/></svg>
+                </button>
+              </div>
+              <div class="grid grid-cols-2 gap-x-8 gap-y-6">
+                <div>
+                  <div class="flex items-baseline gap-2">
+                    <p class="text-2xl font-normal text-neutral-900">14</p>
+                    <div class="relative group cursor-help">
+                      <svg class="w-4 h-4 text-success-600" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m5 12 7-7 7 7"/><path d="M12 19V5"/></svg>
+                      <div class="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 px-2 py-1 bg-neutral-800 text-white text-xs rounded whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none z-50">
+                        Previous: 11 <span class="text-success-400">(+27%)</span>
+                      </div>
+                    </div>
+                  </div>
+                  <p class="text-sm text-neutral-500 mt-0.5">Templates used</p>
+                </div>
+                <div>
+                  <div class="flex items-baseline gap-2">
+                    <p class="text-2xl font-normal text-neutral-900">847</p>
+                    <div class="relative group cursor-help">
+                      <svg class="w-4 h-4 text-success-600" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m5 12 7-7 7 7"/><path d="M12 19V5"/></svg>
+                      <div class="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 px-2 py-1 bg-neutral-800 text-white text-xs rounded whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none z-50">
+                        Previous: 756 <span class="text-success-400">(+12%)</span>
+                      </div>
+                    </div>
+                  </div>
+                  <p class="text-sm text-neutral-500 mt-0.5">Total sends</p>
+                </div>
+                <div>
+                  <div class="flex items-baseline gap-2">
+                    <p class="text-2xl font-normal text-neutral-900">18</p>
+                    <div class="relative group cursor-help">
+                      <svg class="w-4 h-4 text-success-600" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m5 12 7-7 7 7"/><path d="M12 19V5"/></svg>
+                      <div class="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 px-2 py-1 bg-neutral-800 text-white text-xs rounded whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none z-50">
+                        Previous: 16 <span class="text-success-400">(+12.5%)</span>
+                      </div>
+                    </div>
+                  </div>
+                  <p class="text-sm text-neutral-500 mt-0.5">Workspaces</p>
+                </div>
+                <div>
+                  <div class="flex items-baseline gap-2">
+                    <p class="text-2xl font-normal text-neutral-900">94%</p>
+                    <div class="relative group cursor-help">
+                      <svg class="w-4 h-4 text-neutral-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="5" y1="12" x2="19" y2="12"/></svg>
+                      <div class="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 px-2 py-1 bg-neutral-800 text-white text-xs rounded whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none z-50">
+                        Previous: 94% <span class="text-neutral-400">(no change)</span>
+                      </div>
+                    </div>
+                  </div>
+                  <p class="text-sm text-neutral-500 mt-0.5">Brand compliance</p>
+                </div>
+              </div>
+            </div>
+            
+            <!-- Asset Usage Donut - Matching dashboard style -->
+            <div class="bg-white rounded-2xl border border-neutral-100 p-5 shadow-sm">
+              <div class="flex items-center justify-between mb-5">
+                <h3 class="text-sm text-neutral-500">Asset usage breakdown</h3>
+                <button class="p-1 text-neutral-400 hover:text-neutral-600">
+                  <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="1"/><circle cx="12" cy="5" r="1"/><circle cx="12" cy="19" r="1"/></svg>
+                </button>
+              </div>
+              <div class="flex items-center justify-center py-2">
+                <div class="relative">
+                  <svg width="120" height="120" viewBox="0 0 120 120">
+                    <circle cx="60" cy="60" r="50" fill="none" stroke="#F3F4F6" stroke-width="10"/>
+                    <!-- Templates 45% -->
+                    <circle cx="60" cy="60" r="50" fill="none" stroke="#0b3c85" stroke-width="10" 
+                      stroke-dasharray="141 314" stroke-dashoffset="0" stroke-linecap="round"
+                      transform="rotate(-90 60 60)"/>
+                    <!-- Images 35% -->
+                    <circle cx="60" cy="60" r="50" fill="none" stroke="#468af1" stroke-width="10" 
+                      stroke-dasharray="110 314" stroke-dashoffset="-141" stroke-linecap="round"
+                      transform="rotate(-90 60 60)"/>
+                    <!-- Logos 20% -->
+                    <circle cx="60" cy="60" r="50" fill="none" stroke="#a6d3fd" stroke-width="10" 
+                      stroke-dasharray="63 314" stroke-dashoffset="-251" stroke-linecap="round"
+                      transform="rotate(-90 60 60)"/>
+                  </svg>
+                  <div class="absolute inset-0 flex items-center justify-center">
+                    <span class="text-lg font-semibold text-neutral-700">247</span>
+                  </div>
+                </div>
+              </div>
+              <div class="flex justify-center gap-4 mt-4">
+                <div class="flex items-center gap-1.5">
+                  <div class="w-2.5 h-2.5 rounded-full bg-main-950"></div>
+                  <span class="text-xs text-neutral-600">Templates</span>
+                </div>
+                <div class="flex items-center gap-1.5">
+                  <div class="w-2.5 h-2.5 rounded-full bg-main-500"></div>
+                  <span class="text-xs text-neutral-600">Images</span>
+                </div>
+                <div class="flex items-center gap-1.5">
+                  <div class="w-2.5 h-2.5 rounded-full bg-main-300"></div>
+                  <span class="text-xs text-neutral-600">Logos</span>
+                </div>
+              </div>
+            </div>
+          </div>
+          
+          <!-- Brand Assets Detail Table - Full Width -->
+          <div class="bg-white rounded-2xl border border-neutral-100 p-5 shadow-sm mb-6">
+            <div class="flex items-center justify-between mb-5">
+              <h3 class="text-sm text-neutral-500">Brand assets library</h3>
+              <div class="flex items-center gap-3">
+                <div class="flex items-center gap-1 bg-neutral-100 rounded-full p-0.5">
+                  <button onclick="filterAssetType('all')" class="asset-filter-btn px-3 py-1.5 text-xs font-medium bg-white text-neutral-700 rounded-full shadow-sm">All</button>
+                  <button onclick="filterAssetType('templates')" class="asset-filter-btn px-3 py-1.5 text-xs font-medium text-neutral-500 hover:text-neutral-700 rounded-full">Templates</button>
+                  <button onclick="filterAssetType('images')" class="asset-filter-btn px-3 py-1.5 text-xs font-medium text-neutral-500 hover:text-neutral-700 rounded-full">Images</button>
+                  <button onclick="filterAssetType('logos')" class="asset-filter-btn px-3 py-1.5 text-xs font-medium text-neutral-500 hover:text-neutral-700 rounded-full">Logos</button>
+                </div>
+                <button class="p-1 text-neutral-400 hover:text-neutral-600">
+                  <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="1"/><circle cx="12" cy="5" r="1"/><circle cx="12" cy="19" r="1"/></svg>
+                </button>
+              </div>
+            </div>
+              
+              <!-- Asset Table -->
+              <div class="overflow-x-auto">
+                <table class="w-full text-sm">
+                  <thead>
+                    <tr class="border-b border-neutral-100">
+                      <th class="text-left py-3 px-4 font-semibold text-neutral-600">Asset</th>
+                      <th class="text-left py-3 px-4 font-semibold text-neutral-600">Type</th>
+                      <th class="text-center py-3 px-4 font-semibold text-neutral-600">Total Uses</th>
+                      <th class="text-left py-3 px-4 font-semibold text-neutral-600">Top Workspaces</th>
+                      <th class="text-center py-3 px-4 font-semibold text-neutral-600">Last Used</th>
+                      <th class="text-center py-3 px-4 font-semibold text-neutral-600">Trend</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <!-- Email Template Row -->
+                    <tr class="border-b border-neutral-50 hover:bg-neutral-50">
+                      <td class="py-4 px-4">
+                        <div class="flex items-center gap-4">
+                          <div class="w-20 h-14 rounded-lg border border-neutral-200 overflow-hidden bg-gradient-to-b from-[#351C15] to-[#4a2a1f] flex flex-col">
+                            <div class="h-3 bg-[#FFB500] flex items-center justify-center">
+                              <span class="text-[6px] text-[#351C15] font-bold">UPS</span>
+                            </div>
+                            <div class="flex-1 p-1 flex flex-col gap-0.5">
+                              <div class="h-1 bg-white/20 rounded-full w-3/4"></div>
+                              <div class="h-1 bg-white/20 rounded-full w-full"></div>
+                              <div class="h-1 bg-white/20 rounded-full w-1/2"></div>
+                            </div>
+                          </div>
+                          <div>
+                            <p class="text-sm font-medium text-neutral-800">Holiday Newsletter</p>
+                            <p class="text-xs text-neutral-400">Created Dec 1, 2024</p>
+                          </div>
+                        </div>
+                      </td>
+                      <td class="py-4 px-4">
+                        <span class="px-2 py-1 bg-blue-100 text-blue-700 text-xs rounded-full">Email Template</span>
+                      </td>
+                      <td class="text-center py-4 px-4">
+                        <span class="text-lg font-semibold text-neutral-800">847</span>
+                      </td>
+                      <td class="py-4 px-4">
+                        <div class="flex items-center gap-1">
+                          <span class="px-2 py-0.5 bg-blue-50 text-blue-600 text-xs rounded">NY</span>
+                          <span class="px-2 py-0.5 bg-green-50 text-green-600 text-xs rounded">CT</span>
+                          <span class="px-2 py-0.5 bg-purple-50 text-purple-600 text-xs rounded">MA</span>
+                          <span class="text-xs text-neutral-400">+5</span>
+                        </div>
+                      </td>
+                      <td class="text-center py-4 px-4 text-sm text-neutral-500">2 hrs ago</td>
+                      <td class="text-center py-4 px-4">
+                        <span class="text-green-600 text-sm font-medium flex items-center justify-center gap-1">
+                          <svg class="w-3 h-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/></svg>
+                          +12%
+                        </span>
+                      </td>
+                    </tr>
+                    
+                    <!-- Image Asset Row -->
+                    <tr class="border-b border-neutral-50 hover:bg-neutral-50">
+                      <td class="py-4 px-4">
+                        <div class="flex items-center gap-4">
+                          <img src="https://images.unsplash.com/photo-1566576721346-d4a3b4eaeb55?w=80&h=56&fit=crop" class="w-20 h-14 rounded-lg object-cover">
+                          <div>
+                            <p class="text-sm font-medium text-neutral-800">Delivery Driver Hero</p>
+                            <p class="text-xs text-neutral-400">hero-driver-01.jpg</p>
+                          </div>
+                        </div>
+                      </td>
+                      <td class="py-4 px-4">
+                        <span class="px-2 py-1 bg-amber-100 text-amber-700 text-xs rounded-full">Image</span>
+                      </td>
+                      <td class="text-center py-4 px-4">
+                        <span class="text-lg font-semibold text-neutral-800">234</span>
+                      </td>
+                      <td class="py-4 px-4">
+                        <div class="flex items-center gap-1">
+                          <span class="px-2 py-0.5 bg-blue-50 text-blue-600 text-xs rounded">NY</span>
+                          <span class="px-2 py-0.5 bg-amber-50 text-amber-600 text-xs rounded">NJ</span>
+                          <span class="text-xs text-neutral-400">+3</span>
+                        </div>
+                      </td>
+                      <td class="text-center py-4 px-4 text-sm text-neutral-500">1 day ago</td>
+                      <td class="text-center py-4 px-4">
+                        <span class="text-green-600 text-sm font-medium flex items-center justify-center gap-1">
+                          <svg class="w-3 h-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/></svg>
+                          +8%
+                        </span>
+                      </td>
+                    </tr>
+                    
+                    <!-- Email Template Row 2 -->
+                    <tr class="border-b border-neutral-50 hover:bg-neutral-50">
+                      <td class="py-4 px-4">
+                        <div class="flex items-center gap-4">
+                          <div class="w-20 h-14 rounded-lg border border-neutral-200 overflow-hidden bg-white flex flex-col">
+                            <div class="h-3 bg-[#351C15] flex items-center justify-center">
+                              <div class="w-4 h-2 bg-[#FFB500] rounded-sm"></div>
+                            </div>
+                            <div class="flex-1 p-1 flex flex-col gap-0.5">
+                              <div class="h-1 bg-neutral-200 rounded-full w-2/3"></div>
+                              <div class="h-1 bg-neutral-200 rounded-full w-full"></div>
+                              <div class="h-2 bg-[#FFB500] rounded w-1/3"></div>
+                            </div>
+                          </div>
+                          <div>
+                            <p class="text-sm font-medium text-neutral-800">Promotional Offer</p>
+                            <p class="text-xs text-neutral-400">Created Nov 15, 2024</p>
+                          </div>
+                        </div>
+                      </td>
+                      <td class="py-4 px-4">
+                        <span class="px-2 py-1 bg-blue-100 text-blue-700 text-xs rounded-full">Email Template</span>
+                      </td>
+                      <td class="text-center py-4 px-4">
+                        <span class="text-lg font-semibold text-neutral-800">156</span>
+                      </td>
+                      <td class="py-4 px-4">
+                        <div class="flex items-center gap-1">
+                          <span class="px-2 py-0.5 bg-green-50 text-green-600 text-xs rounded">CT</span>
+                          <span class="px-2 py-0.5 bg-teal-50 text-teal-600 text-xs rounded">PA</span>
+                          <span class="text-xs text-neutral-400">+4</span>
+                        </div>
+                      </td>
+                      <td class="text-center py-4 px-4 text-sm text-neutral-500">3 days ago</td>
+                      <td class="text-center py-4 px-4">
+                        <span class="text-neutral-400 text-sm font-medium flex items-center justify-center gap-1">
+                          —
+                        </span>
+                      </td>
+                    </tr>
+                    
+                    <!-- Logo Asset Row -->
+                    <tr class="border-b border-neutral-50 hover:bg-neutral-50">
+                      <td class="py-4 px-4">
+                        <div class="flex items-center gap-4">
+                          <div class="w-20 h-14 rounded-lg border border-neutral-200 bg-neutral-50 flex items-center justify-center">
+                            <img src="assets/upsLogo.png" class="w-12 h-12 object-contain">
+                          </div>
+                          <div>
+                            <p class="text-sm font-medium text-neutral-800">Primary Logo</p>
+                            <p class="text-xs text-neutral-400">ups-logo-primary.png</p>
+                          </div>
+                        </div>
+                      </td>
+                      <td class="py-4 px-4">
+                        <span class="px-2 py-1 bg-purple-100 text-purple-700 text-xs rounded-full">Logo</span>
+                      </td>
+                      <td class="text-center py-4 px-4">
+                        <span class="text-lg font-semibold text-neutral-800">1,209</span>
+                      </td>
+                      <td class="py-4 px-4">
+                        <div class="flex items-center gap-1">
+                          <span class="text-xs text-neutral-500">All 18 workspaces</span>
+                        </div>
+                      </td>
+                      <td class="text-center py-4 px-4 text-sm text-neutral-500">1 hr ago</td>
+                      <td class="text-center py-4 px-4">
+                        <span class="text-green-600 text-sm font-medium flex items-center justify-center gap-1">
+                          <svg class="w-3 h-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/></svg>
+                          +5%
+                        </span>
+                      </td>
+                    </tr>
+                    
+                    <!-- Image Asset Row 2 -->
+                    <tr class="border-b border-neutral-50 hover:bg-neutral-50">
+                      <td class="py-4 px-4">
+                        <div class="flex items-center gap-4">
+                          <img src="https://images.unsplash.com/photo-1586528116311-ad8dd3c8310d?w=80&h=56&fit=crop" class="w-20 h-14 rounded-lg object-cover">
+                          <div>
+                            <p class="text-sm font-medium text-neutral-800">Package Delivery</p>
+                            <p class="text-xs text-neutral-400">delivery-package-02.jpg</p>
+                          </div>
+                        </div>
+                      </td>
+                      <td class="py-4 px-4">
+                        <span class="px-2 py-1 bg-amber-100 text-amber-700 text-xs rounded-full">Image</span>
+                      </td>
+                      <td class="text-center py-4 px-4">
+                        <span class="text-lg font-semibold text-neutral-800">124</span>
+                      </td>
+                      <td class="py-4 px-4">
+                        <div class="flex items-center gap-1">
+                          <span class="px-2 py-0.5 bg-purple-50 text-purple-600 text-xs rounded">MA</span>
+                          <span class="px-2 py-0.5 bg-blue-50 text-blue-600 text-xs rounded">NY</span>
+                          <span class="text-xs text-neutral-400">+2</span>
+                        </div>
+                      </td>
+                      <td class="text-center py-4 px-4 text-sm text-neutral-500">5 days ago</td>
+                      <td class="text-center py-4 px-4">
+                        <span class="text-red-500 text-sm font-medium flex items-center justify-center gap-1">
+                          <svg class="w-3 h-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="23 18 13.5 8.5 8.5 13.5 1 6"/></svg>
+                          -3%
+                        </span>
+                      </td>
+                    </tr>
+                    
+                    <!-- Email Template Row 3 -->
+                    <tr class="hover:bg-neutral-50">
+                      <td class="py-4 px-4">
+                        <div class="flex items-center gap-4">
+                          <div class="w-20 h-14 rounded-lg border border-neutral-200 overflow-hidden bg-gradient-to-br from-[#FFB500] to-[#e5a300] flex flex-col">
+                            <div class="h-3 bg-[#351C15] flex items-center justify-center">
+                              <span class="text-[6px] text-white font-bold">SALE</span>
+                            </div>
+                            <div class="flex-1 p-1 flex items-center justify-center">
+                              <span class="text-[8px] text-[#351C15] font-bold">50% OFF</span>
+                            </div>
+                          </div>
+                          <div>
+                            <p class="text-sm font-medium text-neutral-800">Flash Sale Banner</p>
+                            <p class="text-xs text-neutral-400">Created Oct 28, 2024</p>
+                          </div>
+                        </div>
+                      </td>
+                      <td class="py-4 px-4">
+                        <span class="px-2 py-1 bg-blue-100 text-blue-700 text-xs rounded-full">Email Template</span>
+                      </td>
+                      <td class="text-center py-4 px-4">
+                        <span class="text-lg font-semibold text-neutral-800">98</span>
+                      </td>
+                      <td class="py-4 px-4">
+                        <div class="flex items-center gap-1">
+                          <span class="px-2 py-0.5 bg-amber-50 text-amber-600 text-xs rounded">NJ</span>
+                          <span class="px-2 py-0.5 bg-teal-50 text-teal-600 text-xs rounded">PA</span>
+                          <span class="text-xs text-neutral-400">+2</span>
+                        </div>
+                      </td>
+                      <td class="text-center py-4 px-4 text-sm text-neutral-500">1 week ago</td>
+                      <td class="text-center py-4 px-4">
+                        <span class="text-green-600 text-sm font-medium flex items-center justify-center gap-1">
+                          <svg class="w-3 h-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/></svg>
+                          +22%
+                        </span>
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+              
+              <!-- Pagination -->
+              <div class="flex items-center justify-between mt-4 pt-4 border-t border-neutral-100">
+                <p class="text-sm text-neutral-500">Showing 6 of 247 assets</p>
+                <div class="flex items-center gap-2">
+                  <button class="px-3 py-1.5 text-sm text-neutral-400 border border-neutral-200 rounded-lg cursor-not-allowed">Previous</button>
+                  <button class="px-3 py-1.5 text-sm text-neutral-700 border border-neutral-200 rounded-lg hover:bg-neutral-50">Next</button>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Usage by Workspace Table - Full Width -->
+          <div class="bg-white rounded-2xl border border-neutral-100 p-5 shadow-sm">
+            <div class="flex items-center justify-between mb-5">
+              <h3 class="text-sm text-neutral-500">Usage by workspace</h3>
+              <button class="p-1 text-neutral-400 hover:text-neutral-600">
+                <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="1"/><circle cx="12" cy="5" r="1"/><circle cx="12" cy="19" r="1"/></svg>
+              </button>
+            </div>
+            <div class="overflow-x-auto">
+              <table class="w-full text-sm">
+                <thead>
+                  <tr class="border-b border-neutral-100">
+                    <th class="text-left py-3 px-4 font-semibold text-neutral-600">Workspace</th>
+                    <th class="text-center py-3 px-4 font-semibold text-neutral-600">Email Templates</th>
+                    <th class="text-center py-3 px-4 font-semibold text-neutral-600">Brand Colors</th>
+                    <th class="text-center py-3 px-4 font-semibold text-neutral-600">Logo Uses</th>
+                    <th class="text-center py-3 px-4 font-semibold text-neutral-600">Image Assets</th>
+                    <th class="text-center py-3 px-4 font-semibold text-neutral-600">Compliance</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr class="border-b border-neutral-50 hover:bg-neutral-50">
+                    <td class="py-3 px-4">
+                      <div class="flex items-center gap-2">
+                        <div class="w-6 h-6 bg-blue-500 rounded flex items-center justify-center text-white text-xs font-bold">NY</div>
+                        <a href="workspace-detail.html?workspace=UPS%20New%20York" class="text-neutral-700 hover:text-ctct-blue">UPS New York</a>
+                      </div>
+                    </td>
+                    <td class="text-center py-3 px-4 text-neutral-600">12</td>
+                    <td class="text-center py-3 px-4 text-neutral-600">6/6</td>
+                    <td class="text-center py-3 px-4 text-neutral-600">234</td>
+                    <td class="text-center py-3 px-4 text-neutral-600">89</td>
+                    <td class="text-center py-3 px-4"><span class="px-2 py-1 bg-green-100 text-green-700 text-xs rounded-full">100%</span></td>
+                  </tr>
+                  <tr class="border-b border-neutral-50 hover:bg-neutral-50">
+                    <td class="py-3 px-4">
+                      <div class="flex items-center gap-2">
+                        <div class="w-6 h-6 bg-green-500 rounded flex items-center justify-center text-white text-xs font-bold">CT</div>
+                        <a href="workspace-detail.html?workspace=UPS%20Connecticut" class="text-neutral-700 hover:text-ctct-blue">UPS Connecticut</a>
+                      </div>
+                    </td>
+                    <td class="text-center py-3 px-4 text-neutral-600">10</td>
+                    <td class="text-center py-3 px-4 text-neutral-600">6/6</td>
+                    <td class="text-center py-3 px-4 text-neutral-600">198</td>
+                    <td class="text-center py-3 px-4 text-neutral-600">67</td>
+                    <td class="text-center py-3 px-4"><span class="px-2 py-1 bg-green-100 text-green-700 text-xs rounded-full">100%</span></td>
+                  </tr>
+                  <tr class="border-b border-neutral-50 hover:bg-neutral-50">
+                    <td class="py-3 px-4">
+                      <div class="flex items-center gap-2">
+                        <div class="w-6 h-6 bg-purple-500 rounded flex items-center justify-center text-white text-xs font-bold">MA</div>
+                        <a href="workspace-detail.html?workspace=UPS%20Massachusetts" class="text-neutral-700 hover:text-ctct-blue">UPS Massachusetts</a>
+                      </div>
+                    </td>
+                    <td class="text-center py-3 px-4 text-neutral-600">8</td>
+                    <td class="text-center py-3 px-4 text-neutral-600">5/6</td>
+                    <td class="text-center py-3 px-4 text-neutral-600">156</td>
+                    <td class="text-center py-3 px-4 text-neutral-600">45</td>
+                    <td class="text-center py-3 px-4"><span class="px-2 py-1 bg-amber-100 text-amber-700 text-xs rounded-full">83%</span></td>
+                  </tr>
+                  <tr class="border-b border-neutral-50 hover:bg-neutral-50">
+                    <td class="py-3 px-4">
+                      <div class="flex items-center gap-2">
+                        <div class="w-6 h-6 bg-amber-500 rounded flex items-center justify-center text-white text-xs font-bold">NJ</div>
+                        <a href="workspace-detail.html?workspace=UPS%20New%20Jersey" class="text-neutral-700 hover:text-ctct-blue">UPS New Jersey</a>
+                      </div>
+                    </td>
+                    <td class="text-center py-3 px-4 text-neutral-600">6</td>
+                    <td class="text-center py-3 px-4 text-neutral-600">6/6</td>
+                    <td class="text-center py-3 px-4 text-neutral-600">124</td>
+                    <td class="text-center py-3 px-4 text-neutral-600">32</td>
+                    <td class="text-center py-3 px-4"><span class="px-2 py-1 bg-green-100 text-green-700 text-xs rounded-full">100%</span></td>
+                  </tr>
+                  <tr class="hover:bg-neutral-50">
+                    <td class="py-3 px-4">
+                      <div class="flex items-center gap-2">
+                        <div class="w-6 h-6 bg-teal-500 rounded flex items-center justify-center text-white text-xs font-bold">PA</div>
+                        <a href="workspace-detail.html?workspace=UPS%20Pennsylvania" class="text-neutral-700 hover:text-ctct-blue">UPS Pennsylvania</a>
+                      </div>
+                    </td>
+                    <td class="text-center py-3 px-4 text-neutral-600">4</td>
+                    <td class="text-center py-3 px-4 text-neutral-600">4/6</td>
+                    <td class="text-center py-3 px-4 text-neutral-600">98</td>
+                    <td class="text-center py-3 px-4 text-neutral-600">14</td>
+                    <td class="text-center py-3 px-4"><span class="px-2 py-1 bg-amber-100 text-amber-700 text-xs rounded-full">67%</span></td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+
+        <!-- Old Asset Usage Charts (hidden for reference) -->
+        <div class="hidden" id="old-asset-usage">
+                <div id="asset-usage-filled" class="hidden flex items-center gap-6">
+                  <!-- SVG Donut Chart -->
+                  <div class="relative w-24 h-24">
+                    <svg class="donut-chart w-24 h-24" viewBox="0 0 100 100">
+                      <defs>
+                        <linearGradient id="donut-teal" x1="0%" y1="0%" x2="100%" y2="0%">
+                          <stop offset="0%" style="stop-color:#14B8A6"/>
+                          <stop offset="100%" style="stop-color:#0EA5E9"/>
+                        </linearGradient>
+                        <linearGradient id="donut-purple" x1="0%" y1="0%" x2="100%" y2="0%">
+                          <stop offset="0%" style="stop-color:#8B5CF6"/>
+                          <stop offset="100%" style="stop-color:#A855F7"/>
+                        </linearGradient>
+                        <linearGradient id="donut-blue" x1="0%" y1="0%" x2="100%" y2="0%">
+                          <stop offset="0%" style="stop-color:#3B82F6"/>
+                          <stop offset="100%" style="stop-color:#6366F1"/>
+                        </linearGradient>
+                      </defs>
+                      <circle class="donut-segment" cx="50" cy="50" r="40" stroke="#E5E7EB" stroke-width="10"/>
+                      <circle class="donut-segment" cx="50" cy="50" r="40" stroke="url(#donut-teal)" stroke-width="10" stroke-dasharray="100 151" stroke-dashoffset="0"/>
+                      <circle class="donut-segment" cx="50" cy="50" r="40" stroke="url(#donut-purple)" stroke-width="10" stroke-dasharray="75 176" stroke-dashoffset="-100"/>
+                      <circle class="donut-segment" cx="50" cy="50" r="40" stroke="url(#donut-blue)" stroke-width="10" stroke-dasharray="50 201" stroke-dashoffset="-175"/>
+                    </svg>
+                    <div class="absolute inset-0 flex items-center justify-center">
+                      <span class="text-lg font-bold text-gray-700">89%</span>
+                    </div>
+                  </div>
+                  <div class="space-y-2 text-sm">
+                    <div class="flex items-center gap-2"><span class="w-3 h-3 rounded-full bg-gradient-to-r from-teal-500 to-cyan-500"></span> Templates <span class="text-gray-500 ml-auto">45%</span></div>
+                    <div class="flex items-center gap-2"><span class="w-3 h-3 rounded-full bg-gradient-to-r from-purple-500 to-fuchsia-500"></span> Brand kit <span class="text-gray-500 ml-auto">30%</span></div>
+                    <div class="flex items-center gap-2"><span class="w-3 h-3 rounded-full bg-gradient-to-r from-blue-500 to-indigo-500"></span> Images <span class="text-gray-500 ml-auto">25%</span></div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Second Row: Approval Rate -->
+          <div class="grid grid-cols-2 gap-6 mb-6">
+            <div class="bg-white rounded-2xl border border-gray-100 p-5">
+              <h3 class="text-sm font-semibold text-gray-700 uppercase tracking-wide mb-4">Campaign Approval Rate</h3>
+              <div class="grid grid-cols-3 gap-6">
+                <div class="text-center">
+                  <p class="text-3xl font-bold text-gray-300">—</p>
+                  <p class="text-xs text-gray-500">Requests</p>
+                </div>
+                <div class="text-center">
+                  <p class="text-3xl font-bold text-gray-300">—</p>
+                  <p class="text-xs text-gray-500">Approved</p>
+                </div>
+                <div class="text-center">
+                  <p class="text-3xl font-bold text-gray-300">—</p>
+                  <p class="text-xs text-gray-500">Rejected</p>
+                </div>
+              </div>
+            </div>
+            <div></div>
+          </div>
+
+          <!-- Activity Table -->
+          <div class="bg-white rounded-2xl border border-gray-100">
+            <div class="p-5 border-b border-gray-100">
+              <h3 class="text-sm font-semibold text-gray-700 uppercase tracking-wide">Workspace Activity</h3>
+            </div>
+            
+            <!-- Table Header -->
+            <div class="grid grid-cols-8 gap-4 px-5 py-3 border-b border-gray-100 text-xs text-gray-500 uppercase tracking-wide">
+              <div class="col-span-2">Workspace</div>
+              <div class="text-center">Brand</div>
+              <div class="text-center">Templates</div>
+              <div class="text-center">Emails</div>
+              <div class="text-center">Social</div>
+              <div class="text-center">SMS</div>
+              <div class="text-center">Automations</div>
+            </div>
+
+            <!-- Table Body -->
+            <div id="workspace-activity-table">
+              <!-- Will be populated dynamically -->
+            </div>
+
+            <!-- Pagination -->
+            <div class="flex items-center justify-between px-5 py-4 border-t border-gray-100">
+              <div class="flex items-center gap-2 text-sm text-gray-500">
+                <span>Show</span>
+                <select class="border border-gray-200 rounded px-2 py-1 text-sm">
+                  <option>10</option>
+                  <option>25</option>
+                  <option>50</option>
+                </select>
+              </div>
+              <div class="flex items-center gap-4 text-sm text-gray-500">
+                <span>1 / 1</span>
+                <div class="flex items-center gap-1">
+                  <button class="p-1 text-gray-300"><i data-lucide="chevron-left" class="w-4 h-4"></i></button>
+                  <button class="p-1 text-gray-300"><i data-lucide="chevron-right" class="w-4 h-4"></i></button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- MARKETING CAMPAIGNS TAB CONTENT -->
+        <div id="content-campaigns" class="p-8 hidden">
+          <!-- Top Row: Campaign Performance + Email Performance -->
+          <div class="grid grid-cols-2 gap-6 mb-6">
+            <!-- Campaign Performance -->
+            <div class="bg-white rounded-2xl border border-gray-100 p-5">
+              <div class="flex items-center justify-between mb-4">
+                <div>
+                  <h3 class="text-sm font-semibold text-gray-700 uppercase tracking-wide">Campaign Performance</h3>
+                  <p class="text-xs text-gray-500">Engagement across all channels</p>
+                </div>
+                <div class="relative">
+                  <button onclick="toggleCardMenu('campaign-perf-menu')" class="p-1 hover:bg-gray-100 rounded-full">
+                    <i data-lucide="more-vertical" class="w-4 h-4 text-gray-400"></i>
+                  </button>
+                  <div id="campaign-perf-menu" class="hidden absolute right-0 top-full mt-1 w-40 bg-white rounded-xl shadow-lg border border-gray-100 py-1 z-20">
+                    <a href="#" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-50">View full report</a>
+                    <a href="#" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-50">Export data</a>
+                  </div>
+                </div>
+              </div>
+              <div id="campaign-perf-empty" class="h-40 flex items-end justify-between px-4">
+                <div class="text-xs text-gray-400 flex flex-col justify-between h-full py-2">
+                  <span>1K</span>
+                  <span>500</span>
+                  <span>200</span>
+                  <span>100</span>
+                </div>
+                <div class="flex-1 flex items-end justify-around gap-4 h-32 border-b border-gray-100">
+                  <div class="flex flex-col items-center">
+                    <div class="w-8 h-8 bg-gray-100 rounded-t"></div>
+                    <span class="text-xs text-gray-400 mt-2">Q1</span>
+                  </div>
+                  <div class="flex flex-col items-center">
+                    <div class="w-8 h-12 bg-gray-100 rounded-t"></div>
+                    <span class="text-xs text-gray-400 mt-2">Q2</span>
+                  </div>
+                  <div class="flex flex-col items-center">
+                    <div class="w-8 h-16 bg-gray-100 rounded-t"></div>
+                    <span class="text-xs text-gray-400 mt-2">Q3</span>
+                  </div>
+                  <div class="flex flex-col items-center">
+                    <div class="w-8 h-10 bg-gray-100 rounded-t"></div>
+                    <span class="text-xs text-gray-400 mt-2">Q4</span>
+                  </div>
+                </div>
+              </div>
+              <div id="campaign-perf-filled" class="h-40 hidden flex items-end justify-between px-4">
+                <div class="text-xs text-gray-400 flex flex-col justify-between h-full py-2">
+                  <span>1K</span>
+                  <span>500</span>
+                  <span>200</span>
+                  <span>100</span>
+                </div>
+                <div class="flex-1 flex items-end justify-around gap-3 h-32 border-b border-gray-100">
+                  <div class="flex flex-col items-center">
+                    <div class="chart-bar" style="height: 40px;"></div>
+                    <span class="text-xs text-gray-400 mt-2">Q1</span>
+                  </div>
+                  <div class="flex flex-col items-center">
+                    <div class="chart-bar-teal" style="height: 80px;"></div>
+                    <span class="text-xs text-gray-400 mt-2">Q2</span>
+                  </div>
+                  <div class="flex flex-col items-center">
+                    <div class="chart-bar-orange" style="height: 110px;"></div>
+                    <span class="text-xs text-gray-400 mt-2">Q3</span>
+                  </div>
+                  <div class="flex flex-col items-center">
+                    <div class="chart-bar-green" style="height: 65px;"></div>
+                    <span class="text-xs text-gray-400 mt-2">Q4</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Email Performance -->
+            <div class="bg-white rounded-2xl border border-gray-100 p-5">
+              <div class="flex items-center justify-between mb-4">
+                <div>
+                  <h3 class="text-sm font-semibold text-gray-700 uppercase tracking-wide">Email Performance</h3>
+                  <p class="text-xs text-gray-500">Campaigns approved</p>
+                </div>
+                <div class="relative">
+                  <button onclick="toggleCardMenu('email-perf-menu')" class="p-1 hover:bg-gray-100 rounded-full">
+                    <i data-lucide="more-vertical" class="w-4 h-4 text-gray-400"></i>
+                  </button>
+                  <div id="email-perf-menu" class="hidden absolute right-0 top-full mt-1 w-40 bg-white rounded-xl shadow-lg border border-gray-100 py-1 z-20">
+                    <a href="#" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-50">View full report</a>
+                    <a href="#" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-50">Export data</a>
+                  </div>
+                </div>
+              </div>
+              <div id="email-perf-empty" class="flex items-center gap-6">
+                <div class="w-28 h-28 rounded-full border-8 border-gray-100 flex items-center justify-center">
+                  <span class="text-2xl font-bold text-gray-300">—</span>
+                </div>
+                <div class="space-y-2 text-sm text-gray-400">
+                  <div class="flex items-center gap-2"><span class="w-3 h-3 rounded-full bg-gray-200"></span> First time approval</div>
+                  <div class="flex items-center gap-2"><span class="w-3 h-3 rounded-full bg-gray-200"></span> 2nd time approval</div>
+                  <div class="flex items-center gap-2"><span class="w-3 h-3 rounded-full bg-gray-200"></span> 3rd time approval</div>
+                  <div class="flex items-center gap-2"><span class="w-3 h-3 rounded-full bg-gray-200"></span> Denied</div>
+                </div>
+              </div>
+              <div id="email-perf-filled" class="hidden flex items-center gap-6">
+                <div class="relative w-28 h-28">
+                  <svg class="donut-chart w-28 h-28" viewBox="0 0 100 100">
+                    <circle class="donut-segment" cx="50" cy="50" r="38" stroke="#E5E7EB" stroke-width="12"/>
+                    <circle class="donut-segment" cx="50" cy="50" r="38" stroke="url(#donut-teal)" stroke-width="12" stroke-dasharray="95 144" stroke-dashoffset="0"/>
+                    <circle class="donut-segment" cx="50" cy="50" r="38" stroke="url(#donut-blue)" stroke-width="12" stroke-dasharray="50 189" stroke-dashoffset="-95"/>
+                    <circle class="donut-segment" cx="50" cy="50" r="38" stroke="url(#donut-purple)" stroke-width="12" stroke-dasharray="45 194" stroke-dashoffset="-145"/>
+                    <circle class="donut-segment" cx="50" cy="50" r="38" stroke="#F472B6" stroke-width="12" stroke-dasharray="20 219" stroke-dashoffset="-190"/>
+                  </svg>
+                  <div class="absolute inset-0 flex flex-col items-center justify-center">
+                    <span class="text-xl font-bold text-gray-700">94%</span>
+                    <span class="text-xs text-gray-400">approved</span>
+                  </div>
+                </div>
+                <div class="space-y-2 text-sm">
+                  <div class="flex items-center gap-2"><span class="w-3 h-3 rounded-full bg-gradient-to-r from-teal-500 to-cyan-500"></span> First time <span class="text-gray-500 ml-auto">45%</span></div>
+                  <div class="flex items-center gap-2"><span class="w-3 h-3 rounded-full bg-gradient-to-r from-blue-500 to-indigo-500"></span> 2nd time <span class="text-gray-500 ml-auto">24%</span></div>
+                  <div class="flex items-center gap-2"><span class="w-3 h-3 rounded-full bg-gradient-to-r from-purple-500 to-fuchsia-500"></span> 3rd time <span class="text-gray-500 ml-auto">21%</span></div>
+                  <div class="flex items-center gap-2"><span class="w-3 h-3 rounded-full bg-pink-400"></span> Denied <span class="text-gray-500 ml-auto">6%</span></div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Second Row: Social Engagement + Campaign Leaderboard -->
+          <div class="grid grid-cols-2 gap-6 mb-6">
+            <!-- Social Engagement -->
+            <div class="bg-white rounded-2xl border border-gray-100 p-5">
+              <div class="flex items-center justify-between mb-4">
+                <div>
+                  <h3 class="text-sm font-semibold text-gray-700 uppercase tracking-wide">Social Engagement</h3>
+                  <p class="text-xs text-gray-500">Template usage breakdown</p>
+                </div>
+                <div class="relative">
+                  <button onclick="toggleCardMenu('social-eng-menu')" class="p-1 hover:bg-gray-100 rounded-full">
+                    <i data-lucide="more-vertical" class="w-4 h-4 text-gray-400"></i>
+                  </button>
+                  <div id="social-eng-menu" class="hidden absolute right-0 top-full mt-1 w-40 bg-white rounded-xl shadow-lg border border-gray-100 py-1 z-20">
+                    <a href="#" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-50">View full report</a>
+                    <a href="#" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-50">Export data</a>
+                  </div>
+                </div>
+              </div>
+              <div id="social-eng-empty" class="flex items-center gap-6">
+                <div class="w-28 h-28 rounded-full border-8 border-gray-100 flex items-center justify-center">
+                  <span class="text-2xl font-bold text-gray-300">—</span>
+                </div>
+                <div class="space-y-2 text-sm text-gray-400">
+                  <div class="flex items-center gap-2"><span class="w-3 h-3 rounded-full bg-gray-200"></span> eCard 2025</div>
+                  <div class="flex items-center gap-2"><span class="w-3 h-3 rounded-full bg-gray-200"></span> VIP Club rewards</div>
+                  <div class="flex items-center gap-2"><span class="w-3 h-3 rounded-full bg-gray-200"></span> Grand opening</div>
+                  <div class="flex items-center gap-2"><span class="w-3 h-3 rounded-full bg-gray-200"></span> Other</div>
+                </div>
+              </div>
+              <div id="social-eng-filled" class="hidden flex items-center gap-6">
+                <div class="relative w-28 h-28">
+                  <svg class="donut-chart w-28 h-28" viewBox="0 0 100 100">
+                    <circle class="donut-segment" cx="50" cy="50" r="38" stroke="#E5E7EB" stroke-width="12"/>
+                    <circle class="donut-segment" cx="50" cy="50" r="38" stroke="url(#donut-teal)" stroke-width="12" stroke-dasharray="80 159" stroke-dashoffset="0"/>
+                    <circle class="donut-segment" cx="50" cy="50" r="38" stroke="url(#donut-blue)" stroke-width="12" stroke-dasharray="65 174" stroke-dashoffset="-80"/>
+                    <circle class="donut-segment" cx="50" cy="50" r="38" stroke="url(#donut-purple)" stroke-width="12" stroke-dasharray="45 194" stroke-dashoffset="-145"/>
+                    <circle class="donut-segment" cx="50" cy="50" r="38" stroke="#FBBF24" stroke-width="12" stroke-dasharray="30 209" stroke-dashoffset="-190"/>
+                  </svg>
+                  <div class="absolute inset-0 flex flex-col items-center justify-center">
+                    <span class="text-xl font-bold text-gray-700">8.5k</span>
+                    <span class="text-xs text-gray-400">views</span>
+                  </div>
+                </div>
+                <div class="space-y-2 text-sm">
+                  <div class="flex items-center gap-2"><span class="w-3 h-3 rounded-full bg-gradient-to-r from-teal-500 to-cyan-500"></span> eCard 2025 <span class="text-gray-500 ml-auto">35%</span></div>
+                  <div class="flex items-center gap-2"><span class="w-3 h-3 rounded-full bg-gradient-to-r from-blue-500 to-indigo-500"></span> VIP Club <span class="text-gray-500 ml-auto">28%</span></div>
+                  <div class="flex items-center gap-2"><span class="w-3 h-3 rounded-full bg-gradient-to-r from-purple-500 to-fuchsia-500"></span> Grand open <span class="text-gray-500 ml-auto">20%</span></div>
+                  <div class="flex items-center gap-2"><span class="w-3 h-3 rounded-full bg-yellow-400"></span> Other <span class="text-gray-500 ml-auto">17%</span></div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Campaign Leaderboard -->
+            <div class="bg-white rounded-2xl border border-gray-100 p-5">
+              <div class="mb-4">
+                <h3 class="text-sm font-semibold text-gray-700 uppercase tracking-wide">Campaign Leaderboard</h3>
+                <p class="text-xs text-gray-500">Performance by campaign</p>
+              </div>
+              <div id="campaign-leaderboard" class="space-y-4">
+                <div class="text-center py-8 text-gray-400">
+                  <p class="text-sm">No campaign data yet</p>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Campaign Activity Table -->
+          <div class="bg-white rounded-2xl border border-gray-100">
+            <div class="p-5 border-b border-gray-100">
+              <h3 class="text-sm font-semibold text-gray-700 uppercase tracking-wide">Campaign Activity</h3>
+            </div>
+            
+            <!-- Table Header -->
+            <div class="grid grid-cols-8 gap-4 px-5 py-3 border-b border-gray-100 text-xs text-gray-500 uppercase tracking-wide">
+              <div class="col-span-2">Campaign</div>
+              <div class="text-center">Channel</div>
+              <div class="text-center">Click</div>
+              <div class="text-center">Views</div>
+              <div class="text-center">Bounces</div>
+              <div class="text-center">Audience</div>
+              <div class="text-center">Likes</div>
+            </div>
+
+            <!-- Table Body -->
+            <div id="campaign-activity-table">
+              <div class="px-5 py-12 text-center text-gray-400">
+                <i data-lucide="mail" class="w-8 h-8 mx-auto mb-2 opacity-50"></i>
+                <p class="text-sm">No campaign activity yet</p>
+                <p class="text-xs text-gray-300 mt-1">Campaign activity will appear here once campaigns are sent</p>
+              </div>
+            </div>
+
+            <!-- Pagination -->
+            <div class="flex items-center justify-between px-5 py-4 border-t border-gray-100">
+              <div class="flex items-center gap-2 text-sm text-gray-500">
+                <span>Show</span>
+                <select class="border border-gray-200 rounded px-2 py-1 text-sm">
+                  <option>10</option>
+                  <option>25</option>
+                  <option>50</option>
+                </select>
+              </div>
+              <div class="flex items-center gap-4 text-sm text-gray-500">
+                <span>1 / 1</span>
+                <div class="flex items-center gap-1">
+                  <button class="p-1 text-gray-300"><i data-lucide="chevron-left" class="w-4 h-4"></i></button>
+                  <button class="p-1 text-gray-300"><i data-lucide="chevron-right" class="w-4 h-4"></i></button>
+                </div>
+              </div>
+            </div>
+          </div>
+          
+          <!-- Campaign Details Section (shown when coming from dashboard) -->
+          <div id="campaign-details-section" class="hidden mt-6">
+            <!-- Aggregate Totals -->
+            <div class="grid grid-cols-5 gap-4 mb-6">
+              <div class="bg-white rounded-2xl border border-gray-100 p-5 text-center">
+                <p class="text-3xl font-bold text-gray-900">47</p>
+                <p class="text-sm text-gray-500">Total Campaigns</p>
+              </div>
+              <div class="bg-white rounded-2xl border border-gray-100 p-5 text-center">
+                <p class="text-3xl font-bold text-blue-600">1,260</p>
+                <p class="text-sm text-gray-500">Total Sends</p>
+              </div>
+              <div class="bg-white rounded-2xl border border-gray-100 p-5 text-center">
+                <p class="text-3xl font-bold text-teal-600">24.8%</p>
+                <p class="text-sm text-gray-500">Avg Open Rate</p>
+              </div>
+              <div class="bg-white rounded-2xl border border-gray-100 p-5 text-center">
+                <p class="text-3xl font-bold text-green-600">3.2%</p>
+                <p class="text-sm text-gray-500">Avg Click Rate</p>
+              </div>
+              <div class="bg-white rounded-2xl border border-gray-100 p-5 text-center">
+                <p class="text-3xl font-bold text-amber-600">1.4%</p>
+                <p class="text-sm text-gray-500">Avg Bounce Rate</p>
+              </div>
+            </div>
+            
+            <!-- Campaign Details Table -->
+            <div class="bg-white rounded-2xl border border-gray-100">
+              <div class="p-5 border-b border-gray-100 flex items-center justify-between">
+                <div>
+                  <h3 class="text-sm font-semibold text-gray-700 uppercase tracking-wide">Campaign Details</h3>
+                  <p class="text-xs text-gray-500 mt-1">Click a campaign to view in workspace</p>
+                </div>
+                <div class="flex items-center gap-3">
+                  <div class="relative">
+                    <i data-lucide="search" class="w-4 h-4 text-gray-400 absolute left-3 top-1/2 -translate-y-1/2"></i>
+                    <input type="text" placeholder="Search campaigns..." class="pl-9 pr-4 py-2 border border-gray-200 rounded-lg text-sm w-64">
+                  </div>
+                  <button class="px-4 py-2 border border-gray-200 rounded-lg text-sm text-gray-600 hover:bg-gray-50 flex items-center gap-2">
+                    <i data-lucide="download" class="w-4 h-4"></i>
+                    Export
+                  </button>
+                </div>
+              </div>
+              
+              <!-- Table Header -->
+              <div class="grid grid-cols-9 gap-4 px-5 py-3 border-b border-gray-100 text-xs text-gray-500 uppercase tracking-wide bg-gray-50">
+                <div class="col-span-2">Campaign</div>
+                <div>Workspace</div>
+                <div class="text-center">Channel</div>
+                <div class="text-center">Sends</div>
+                <div class="text-center">Opens</div>
+                <div class="text-center">Clicks</div>
+                <div class="text-center">Bounces</div>
+                <div class="text-center">Sent</div>
+              </div>
+              
+              <!-- Table Body -->
+              <div id="campaign-details-table">
+                <a href="workspace-detail.html?workspace=UPS%20New%20York" class="grid grid-cols-9 gap-4 px-5 py-4 border-b border-gray-50 hover:bg-blue-50 transition-colors cursor-pointer group">
+                  <div class="col-span-2 flex items-center gap-3">
+                    <div class="w-10 h-10 bg-blue-100 rounded-lg flex items-center justify-center overflow-hidden">
+                      <img src="assets/email1.png" alt="" class="w-full h-full object-cover">
+                    </div>
+                    <span class="text-sm text-gray-700 group-hover:text-blue-600">Holiday Promo 2025</span>
+                  </div>
+                  <div class="flex items-center">
+                    <span class="px-2 py-1 bg-blue-100 text-blue-700 text-xs rounded-full font-medium">UPS NY</span>
+                  </div>
+                  <div class="text-center"><span class="px-2 py-1 bg-purple-100 text-purple-700 text-xs rounded-full">Email</span></div>
+                  <div class="text-center text-sm text-gray-700">2,450</div>
+                  <div class="text-center text-sm text-gray-700">28.4%</div>
+                  <div class="text-center text-sm text-gray-700">4.2%</div>
+                  <div class="text-center text-sm text-gray-700">1.1%</div>
+                  <div class="text-center text-sm text-gray-500 flex items-center justify-center">Dec 15 <i data-lucide="chevron-right" class="w-4 h-4 ml-2 text-gray-300 group-hover:text-blue-400"></i></div>
+                </a>
+                <a href="workspace-detail.html?workspace=UPS%20Connecticut" class="grid grid-cols-9 gap-4 px-5 py-4 border-b border-gray-50 hover:bg-blue-50 transition-colors cursor-pointer group">
+                  <div class="col-span-2 flex items-center gap-3">
+                    <div class="w-10 h-10 bg-green-100 rounded-lg flex items-center justify-center overflow-hidden">
+                      <img src="assets/email2.png" alt="" class="w-full h-full object-cover">
+                    </div>
+                    <span class="text-sm text-gray-700 group-hover:text-blue-600">New Year Kickoff</span>
+                  </div>
+                  <div class="flex items-center">
+                    <span class="px-2 py-1 bg-teal-100 text-teal-700 text-xs rounded-full font-medium">UPS CT</span>
+                  </div>
+                  <div class="text-center"><span class="px-2 py-1 bg-purple-100 text-purple-700 text-xs rounded-full">Email</span></div>
+                  <div class="text-center text-sm text-gray-700">1,820</div>
+                  <div class="text-center text-sm text-gray-700">26.1%</div>
+                  <div class="text-center text-sm text-gray-700">3.8%</div>
+                  <div class="text-center text-sm text-gray-700">0.9%</div>
+                  <div class="text-center text-sm text-gray-500 flex items-center justify-center">Dec 28 <i data-lucide="chevron-right" class="w-4 h-4 ml-2 text-gray-300 group-hover:text-blue-400"></i></div>
+                </a>
+                <a href="workspace-detail.html?workspace=UPS%20Massachusetts" class="grid grid-cols-9 gap-4 px-5 py-4 border-b border-gray-50 hover:bg-blue-50 transition-colors cursor-pointer group">
+                  <div class="col-span-2 flex items-center gap-3">
+                    <div class="w-10 h-10 bg-amber-100 rounded-lg flex items-center justify-center overflow-hidden">
+                      <img src="assets/email3.png" alt="" class="w-full h-full object-cover">
+                    </div>
+                    <span class="text-sm text-gray-700 group-hover:text-blue-600">Winter Clearance</span>
+                  </div>
+                  <div class="flex items-center">
+                    <span class="px-2 py-1 bg-purple-100 text-purple-700 text-xs rounded-full font-medium">UPS MA</span>
+                  </div>
+                  <div class="text-center"><span class="px-2 py-1 bg-purple-100 text-purple-700 text-xs rounded-full">Email</span></div>
+                  <div class="text-center text-sm text-gray-700">3,120</div>
+                  <div class="text-center text-sm text-gray-700">22.7%</div>
+                  <div class="text-center text-sm text-gray-700">2.9%</div>
+                  <div class="text-center text-sm text-gray-700">1.5%</div>
+                  <div class="text-center text-sm text-gray-500 flex items-center justify-center">Jan 2 <i data-lucide="chevron-right" class="w-4 h-4 ml-2 text-gray-300 group-hover:text-blue-400"></i></div>
+                </a>
+                <a href="workspace-detail.html?workspace=UPS%20New%20Jersey" class="grid grid-cols-9 gap-4 px-5 py-4 border-b border-gray-50 hover:bg-blue-50 transition-colors cursor-pointer group">
+                  <div class="col-span-2 flex items-center gap-3">
+                    <div class="w-10 h-10 bg-rose-100 rounded-lg flex items-center justify-center overflow-hidden">
+                      <img src="assets/email4.png" alt="" class="w-full h-full object-cover">
+                    </div>
+                    <span class="text-sm text-gray-700 group-hover:text-blue-600">Member Exclusive</span>
+                  </div>
+                  <div class="flex items-center">
+                    <span class="px-2 py-1 bg-orange-100 text-orange-700 text-xs rounded-full font-medium">UPS NJ</span>
+                  </div>
+                  <div class="text-center"><span class="px-2 py-1 bg-purple-100 text-purple-700 text-xs rounded-full">Email</span></div>
+                  <div class="text-center text-sm text-gray-700">2,890</div>
+                  <div class="text-center text-sm text-gray-700">25.3%</div>
+                  <div class="text-center text-sm text-gray-700">3.5%</div>
+                  <div class="text-center text-sm text-gray-700">1.2%</div>
+                  <div class="text-center text-sm text-gray-500 flex items-center justify-center">Jan 5 <i data-lucide="chevron-right" class="w-4 h-4 ml-2 text-gray-300 group-hover:text-blue-400"></i></div>
+                </a>
+                <a href="workspace-detail.html?workspace=UPS%20Pennsylvania" class="grid grid-cols-9 gap-4 px-5 py-4 hover:bg-blue-50 transition-colors cursor-pointer group">
+                  <div class="col-span-2 flex items-center gap-3">
+                    <div class="w-10 h-10 bg-indigo-100 rounded-lg flex items-center justify-center overflow-hidden">
+                      <img src="assets/email5.png" alt="" class="w-full h-full object-cover">
+                    </div>
+                    <span class="text-sm text-gray-700 group-hover:text-blue-600">Spring Preview</span>
+                  </div>
+                  <div class="flex items-center">
+                    <span class="px-2 py-1 bg-indigo-100 text-indigo-700 text-xs rounded-full font-medium">UPS PA</span>
+                  </div>
+                  <div class="text-center"><span class="px-2 py-1 bg-purple-100 text-purple-700 text-xs rounded-full">Email</span></div>
+                  <div class="text-center text-sm text-gray-700">1,540</div>
+                  <div class="text-center text-sm text-gray-700">21.9%</div>
+                  <div class="text-center text-sm text-gray-700">2.6%</div>
+                  <div class="text-center text-sm text-gray-700">1.8%</div>
+                  <div class="text-center text-sm text-gray-500 flex items-center justify-center">Jan 7 <i data-lucide="chevron-right" class="w-4 h-4 ml-2 text-gray-300 group-hover:text-blue-400"></i></div>
+                </a>
+              </div>
+              
+              <!-- Pagination -->
+              <div class="flex items-center justify-between px-5 py-4 border-t border-gray-100">
+                <p class="text-sm text-gray-500">Showing 5 of 47 campaigns</p>
+                <div class="flex items-center gap-2">
+                  <button class="px-3 py-1 border border-gray-200 rounded text-sm text-gray-400">Previous</button>
+                  <button class="px-3 py-1 bg-blue-600 text-white rounded text-sm">1</button>
+                  <button class="px-3 py-1 border border-gray-200 rounded text-sm text-gray-600 hover:bg-gray-50">2</button>
+                  <button class="px-3 py-1 border border-gray-200 rounded text-sm text-gray-600 hover:bg-gray-50">3</button>
+                  <span class="text-gray-400">...</span>
+                  <button class="px-3 py-1 border border-gray-200 rounded text-sm text-gray-600 hover:bg-gray-50">10</button>
+                  <button class="px-3 py-1 border border-gray-200 rounded text-sm text-gray-600 hover:bg-gray-50">Next</button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- WORKSPACE COMPARISON TAB CONTENT (NEW) -->
+        <div id="content-comparison" class="p-8 hidden">
+          <!-- Comparison Header -->
+          <div class="bg-white rounded-2xl border border-gray-100 p-6 mb-6">
+            <div class="flex items-center justify-between mb-6">
+              <div>
+                <h2 class="text-lg font-semibold text-gray-800">Workspace Comparison</h2>
+                <p class="text-sm text-gray-500">Compare performance metrics across selected workspaces</p>
+              </div>
+              <div class="flex items-center gap-3">
+                <select id="comparison-metric" class="px-4 py-2 border border-gray-200 rounded-lg text-sm text-gray-600 bg-white">
+                  <option value="opens">Open Rate</option>
+                  <option value="clicks">Click Rate</option>
+                  <option value="bounces">Bounce Rate</option>
+                  <option value="sends">Total Sends</option>
+                  <option value="revenue">Revenue</option>
+                </select>
+                <select id="comparison-period" class="px-4 py-2 border border-gray-200 rounded-lg text-sm text-gray-600 bg-white">
+                  <option value="current">This Month</option>
+                  <option value="previous">vs Previous Month</option>
+                  <option value="yoy">vs Same Month Last Year</option>
+                </select>
+              </div>
+            </div>
+            
+            <!-- Comparison Chart Area -->
+            <div class="relative h-64 border border-gray-100 rounded-xl bg-gray-50 p-4">
+              <!-- Y-axis labels -->
+              <div class="absolute left-2 top-4 bottom-4 flex flex-col justify-between text-xs text-gray-400">
+                <span>30%</span>
+                <span>20%</span>
+                <span>10%</span>
+                <span>0%</span>
+              </div>
+              
+              <!-- Bars Container -->
+              <div class="ml-10 h-full flex items-end justify-around gap-4">
+                <!-- NY -->
+                <div class="flex flex-col items-center flex-1">
+                  <div class="relative w-full max-w-16 flex items-end gap-1 h-48">
+                    <div class="flex-1 bg-gradient-to-t from-blue-500 to-blue-400 rounded-t-md" style="height: 85%"></div>
+                    <div class="flex-1 bg-gradient-to-t from-blue-300 to-blue-200 rounded-t-md opacity-60" style="height: 70%"></div>
+                  </div>
+                  <span class="text-xs text-gray-600 mt-2 font-medium">NY</span>
+                  <span class="text-xs text-green-600 font-medium">+2.1%</span>
+                </div>
+                
+                <!-- CT -->
+                <div class="flex flex-col items-center flex-1">
+                  <div class="relative w-full max-w-16 flex items-end gap-1 h-48">
+                    <div class="flex-1 bg-gradient-to-t from-teal-500 to-teal-400 rounded-t-md" style="height: 70%"></div>
+                    <div class="flex-1 bg-gradient-to-t from-teal-300 to-teal-200 rounded-t-md opacity-60" style="height: 65%"></div>
+                  </div>
+                  <span class="text-xs text-gray-600 mt-2 font-medium">CT</span>
+                  <span class="text-xs text-green-600 font-medium">+0.8%</span>
+                </div>
+                
+                <!-- MA -->
+                <div class="flex flex-col items-center flex-1">
+                  <div class="relative w-full max-w-16 flex items-end gap-1 h-48">
+                    <div class="flex-1 bg-gradient-to-t from-purple-500 to-purple-400 rounded-t-md" style="height: 60%"></div>
+                    <div class="flex-1 bg-gradient-to-t from-purple-300 to-purple-200 rounded-t-md opacity-60" style="height: 75%"></div>
+                  </div>
+                  <span class="text-xs text-gray-600 mt-2 font-medium">MA</span>
+                  <span class="text-xs text-red-600 font-medium">-1.2%</span>
+                </div>
+                
+                <!-- NJ -->
+                <div class="flex flex-col items-center flex-1">
+                  <div class="relative w-full max-w-16 flex items-end gap-1 h-48">
+                    <div class="flex-1 bg-gradient-to-t from-orange-500 to-orange-400 rounded-t-md" style="height: 75%"></div>
+                    <div class="flex-1 bg-gradient-to-t from-orange-300 to-orange-200 rounded-t-md opacity-60" style="height: 68%"></div>
+                  </div>
+                  <span class="text-xs text-gray-600 mt-2 font-medium">NJ</span>
+                  <span class="text-xs text-green-600 font-medium">+1.5%</span>
+                </div>
+                
+                <!-- PA -->
+                <div class="flex flex-col items-center flex-1">
+                  <div class="relative w-full max-w-16 flex items-end gap-1 h-48">
+                    <div class="flex-1 bg-gradient-to-t from-pink-500 to-pink-400 rounded-t-md" style="height: 55%"></div>
+                    <div class="flex-1 bg-gradient-to-t from-pink-300 to-pink-200 rounded-t-md opacity-60" style="height: 50%"></div>
+                  </div>
+                  <span class="text-xs text-gray-600 mt-2 font-medium">PA</span>
+                  <span class="text-xs text-green-600 font-medium">+0.5%</span>
+                </div>
+              </div>
+              
+              <!-- Legend -->
+              <div class="absolute top-4 right-4 flex items-center gap-4 text-xs">
+                <div class="flex items-center gap-1.5">
+                  <div class="w-3 h-3 bg-gradient-to-t from-blue-500 to-blue-400 rounded"></div>
+                  <span class="text-gray-600">Current Period</span>
+                </div>
+                <div class="flex items-center gap-1.5">
+                  <div class="w-3 h-3 bg-gray-300 rounded"></div>
+                  <span class="text-gray-600">Previous Period</span>
+                </div>
+              </div>
+            </div>
+          </div>
+          
+          <!-- Detailed Comparison Table -->
+          <div class="bg-white rounded-2xl border border-gray-100">
+            <div class="p-5 border-b border-gray-100 flex items-center justify-between">
+              <h3 class="text-sm font-semibold text-gray-700 uppercase tracking-wide">Detailed Comparison</h3>
+              <div class="flex items-center gap-3">
+                <button onclick="exportComparison()" class="px-4 py-2 border border-gray-200 rounded-lg text-sm text-gray-600 hover:bg-gray-50 flex items-center gap-2">
+                  <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+                  Export Comparison
+                </button>
+              </div>
+            </div>
+            
+            <!-- Table Header -->
+            <div class="grid grid-cols-10 gap-4 px-5 py-3 border-b border-gray-100 text-xs text-gray-500 uppercase tracking-wide bg-gray-50">
+              <div class="col-span-2">Workspace</div>
+              <div class="text-center">Sends</div>
+              <div class="text-center">Open Rate</div>
+              <div class="text-center">Click Rate</div>
+              <div class="text-center">Bounce</div>
+              <div class="text-center">Unsubs</div>
+              <div class="text-center">Revenue</div>
+              <div class="text-center">vs Prev</div>
+              <div class="text-center">Trend</div>
+            </div>
+            
+            <!-- Table Body -->
+            <div id="comparison-table">
+              <!-- UPS New York -->
+              <div class="grid grid-cols-10 gap-4 px-5 py-4 border-b border-gray-50 hover:bg-gray-50 transition-colors">
+                <div class="col-span-2 flex items-center gap-3">
+                  <div class="w-8 h-8 bg-blue-500 rounded-full flex items-center justify-center text-white text-xs font-bold">NY</div>
+                  <div>
+                    <span class="text-sm text-gray-700 font-medium">UPS New York</span>
+                    <span class="block text-xs text-gray-400">12 campaigns</span>
+                  </div>
+                </div>
+                <div class="text-center text-sm text-gray-700 flex items-center justify-center">2,450</div>
+                <div class="text-center">
+                  <span class="text-sm font-medium text-green-600">28.4%</span>
+                </div>
+                <div class="text-center text-sm text-gray-700">4.2%</div>
+                <div class="text-center text-sm text-gray-700">1.1%</div>
+                <div class="text-center text-sm text-gray-700">0.3%</div>
+                <div class="text-center text-sm text-gray-700">$12.4k</div>
+                <div class="text-center">
+                  <span class="inline-flex items-center gap-1 text-xs font-medium text-green-600">
+                    <svg class="w-3 h-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="18 15 12 9 6 15"/></svg>
+                    +2.1%
+                  </span>
+                </div>
+                <div class="text-center">
+                  <svg class="w-16 h-6 mx-auto" viewBox="0 0 60 20">
+                    <polyline fill="none" stroke="#22C55E" stroke-width="2" points="0,15 10,12 20,10 30,8 40,6 50,7 60,5"/>
+                  </svg>
+                </div>
+              </div>
+              
+              <!-- UPS Connecticut -->
+              <div class="grid grid-cols-10 gap-4 px-5 py-4 border-b border-gray-50 hover:bg-gray-50 transition-colors">
+                <div class="col-span-2 flex items-center gap-3">
+                  <div class="w-8 h-8 bg-teal-500 rounded-full flex items-center justify-center text-white text-xs font-bold">CT</div>
+                  <div>
+                    <span class="text-sm text-gray-700 font-medium">UPS Connecticut</span>
+                    <span class="block text-xs text-gray-400">8 campaigns</span>
+                  </div>
+                </div>
+                <div class="text-center text-sm text-gray-700">1,820</div>
+                <div class="text-center">
+                  <span class="text-sm font-medium text-green-600">26.1%</span>
+                </div>
+                <div class="text-center text-sm text-gray-700">3.8%</div>
+                <div class="text-center text-sm text-gray-700">0.9%</div>
+                <div class="text-center text-sm text-gray-700">0.4%</div>
+                <div class="text-center text-sm text-gray-700">$8.2k</div>
+                <div class="text-center">
+                  <span class="inline-flex items-center gap-1 text-xs font-medium text-green-600">
+                    <svg class="w-3 h-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="18 15 12 9 6 15"/></svg>
+                    +0.8%
+                  </span>
+                </div>
+                <div class="text-center">
+                  <svg class="w-16 h-6 mx-auto" viewBox="0 0 60 20">
+                    <polyline fill="none" stroke="#22C55E" stroke-width="2" points="0,12 10,11 20,13 30,10 40,9 50,8 60,7"/>
+                  </svg>
+                </div>
+              </div>
+              
+              <!-- UPS Massachusetts -->
+              <div class="grid grid-cols-10 gap-4 px-5 py-4 border-b border-gray-50 hover:bg-gray-50 transition-colors">
+                <div class="col-span-2 flex items-center gap-3">
+                  <div class="w-8 h-8 bg-purple-500 rounded-full flex items-center justify-center text-white text-xs font-bold">MA</div>
+                  <div>
+                    <span class="text-sm text-gray-700 font-medium">UPS Massachusetts</span>
+                    <span class="block text-xs text-gray-400">10 campaigns</span>
+                  </div>
+                </div>
+                <div class="text-center text-sm text-gray-700">3,120</div>
+                <div class="text-center">
+                  <span class="text-sm font-medium text-amber-600">22.7%</span>
+                </div>
+                <div class="text-center text-sm text-gray-700">2.9%</div>
+                <div class="text-center text-sm text-gray-700">1.5%</div>
+                <div class="text-center text-sm text-gray-700">0.5%</div>
+                <div class="text-center text-sm text-gray-700">$9.8k</div>
+                <div class="text-center">
+                  <span class="inline-flex items-center gap-1 text-xs font-medium text-red-600">
+                    <svg class="w-3 h-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
+                    -1.2%
+                  </span>
+                </div>
+                <div class="text-center">
+                  <svg class="w-16 h-6 mx-auto" viewBox="0 0 60 20">
+                    <polyline fill="none" stroke="#EF4444" stroke-width="2" points="0,8 10,9 20,7 30,10 40,12 50,11 60,13"/>
+                  </svg>
+                </div>
+              </div>
+              
+              <!-- UPS New Jersey -->
+              <div class="grid grid-cols-10 gap-4 px-5 py-4 border-b border-gray-50 hover:bg-gray-50 transition-colors">
+                <div class="col-span-2 flex items-center gap-3">
+                  <div class="w-8 h-8 bg-orange-500 rounded-full flex items-center justify-center text-white text-xs font-bold">NJ</div>
+                  <div>
+                    <span class="text-sm text-gray-700 font-medium">UPS New Jersey</span>
+                    <span class="block text-xs text-gray-400">9 campaigns</span>
+                  </div>
+                </div>
+                <div class="text-center text-sm text-gray-700">2,890</div>
+                <div class="text-center">
+                  <span class="text-sm font-medium text-green-600">25.3%</span>
+                </div>
+                <div class="text-center text-sm text-gray-700">3.5%</div>
+                <div class="text-center text-sm text-gray-700">1.2%</div>
+                <div class="text-center text-sm text-gray-700">0.4%</div>
+                <div class="text-center text-sm text-gray-700">$10.5k</div>
+                <div class="text-center">
+                  <span class="inline-flex items-center gap-1 text-xs font-medium text-green-600">
+                    <svg class="w-3 h-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="18 15 12 9 6 15"/></svg>
+                    +1.5%
+                  </span>
+                </div>
+                <div class="text-center">
+                  <svg class="w-16 h-6 mx-auto" viewBox="0 0 60 20">
+                    <polyline fill="none" stroke="#22C55E" stroke-width="2" points="0,14 10,12 20,11 30,9 40,8 50,9 60,6"/>
+                  </svg>
+                </div>
+              </div>
+              
+              <!-- UPS Pennsylvania -->
+              <div class="grid grid-cols-10 gap-4 px-5 py-4 hover:bg-gray-50 transition-colors">
+                <div class="col-span-2 flex items-center gap-3">
+                  <div class="w-8 h-8 bg-pink-500 rounded-full flex items-center justify-center text-white text-xs font-bold">PA</div>
+                  <div>
+                    <span class="text-sm text-gray-700 font-medium">UPS Pennsylvania</span>
+                    <span class="block text-xs text-gray-400">8 campaigns</span>
+                  </div>
+                </div>
+                <div class="text-center text-sm text-gray-700">1,540</div>
+                <div class="text-center">
+                  <span class="text-sm font-medium text-amber-600">21.9%</span>
+                </div>
+                <div class="text-center text-sm text-gray-700">2.6%</div>
+                <div class="text-center text-sm text-gray-700">1.8%</div>
+                <div class="text-center text-sm text-gray-700">0.6%</div>
+                <div class="text-center text-sm text-gray-700">$6.2k</div>
+                <div class="text-center">
+                  <span class="inline-flex items-center gap-1 text-xs font-medium text-green-600">
+                    <svg class="w-3 h-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="18 15 12 9 6 15"/></svg>
+                    +0.5%
+                  </span>
+                </div>
+                <div class="text-center">
+                  <svg class="w-16 h-6 mx-auto" viewBox="0 0 60 20">
+                    <polyline fill="none" stroke="#22C55E" stroke-width="2" points="0,12 10,13 20,11 30,10 40,11 50,9 60,10"/>
+                  </svg>
+                </div>
+              </div>
+            </div>
+            
+            <!-- Summary Row -->
+            <div class="grid grid-cols-10 gap-4 px-5 py-4 bg-gray-50 border-t border-gray-200 font-medium">
+              <div class="col-span-2 flex items-center gap-3">
+                <div class="w-8 h-8 bg-gray-700 rounded-full flex items-center justify-center text-white text-xs font-bold">Σ</div>
+                <span class="text-sm text-gray-800">Total / Average</span>
+              </div>
+              <div class="text-center text-sm text-gray-800">11,820</div>
+              <div class="text-center text-sm text-gray-800">24.9%</div>
+              <div class="text-center text-sm text-gray-800">3.4%</div>
+              <div class="text-center text-sm text-gray-800">1.3%</div>
+              <div class="text-center text-sm text-gray-800">0.4%</div>
+              <div class="text-center text-sm text-gray-800">$47.1k</div>
+              <div class="text-center">
+                <span class="inline-flex items-center gap-1 text-xs font-medium text-green-600">
+                  <svg class="w-3 h-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="18 15 12 9 6 15"/></svg>
+                  +0.7%
+                </span>
+              </div>
+              <div class="text-center text-sm text-gray-500">—</div>
+            </div>
+          </div>
+        </div>
+        </div><!-- Close flex-1 min-w-0 -->
+      </div><!-- Close relative flex -->
+    </main>
+  </div>
+
+  <script>
+    // Safe lucide helper
+function safeCreateIcons() {
+        if (typeof lucide !== 'undefined' && lucide.createIcons) {
+          lucide.createIcons();
+        }
+      }
+    
+    // Parse URL parameters
+    const urlParams = new URLSearchParams(window.location.search);
+    let folderName = urlParams.get('folder') || sessionStorage.getItem('reportFolderName') || 'Untitled';
+    const workspaceParam = urlParams.get('workspace'); // Single workspace from link
+    const workspacesParam = urlParams.get('workspaces'); // Multiple workspaces
+    const channelFilter = urlParams.get('channel') || 'all';
+    const dateRange = urlParams.get('dateRange') || '1M';
+    
+    // Sample data for workspaces
+    const filledFoldersData = {
+      // US Regions
+      'UPS Northeast': ['UPS New York', 'UPS Connecticut', 'UPS Massachusetts', 'UPS New Jersey', 'UPS Pennsylvania'],
+      'UPS Southeast': ['UPS Florida', 'UPS Georgia', 'UPS North Carolina', 'UPS South Carolina', 'UPS Virginia'],
+      'UPS Southwest': ['UPS Texas', 'UPS Arizona', 'UPS New Mexico', 'UPS Oklahoma'],
+      'UPS Northwest': ['UPS Washington', 'UPS Oregon', 'UPS Idaho', 'UPS Montana'],
+      // EU Regions
+      'UPS UK & Ireland': ['UPS London', 'UPS Manchester', 'UPS Dublin', 'UPS Edinburgh'],
+      'UPS DACH': ['UPS Germany', 'UPS Austria', 'UPS Switzerland'],
+      'UPS Nordics': ['UPS Sweden', 'UPS Norway', 'UPS Denmark', 'UPS Finland'],
+      'UPS Southern Europe': ['UPS Spain', 'UPS Italy', 'UPS Portugal'],
+      // Parent Folders (aggregate all child folder workspaces)
+      'UPS US': ['UPS New York', 'UPS Connecticut', 'UPS Massachusetts', 'UPS New Jersey', 'UPS Pennsylvania', 'UPS Florida', 'UPS Georgia', 'UPS North Carolina', 'UPS South Carolina', 'UPS Virginia', 'UPS Texas', 'UPS Arizona', 'UPS New Mexico', 'UPS Oklahoma', 'UPS Washington', 'UPS Oregon', 'UPS Idaho', 'UPS Montana'],
+      'UPS EU': ['UPS London', 'UPS Manchester', 'UPS Dublin', 'UPS Edinburgh', 'UPS Germany', 'UPS Austria', 'UPS Switzerland', 'UPS Sweden', 'UPS Norway', 'UPS Denmark', 'UPS Finland', 'UPS Spain', 'UPS Italy', 'UPS Portugal']
+    };
+    
+    let workspaces = [];
+    let selectedWorkspace = null;
+    
+    // If a single workspace is specified (from clicking through)
+    if (workspaceParam) {
+      selectedWorkspace = decodeURIComponent(workspaceParam);
+      workspaces = [selectedWorkspace];
+    } else if (workspacesParam) {
+      workspaces = workspacesParam.split(',').map(w => decodeURIComponent(w.trim())).filter(w => w);
+    } else {
+      // Fall back to sessionStorage or folder data
+      const storedWorkspaces = sessionStorage.getItem('reportWorkspaces');
+      if (storedWorkspaces) {
+        workspaces = JSON.parse(storedWorkspaces);
+      } else if (folderName && filledFoldersData[folderName]) {
+        workspaces = filledFoldersData[folderName];
+      }
+    }
+    
+    // Update filter pills based on URL parameters
+    function updateFilterPills() {
+      // Workspace pill
+      const workspacePillText = document.getElementById('workspace-pill-text');
+      const workspacePill = document.getElementById('workspace-filter-pill');
+      if (workspacePillText && workspacePill) {
+        if (selectedWorkspace) {
+          workspacePillText.textContent = selectedWorkspace;
+          workspacePill.classList.remove('border-gray-200', 'text-gray-600');
+          workspacePill.classList.add('border-ctct-blue', 'text-ctct-blue', 'font-medium');
+        } else if (workspaces.length > 0) {
+          workspacePillText.textContent = `${workspaces.length} Workspaces`;
+          workspacePill.classList.remove('border-ctct-blue', 'text-ctct-blue', 'font-medium');
+          workspacePill.classList.add('border-gray-200', 'text-gray-600');
+        } else {
+          workspacePillText.textContent = 'All Workspaces';
+        }
+      }
+      
+      // Channel pill
+      const channelPillText = document.getElementById('channel-pill-text');
+      const channelPill = document.getElementById('channel-filter-pill');
+      if (channelPillText && channelPill) {
+        if (channelFilter && channelFilter !== 'all') {
+          const channelNames = {
+            'email': 'Email',
+            'sms': 'SMS',
+            'social': 'Social',
+            'automation': 'Automations'
+          };
+          channelPillText.textContent = channelNames[channelFilter] || channelFilter;
+          channelPill.classList.remove('border-gray-200', 'text-gray-600');
+          channelPill.classList.add('border-ctct-blue', 'text-ctct-blue', 'font-medium');
+        } else {
+          channelPillText.textContent = 'All Channels';
+          channelPill.classList.remove('border-ctct-blue', 'text-ctct-blue', 'font-medium');
+          channelPill.classList.add('border-gray-200', 'text-gray-600');
+        }
+      }
+      
+      // Date range pill
+      const datePillText = document.getElementById('date-pill-text');
+      const datePill = document.getElementById('date-filter-pill');
+      const dateRangeLabels = {
+        '7D': 'Last 7 Days',
+        '1M': 'Last 1 Month',
+        '3M': 'Last 3 Months',
+        '6M': 'Last 6 Months',
+        '1Y': 'Last 1 Year',
+        'all': 'All Time'
+      };
+      if (datePillText) datePillText.textContent = dateRangeLabels[dateRange] || 'Last 1 Month';
+      
+      // Update date range button in header
+      const dateRangeBtn = document.getElementById('date-range-btn');
+      if (dateRangeBtn) {
+        dateRangeBtn.textContent = dateRange || '1M';
+      }
+    }
+    
+    // Reset filters to default
+    function resetFilters() {
+      const url = new URL(window.location);
+      url.searchParams.delete('workspace');
+      url.searchParams.delete('channel');
+      url.searchParams.set('dateRange', '1M');
+      window.location.href = url.toString();
+    }
+    
+    // Update workspace count (if elements exist)
+    const wsCountLabel = document.getElementById('workspace-count-label');
+    const wsFilterPill = document.getElementById('workspace-filter-pill');
+    if (wsCountLabel) wsCountLabel.textContent = workspaces.length;
+    if (wsFilterPill) wsFilterPill.textContent = `${workspaces.length} Workspaces`;
+    
+    // Helper functions
+    function getInitials(name) {
+      const words = name.split(' ').filter(w => w);
+      if (words.length >= 2) {
+        return (words[0][0] + words[1][0]).toUpperCase();
+      }
+      return name.substring(0, 2).toUpperCase();
+    }
+    
+    function getColor(name) {
+      const colors = ['bg-green-500', 'bg-blue-500', 'bg-purple-500', 'bg-orange-500', 'bg-teal-500', 'bg-pink-500'];
+      let hash = 0;
+      for (let i = 0; i < name.length; i++) {
+        hash = name.charCodeAt(i) + ((hash << 5) - hash);
+      }
+      return colors[Math.abs(hash) % colors.length];
+    }
+    
+    // Toggle header dropdowns
+    let activeHeaderDropdown = null;
+    // Toggle dropdown menus (used by top bar)
+    function toggleDropdown(dropdownId) {
+      const dropdown = document.getElementById(dropdownId);
+      const allDropdowns = ['user-dropdown', 'org-dropdown', 'notifications-dropdown', 'help-dropdown'];
+      
+      allDropdowns.forEach(id => {
+        if (id !== dropdownId) {
+          const el = document.getElementById(id);
+          if (el) el.classList.add('hidden');
+        }
+      });
+      
+      if (dropdown) {
+        dropdown.classList.toggle('hidden');
+      }
+    }
+    
+    // Open quick actions dialog (Create button)
+    function openQuickActionsDialog() {
+      alert('Quick Actions Dialog - Create Email, SMS, Campaign, etc.');
+    }
+    
+    // Legacy function
+    function toggleHeaderDropdown(dropdownId) {
+      toggleDropdown(dropdownId);
+      const dropdown = document.getElementById(dropdownId);
+      if (dropdown) {
+        const orgChevron = document.getElementById('org-dropdown-chevron');
+        if (orgChevron) {
+          orgChevron.style.transform = dropdownId === 'org-dropdown' && !dropdown.classList.contains('hidden') ? 'rotate(180deg)' : 'rotate(0deg)';
+        }
+        safeCreateIcons();
+      }
+    }
+    
+    document.addEventListener('click', (e) => {
+      const dropdownButtons = e.target.closest('[onclick^="toggleHeaderDropdown"]');
+      if (!dropdownButtons && activeHeaderDropdown) {
+        const dropdown = document.getElementById(activeHeaderDropdown);
+        if (dropdown && !dropdown.contains(e.target)) {
+          dropdown.classList.add('hidden');
+          activeHeaderDropdown = null;
+          const orgChevron = document.getElementById('org-dropdown-chevron');
+          if (orgChevron) orgChevron.style.transform = 'rotate(0deg)';
+        }
+      }
+    });
+
+    // Toggle section visibility
+    function toggleSection(section) {
+      const items = document.getElementById(`${section}-items`);
+      const chevron = document.getElementById(`${section}-chevron`);
+      if (items && chevron) {
+        items.classList.toggle('hidden');
+        chevron.style.transform = items.classList.contains('hidden') ? 'rotate(180deg)' : 'rotate(0deg)';
+      }
+    }
+    
+    // Toggle card overflow menus
+    function toggleCardMenu(menuId) {
+      const menu = document.getElementById(menuId);
+      const allMenus = document.querySelectorAll('[id$="-menu"]');
+      
+      // Close all other menus
+      allMenus.forEach(m => {
+        if (m.id !== menuId && m.id.includes('-menu')) {
+          m.classList.add('hidden');
+        }
+      });
+      
+      // Toggle this menu
+      if (menu) menu.classList.toggle('hidden');
+    }
+    
+    // Close menus when clicking outside
+    document.addEventListener('click', function(e) {
+      if (!e.target.closest('[id$="-menu"]') && !e.target.closest('button')) {
+        document.querySelectorAll('[id$="-menu"]').forEach(m => {
+          if (m.id.includes('-menu')) m.classList.add('hidden');
+        });
+      }
+    });
+    
+    // Toggle filter drawer visibility (right side sheet)
+    function toggleFilterDrawer() {
+      const drawer = document.getElementById('filter-drawer');
+      const overlay = document.getElementById('filter-drawer-overlay');
+      const toggle = document.getElementById('filter-drawer-toggle');
+      
+      if (drawer.classList.contains('hidden')) {
+        // Show drawer
+        drawer.classList.remove('hidden');
+        overlay.classList.remove('hidden');
+        toggle.classList.add('bg-ctct-blue/10', 'border-ctct-blue', 'text-ctct-blue');
+        toggle.classList.remove('border-neutral-200', 'text-neutral-600');
+      } else {
+        // Hide drawer
+        drawer.classList.add('hidden');
+        overlay.classList.add('hidden');
+        toggle.classList.remove('bg-ctct-blue/10', 'border-ctct-blue', 'text-ctct-blue');
+        toggle.classList.add('border-neutral-200', 'text-neutral-600');
+      }
+    }
+    
+    // Legacy function for backward compatibility
+    function toggleFilterBar() {
+      toggleFilterDrawer();
+    }
+    
+    // Switch tabs
+    function switchTab(tab) {
+      // Get nav buttons and content panels
+      const navWorkspaces = document.getElementById('nav-workspaces');
+      const navCampaigns = document.getElementById('nav-campaigns');
+      const navComparison = document.getElementById('nav-comparison');
+      const contentWorkspaces = document.getElementById('content-workspaces');
+      const contentCampaigns = document.getElementById('content-campaigns');
+      const contentComparison = document.getElementById('content-comparison');
+      const pageTitle = document.getElementById('report-page-title');
+      
+      // Define classes
+      const inactiveClass = 'w-full flex items-center gap-3 py-3 px-4 text-sm text-slate-600 hover:bg-sky-50 rounded-xl mb-1 transition-colors text-left';
+      const activeClass = 'w-full flex items-center gap-3 py-3 px-4 text-sm font-medium text-ctct-blue bg-sky-50 rounded-xl mb-1 transition-colors text-left';
+      
+      // Reset all nav items
+      if (navWorkspaces) navWorkspaces.className = inactiveClass;
+      if (navCampaigns) navCampaigns.className = inactiveClass;
+      if (navComparison) navComparison.className = inactiveClass;
+      
+      // Hide all content
+      if (contentWorkspaces) contentWorkspaces.classList.add('hidden');
+      if (contentCampaigns) contentCampaigns.classList.add('hidden');
+      if (contentComparison) contentComparison.classList.add('hidden');
+      
+      // Get filter sections
+      const filterAssetTypes = document.getElementById('filter-asset-types');
+      const filterChannels = document.getElementById('filter-channels');
+      
+      // Activate selected tab and update page title to match nav item
+      if (tab === 'workspaces') {
+        if (navWorkspaces) navWorkspaces.className = activeClass;
+        if (contentWorkspaces) contentWorkspaces.classList.remove('hidden');
+        if (pageTitle) pageTitle.textContent = 'Brand Usage';
+        // Show asset types filter, hide channels
+        if (filterAssetTypes) filterAssetTypes.classList.remove('hidden');
+        if (filterChannels) filterChannels.classList.add('hidden');
+      } else if (tab === 'campaigns') {
+        if (navCampaigns) navCampaigns.className = activeClass;
+        if (contentCampaigns) contentCampaigns.classList.remove('hidden');
+        if (pageTitle) pageTitle.textContent = 'Campaigns';
+        // Hide asset types filter, show channels
+        if (filterAssetTypes) filterAssetTypes.classList.add('hidden');
+        if (filterChannels) filterChannels.classList.remove('hidden');
+      } else if (tab === 'comparison') {
+        if (navComparison) navComparison.className = activeClass;
+        if (contentComparison) contentComparison.classList.remove('hidden');
+        if (pageTitle) pageTitle.textContent = 'Comparison';
+        // Show both filters for comparison
+        if (filterAssetTypes) filterAssetTypes.classList.remove('hidden');
+        if (filterChannels) filterChannels.classList.remove('hidden');
+      }
+      
+      // Update URL
+      const url = new URL(window.location);
+      url.searchParams.set('tab', tab);
+      window.history.replaceState({}, '', url);
+    }
+    
+    // Toggle filter dropdowns
+    function toggleFilterDropdown(dropdownId) {
+      const dropdown = document.getElementById(dropdownId);
+      const allDropdowns = ['folder-dropdown', 'workspace-dropdown', 'channel-dropdown', 'date-dropdown', 'perf-dropdown'];
+      
+      allDropdowns.forEach(id => {
+        if (id !== dropdownId) {
+          const el = document.getElementById(id);
+          if (el) el.classList.add('hidden');
+        }
+      });
+      
+      if (dropdown) {
+        dropdown.classList.toggle('hidden');
+      }
+    }
+    
+    // Toggle export menu
+    function toggleExportMenu() {
+      const menu = document.getElementById('export-menu');
+      if (menu) menu.classList.toggle('hidden');
+    }
+    
+    // Export report
+    function exportReport(format) {
+      const formatNames = { csv: 'CSV', pdf: 'PDF', excel: 'Excel' };
+      showToast(`Exporting report as ${formatNames[format]}...`, 'success');
+      document.getElementById('export-menu').classList.add('hidden');
+      
+      // Simulate download
+      setTimeout(() => {
+        showToast(`Report exported successfully!`, 'success');
+      }, 1500);
+    }
+    
+    // Schedule report
+    function scheduleReport() {
+      document.getElementById('export-menu').classList.add('hidden');
+      showToast('Opening schedule dialog...', 'info');
+    }
+    
+    // Share report
+    function shareReport() {
+      document.getElementById('export-menu').classList.add('hidden');
+      navigator.clipboard.writeText(window.location.href);
+      showToast('Report link copied to clipboard!', 'success');
+    }
+    
+    // Export comparison
+    function exportComparison() {
+      showToast('Exporting comparison report...', 'success');
+    }
+    
+    // Show toast notification
+    function showToast(message, type = 'info') {
+      const toast = document.createElement('div');
+      const bgColor = type === 'success' ? 'bg-green-600' : type === 'error' ? 'bg-red-600' : 'bg-blue-600';
+      toast.className = `fixed bottom-20 right-6 ${bgColor} text-white px-6 py-3 rounded-lg shadow-lg z-50 animate-fade-in`;
+      toast.textContent = message;
+      document.body.appendChild(toast);
+      
+      setTimeout(() => {
+        toast.remove();
+      }, 3000);
+    }
+    
+    // Set date range
+    function setDateRange(range) {
+      const rangeLabels = {
+        '7D': 'Last 7 Days',
+        '1M': 'Last 1 Month',
+        '3M': 'Last 3 Months',
+        '6M': 'Last 6 Months',
+        '1Y': 'Last 1 Year',
+        'All': 'All Time'
+      };
+      
+      // Update current filters
+      currentFilters.dateRange = range;
+      
+      // Update active button state in drawer
+      document.querySelectorAll('.date-range-btn').forEach(btn => {
+        btn.classList.remove('border-ctct-blue', 'bg-ctct-blue/5', 'text-ctct-blue', 'font-medium');
+        btn.classList.add('border-gray-200', 'text-gray-600');
+      });
+      
+      // Find and activate the clicked button
+      document.querySelectorAll('.date-range-btn').forEach(btn => {
+        if (btn.textContent.trim() === range) {
+          btn.classList.add('border-ctct-blue', 'bg-ctct-blue/5', 'text-ctct-blue', 'font-medium');
+          btn.classList.remove('border-gray-200', 'text-gray-600');
+        }
+      });
+      
+      // Update any legacy elements if they exist
+      const datePillText = document.getElementById('date-pill-text');
+      const dateRangeText = document.getElementById('date-range-text');
+      const dateDropdown = document.getElementById('date-dropdown');
+      
+      if (datePillText) datePillText.textContent = rangeLabels[range];
+      if (dateRangeText) dateRangeText.textContent = range;
+      if (dateDropdown) dateDropdown.classList.add('hidden');
+      
+      // Update URL
+      const url = new URL(window.location);
+      url.searchParams.set('dateRange', range);
+      window.history.replaceState({}, '', url);
+      
+      // Update filter summary and data
+      updateFilterSummary();
+      updateReportData();
+    }
+    
+    // Open custom date range picker
+    function openCustomDateRange() {
+      document.getElementById('date-dropdown').classList.add('hidden');
+      showToast('Custom date range picker coming soon', 'info');
+    }
+    
+    // Open date range modal
+    function openDateRangeModal() {
+      toggleFilterDropdown('date-dropdown');
+    }
+    
+    // Set performance filter
+    function setPerformanceFilter(level) {
+      const labels = {
+        'all': 'All Performance',
+        'high': 'High Performers',
+        'medium': 'Medium Performers',
+        'low': 'Low Performers'
+      };
+      const perfPillText = document.getElementById('perf-pill-text');
+      if (perfPillText) perfPillText.textContent = labels[level];
+      document.getElementById('perf-dropdown').classList.add('hidden');
+    }
+    
+    // Toggle comparison mode
+    function toggleComparisonMode() {
+      const btn = document.getElementById('comparison-toggle');
+      const isActive = btn.classList.contains('bg-ctct-blue');
+      
+      if (isActive) {
+        btn.classList.remove('bg-ctct-blue', 'text-white', 'border-ctct-blue');
+        btn.classList.add('bg-white', 'text-gray-600', 'border-gray-200');
+      } else {
+        btn.classList.add('bg-ctct-blue', 'text-white', 'border-ctct-blue');
+        btn.classList.remove('bg-white', 'text-gray-600', 'border-gray-200');
+        switchTab('comparison');
+      }
+    }
+    
+    // Current filter state
+    let currentFilters = {
+      dateRange: '1M',
+      workspaces: 'all',
+      workspaceCount: 18,
+      assetTypes: 'all',
+      folders: 'all'
+    };
+    
+    // Generic handler for all filter checkbox changes
+    function handleFilterChange(filterType, itemType) {
+      let allCheckbox, specificCheckboxes, filterKey;
+      
+      if (filterType === 'folder') {
+        allCheckbox = document.getElementById('folder-all');
+        specificCheckboxes = document.querySelectorAll('.folder-checkbox');
+        filterKey = 'folders';
+      } else if (filterType === 'workspace') {
+        allCheckbox = document.getElementById('workspace-all');
+        specificCheckboxes = document.querySelectorAll('.workspace-checkbox');
+        filterKey = 'workspaces';
+      } else if (filterType === 'asset') {
+        allCheckbox = document.getElementById('asset-all');
+        specificCheckboxes = document.querySelectorAll('.asset-type-checkbox');
+        filterKey = 'assetTypes';
+      }
+      
+      if (!allCheckbox || !specificCheckboxes) return;
+      
+      if (itemType === 'all') {
+        // When "All" is clicked, uncheck all specific ones
+        if (allCheckbox.checked) {
+          specificCheckboxes.forEach(cb => cb.checked = false);
+          currentFilters[filterKey] = 'all';
+        }
+      } else {
+        // When a specific one is clicked
+        const anySpecificChecked = Array.from(specificCheckboxes).some(cb => cb.checked);
+        
+        if (anySpecificChecked) {
+          // Uncheck "All" when any specific is checked
+          allCheckbox.checked = false;
+          
+          // Build list of selected items
+          const selectedItems = [];
+          specificCheckboxes.forEach(cb => {
+            if (cb.checked) {
+              selectedItems.push(cb.dataset.name || cb.id);
+            }
+          });
+          
+          currentFilters[filterKey] = selectedItems.join(', ');
+          
+          // Update workspace count if workspaces
+          if (filterType === 'workspace') {
+            currentFilters.workspaceCount = selectedItems.length;
+          }
+        } else {
+          // If nothing specific is checked, check "All" again
+          allCheckbox.checked = true;
+          currentFilters[filterKey] = 'all';
+          if (filterType === 'workspace') {
+            currentFilters.workspaceCount = 18;
+          }
+        }
+      }
+    }
+    
+    // Legacy handler for asset types (uses the generic one)
+    function handleAssetFilterChange(type) {
+      handleFilterChange('asset', type);
+    }
+    
+    // Apply filters and update data
+    function applyFilters() {
+      // Read workspace filter state
+      const wsAllCheckbox = document.getElementById('workspace-all');
+      if (wsAllCheckbox && wsAllCheckbox.checked) {
+        currentFilters.workspaces = 'all';
+        currentFilters.workspaceCount = 18;
+      } else {
+        const selectedWs = [];
+        document.querySelectorAll('.workspace-checkbox:checked').forEach(cb => {
+          selectedWs.push(cb.dataset.name);
+        });
+        currentFilters.workspaces = selectedWs.length > 0 ? selectedWs.join(', ') : 'all';
+        currentFilters.workspaceCount = selectedWs.length || 18;
+      }
+      
+      // Read folder filter state
+      const folderAllCheckbox = document.getElementById('folder-all');
+      if (folderAllCheckbox && folderAllCheckbox.checked) {
+        currentFilters.folders = 'all';
+      } else {
+        const selectedFolders = [];
+        document.querySelectorAll('.folder-checkbox:checked').forEach(cb => {
+          selectedFolders.push(cb.dataset.name);
+        });
+        currentFilters.folders = selectedFolders.length > 0 ? selectedFolders.join(', ') : 'all';
+      }
+      
+      // Read asset type filter state
+      const assetAllCheckbox = document.getElementById('asset-all');
+      if (assetAllCheckbox && assetAllCheckbox.checked) {
+        currentFilters.assetTypes = 'all';
+      } else {
+        const selectedTypes = [];
+        if (document.getElementById('asset-templates')?.checked) selectedTypes.push('Templates');
+        if (document.getElementById('asset-images')?.checked) selectedTypes.push('Images');
+        if (document.getElementById('asset-logos')?.checked) selectedTypes.push('Logos');
+        if (document.getElementById('asset-colors')?.checked) selectedTypes.push('Colors');
+        currentFilters.assetTypes = selectedTypes.length > 0 ? selectedTypes.join(', ') : 'all';
+      }
+      
+      // Update filter summary tags
+      updateFilterSummary();
+      
+      // Update the data based on filters
+      updateReportData();
+      
+      // Filter visible data
+      filterPageContent();
+      
+      showToast('Filters applied', 'success');
+    }
+    
+    // Filter all page content based on current filters
+    function filterPageContent() {
+      console.log('filterPageContent called with filters:', currentFilters);
+      
+      // Get filter states
+      const assetAllChecked = document.getElementById('asset-all')?.checked ?? true;
+      const showTemplates = document.getElementById('asset-templates')?.checked ?? false;
+      const showImages = document.getElementById('asset-images')?.checked ?? false;
+      const showLogos = document.getElementById('asset-logos')?.checked ?? false;
+      const showColors = document.getElementById('asset-colors')?.checked ?? false;
+      
+      console.log('Asset filters:', { assetAllChecked, showTemplates, showImages, showLogos, showColors });
+      
+      // Filter asset table rows - try multiple selectors
+      let rows = document.querySelectorAll('#content-workspaces table tbody tr');
+      if (rows.length === 0) {
+        rows = document.querySelectorAll('table tbody tr');
+      }
+      
+      console.log('Found rows:', rows.length);
+      
+      let visibleCount = 0;
+      rows.forEach(row => {
+        // Find the type badge in the row
+        const typeCell = row.querySelector('td:nth-child(2) span');
+        if (!typeCell) {
+          row.style.display = '';
+          visibleCount++;
+          return;
+        }
+        
+        const type = typeCell.textContent.toLowerCase().trim();
+        let shouldShow = assetAllChecked;
+        
+        if (!assetAllChecked) {
+          if (showTemplates && type.includes('template')) shouldShow = true;
+          if (showImages && type.includes('image')) shouldShow = true;
+          if (showLogos && type.includes('logo')) shouldShow = true;
+          if (showColors && type.includes('color')) shouldShow = true;
+          
+          // If nothing selected, show all
+          if (!showTemplates && !showImages && !showLogos && !showColors) {
+            shouldShow = true;
+          }
+        }
+        
+        row.style.display = shouldShow ? '' : 'none';
+        if (shouldShow) visibleCount++;
+      });
+      
+      console.log('Visible rows after filter:', visibleCount);
+      
+      // Filter workspace leaderboard items
+      const wsAllChecked = document.getElementById('workspace-all')?.checked ?? true;
+      const leaderboardItems = document.querySelectorAll('#content-workspaces .space-y-4 > a');
+      
+      leaderboardItems.forEach(item => {
+        const wsName = item.querySelector('span.text-sm')?.textContent?.toLowerCase() || '';
+        let shouldShow = wsAllChecked;
+        
+        if (!wsAllChecked) {
+          const checkedWs = document.querySelectorAll('.workspace-checkbox:checked');
+          checkedWs.forEach(cb => {
+            const cbName = cb.dataset.name?.toLowerCase() || '';
+            if (wsName.includes(cbName.split(' ').pop())) {
+              shouldShow = true;
+            }
+          });
+          
+          // If nothing selected, show all
+          if (checkedWs.length === 0) {
+            shouldShow = true;
+          }
+        }
+        
+        item.style.display = shouldShow ? '' : 'none';
+      });
+      
+      // Update visible count in pagination
+      const countTexts = document.querySelectorAll('.text-sm.text-neutral-500');
+      countTexts.forEach(el => {
+        if (el.textContent.includes('Showing')) {
+          el.textContent = `Showing ${visibleCount} of 247 assets`;
+        }
+      });
+    }
+    
+    // Legacy filter function
+    function filterAssetTable() {
+      filterPageContent();
+    }
+    
+    // Reset all filters in the drawer
+    function resetFilters() {
+      // Reset all "All" checkboxes
+      ['folder-all', 'workspace-all', 'asset-all'].forEach(id => {
+        const cb = document.getElementById(id);
+        if (cb) cb.checked = true;
+      });
+      
+      // Uncheck all specific checkboxes
+      document.querySelectorAll('.folder-checkbox, .workspace-checkbox, .asset-type-checkbox').forEach(cb => {
+        cb.checked = false;
+      });
+      
+      // Reset date range
+      setDateRange('1M');
+      
+      // Reset current filters
+      currentFilters = {
+        dateRange: '1M',
+        workspaces: 'all',
+        workspaceCount: 18,
+        assetTypes: 'all',
+        folders: 'all'
+      };
+      
+      // Show all content
+      document.querySelectorAll('#content-workspaces table tbody tr').forEach(row => {
+        row.style.display = '';
+      });
+      document.querySelectorAll('#content-workspaces .space-y-4 > a').forEach(item => {
+        item.style.display = '';
+      });
+      
+      updateFilterSummary();
+      showToast('Filters reset', 'info');
+    }
+    
+    // Update filter summary in header
+    function updateFilterSummary() {
+      const dateTag = document.getElementById('filter-date-tag');
+      const workspaceTag = document.getElementById('filter-workspace-tag');
+      const assetsTag = document.getElementById('filter-assets-tag');
+      
+      // Date range labels
+      const rangeLabels = {
+        '7D': 'Last 7 days',
+        '1M': 'Last 30 days',
+        '3M': 'Last 3 months',
+        '6M': 'Last 6 months',
+        '1Y': 'Last year',
+        'All': 'All time'
+      };
+      
+      if (dateTag) {
+        const dateText = rangeLabels[currentFilters.dateRange] || 'Last 30 days';
+        const textSpan = dateTag.querySelector('.filter-tag-text');
+        if (textSpan) textSpan.textContent = dateText;
+      }
+      
+      if (workspaceTag) {
+        const wsText = currentFilters.workspaces === 'all' 
+          ? `All ${currentFilters.workspaceCount} workspaces` 
+          : currentFilters.workspaces;
+        const textSpan = workspaceTag.querySelector('.filter-tag-text');
+        if (textSpan) textSpan.textContent = wsText;
+      }
+      
+      if (assetsTag) {
+        const assetText = currentFilters.assetTypes === 'all' ? 'All assets' : currentFilters.assetTypes;
+        const textSpan = assetsTag.querySelector('.filter-tag-text');
+        if (textSpan) textSpan.textContent = assetText;
+      }
+    }
+    
+    // Clear individual filter
+    function clearFilter(type) {
+      if (type === 'date') {
+        currentFilters.dateRange = '1M';
+        setDateRange('1M');
+      } else if (type === 'workspace') {
+        currentFilters.workspaces = 'all';
+        currentFilters.workspaceCount = 18;
+      } else if (type === 'assets') {
+        currentFilters.assetTypes = 'all';
+      }
+      updateFilterSummary();
+      updateReportData();
+      showToast('Filter cleared', 'info');
+    }
+    
+    // Clear all filters
+    function clearAllFilters() {
+      currentFilters = {
+        dateRange: '1M',
+        workspaces: 'all',
+        workspaceCount: 18,
+        assetTypes: 'all',
+        folders: 'all'
+      };
+      setDateRange('1M');
+      updateFilterSummary();
+      updateReportData();
+      showToast('All filters cleared', 'info');
+    }
+    
+    // Update report data based on filters
+    function updateReportData() {
+      // Simulate data update based on filters
+      const multipliers = {
+        '7D': 0.25,
+        '1M': 1,
+        '3M': 2.5,
+        '6M': 4,
+        '1Y': 8,
+        'All': 12
+      };
+      
+      const multiplier = multipliers[currentFilters.dateRange] || 1;
+      
+      // Update summary stats with filtered data
+      const baseData = {
+        templates: 14,
+        assets: 247,
+        workspaces: 18
+      };
+      
+      // Update metric displays if they exist
+      const templateMetric = document.querySelector('#content-workspaces .text-3xl');
+      if (templateMetric && currentFilters.dateRange !== '1M') {
+        const newValue = Math.round(baseData.templates * multiplier * (0.8 + Math.random() * 0.4));
+        // Show loading state briefly
+        templateMetric.classList.add('animate-pulse');
+        setTimeout(() => {
+          templateMetric.textContent = newValue;
+          templateMetric.classList.remove('animate-pulse');
+        }, 300);
+      }
+    }
+    
+    // Save report
+    function saveReport() {
+      // Show save report modal
+      const modal = document.createElement('div');
+      modal.id = 'save-report-modal';
+      modal.className = 'fixed inset-0 z-[200] flex items-center justify-center';
+      modal.innerHTML = `
+        <div class="absolute inset-0 bg-black/50 backdrop-blur-sm" onclick="closeSaveReportModal()"></div>
+        <div class="relative bg-white rounded-2xl shadow-2xl w-full max-w-md p-6 mx-4">
+          <div class="flex items-center justify-between mb-5">
+            <h3 class="text-lg font-semibold text-neutral-800">Save Report</h3>
+            <button onclick="closeSaveReportModal()" class="p-1 text-neutral-400 hover:text-neutral-600">
+              <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+            </button>
+          </div>
+          
+          <div class="space-y-4">
+            <div>
+              <label class="block text-sm font-medium text-neutral-700 mb-1">Report Name</label>
+              <input type="text" value="Brand Usage Report - ${new Date().toLocaleDateString()}" class="w-full px-3 py-2 border border-neutral-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-ctct-blue focus:border-transparent">
+            </div>
+            
+            <div>
+              <label class="block text-sm font-medium text-neutral-700 mb-1">Description (optional)</label>
+              <textarea class="w-full px-3 py-2 border border-neutral-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-ctct-blue focus:border-transparent h-20" placeholder="Add notes about this report..."></textarea>
+            </div>
+            
+            <div class="bg-neutral-50 rounded-lg p-3">
+              <p class="text-xs font-medium text-neutral-500 uppercase mb-2">Saved Filters</p>
+              <div class="flex flex-wrap gap-2">
+                <span class="px-2 py-1 bg-white border border-neutral-200 text-neutral-600 text-xs rounded-full">Last 30 days</span>
+                <span class="px-2 py-1 bg-white border border-neutral-200 text-neutral-600 text-xs rounded-full">All 18 workspaces</span>
+                <span class="px-2 py-1 bg-white border border-neutral-200 text-neutral-600 text-xs rounded-full">All assets</span>
+              </div>
+            </div>
+          </div>
+          
+          <div class="flex gap-3 mt-6">
+            <button onclick="closeSaveReportModal()" class="flex-1 px-4 py-2 border border-neutral-200 text-neutral-600 rounded-lg text-sm font-medium hover:bg-neutral-50">Cancel</button>
+            <button onclick="confirmSaveReport()" class="flex-1 px-4 py-2 bg-ctct-blue text-white rounded-lg text-sm font-medium hover:opacity-90">Save Report</button>
+          </div>
+        </div>
+      `;
+      document.body.appendChild(modal);
+    }
+    
+    function closeSaveReportModal() {
+      const modal = document.getElementById('save-report-modal');
+      if (modal) modal.remove();
+    }
+    
+    function confirmSaveReport() {
+      // Get the report name from the input
+      const modal = document.getElementById('save-report-modal');
+      const nameInput = modal?.querySelector('input[type="text"]');
+      const reportName = nameInput?.value || `Brand Usage Report - ${new Date().toLocaleDateString()}`;
+      
+      // Add to saved reports list in left nav
+      const savedReportsList = document.getElementById('saved-reports-list');
+      if (savedReportsList) {
+        const newReport = document.createElement('a');
+        newReport.href = '#';
+        newReport.className = 'flex items-center gap-3 py-2 px-3 text-sm text-ctct-blue font-medium hover:bg-sky-50 rounded-lg bg-sky-50';
+        newReport.innerHTML = `
+          <svg class="w-4 h-4 text-ctct-blue" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/></svg>
+          ${reportName}
+        `;
+        
+        // Add click handler to load this report
+        newReport.onclick = (e) => {
+          e.preventDefault();
+          // Remove active state from other saved reports
+          savedReportsList.querySelectorAll('a').forEach(a => {
+            a.classList.remove('text-ctct-blue', 'font-medium', 'bg-sky-50');
+            a.classList.add('text-slate-500');
+            a.querySelector('svg')?.classList.remove('text-ctct-blue');
+            a.querySelector('svg')?.classList.add('text-neutral-400');
+          });
+          // Add active state to clicked report
+          newReport.classList.add('text-ctct-blue', 'font-medium', 'bg-sky-50');
+          newReport.classList.remove('text-slate-500');
+          newReport.querySelector('svg')?.classList.add('text-ctct-blue');
+          newReport.querySelector('svg')?.classList.remove('text-neutral-400');
+          showToast(`Loaded: ${reportName}`, 'info');
+        };
+        
+        // Insert at the top of the list
+        savedReportsList.insertBefore(newReport, savedReportsList.firstChild);
+      }
+      
+      closeSaveReportModal();
+      showToast('Report saved successfully', 'success');
+    }
+    
+    // Open compare modal
+    function openCompareModal() {
+      const modal = document.createElement('div');
+      modal.id = 'compare-modal';
+      modal.className = 'fixed inset-0 z-[200] flex items-center justify-center';
+      modal.innerHTML = `
+        <div class="absolute inset-0 bg-black/50 backdrop-blur-sm" onclick="closeCompareModal()"></div>
+        <div class="relative bg-white rounded-2xl shadow-2xl w-full max-w-lg p-6 mx-4">
+          <div class="flex items-center justify-between mb-5">
+            <h3 class="text-lg font-semibold text-neutral-800">Compare Workspaces</h3>
+            <button onclick="closeCompareModal()" class="p-1 text-neutral-400 hover:text-neutral-600">
+              <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+            </button>
+          </div>
+          
+          <p class="text-sm text-neutral-500 mb-4">Select up to 4 workspaces to compare their brand usage metrics side by side.</p>
+          
+          <div class="space-y-2 max-h-64 overflow-y-auto mb-5">
+            <label class="flex items-center gap-3 px-3 py-2.5 hover:bg-neutral-50 rounded-lg cursor-pointer border border-neutral-100">
+              <input type="checkbox" checked class="rounded text-ctct-blue w-4 h-4">
+              <div class="w-2 h-2 bg-success-800 rounded-full"></div>
+              <span class="text-sm text-neutral-700 flex-1">NY Location</span>
+              <span class="text-xs text-neutral-400">95% usage</span>
+            </label>
+            <label class="flex items-center gap-3 px-3 py-2.5 hover:bg-neutral-50 rounded-lg cursor-pointer border border-neutral-100">
+              <input type="checkbox" checked class="rounded text-ctct-blue w-4 h-4">
+              <div class="w-2 h-2 bg-success-700 rounded-full"></div>
+              <span class="text-sm text-neutral-700 flex-1">CT Location</span>
+              <span class="text-xs text-neutral-400">82% usage</span>
+            </label>
+            <label class="flex items-center gap-3 px-3 py-2.5 hover:bg-neutral-50 rounded-lg cursor-pointer border border-transparent">
+              <input type="checkbox" class="rounded text-ctct-blue w-4 h-4">
+              <div class="w-2 h-2 bg-success-600 rounded-full"></div>
+              <span class="text-sm text-neutral-700 flex-1">MA Location</span>
+              <span class="text-xs text-neutral-400">68% usage</span>
+            </label>
+            <label class="flex items-center gap-3 px-3 py-2.5 hover:bg-neutral-50 rounded-lg cursor-pointer border border-transparent">
+              <input type="checkbox" class="rounded text-ctct-blue w-4 h-4">
+              <div class="w-2 h-2 bg-success-400 rounded-full"></div>
+              <span class="text-sm text-neutral-700 flex-1">NJ Location</span>
+              <span class="text-xs text-neutral-400">54% usage</span>
+            </label>
+            <label class="flex items-center gap-3 px-3 py-2.5 hover:bg-neutral-50 rounded-lg cursor-pointer border border-transparent">
+              <input type="checkbox" class="rounded text-ctct-blue w-4 h-4">
+              <div class="w-2 h-2 bg-success-300 rounded-full"></div>
+              <span class="text-sm text-neutral-700 flex-1">PA Location</span>
+              <span class="text-xs text-neutral-400">41% usage</span>
+            </label>
+          </div>
+          
+          <div class="flex gap-3">
+            <button onclick="closeCompareModal()" class="flex-1 px-4 py-2 border border-neutral-200 text-neutral-600 rounded-lg text-sm font-medium hover:bg-neutral-50">Cancel</button>
+            <button onclick="startComparison()" class="flex-1 px-4 py-2 bg-ctct-blue text-white rounded-lg text-sm font-medium hover:opacity-90 flex items-center justify-center gap-2">
+              <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><line x1="12" y1="3" x2="12" y2="21"/></svg>
+              Compare Selected
+            </button>
+          </div>
+        </div>
+      `;
+      document.body.appendChild(modal);
+    }
+    
+    function closeCompareModal() {
+      const modal = document.getElementById('compare-modal');
+      if (modal) modal.remove();
+    }
+    
+    function startComparison() {
+      closeCompareModal();
+      switchTab('comparison');
+      showToast('Comparison view loaded', 'success');
+    }
+    
+    // Close dropdowns when clicking outside
+    document.addEventListener('click', function(e) {
+      if (!e.target.closest('[onclick*="toggleFilterDropdown"]') && !e.target.closest('[id$="-dropdown"]')) {
+        ['folder-dropdown', 'workspace-dropdown', 'channel-dropdown', 'date-dropdown', 'perf-dropdown'].forEach(id => {
+          const el = document.getElementById(id);
+          if (el) el.classList.add('hidden');
+        });
+      }
+      if (!e.target.closest('[onclick*="toggleExportMenu"]') && !e.target.closest('#export-menu')) {
+        const menu = document.getElementById('export-menu');
+        if (menu) menu.classList.add('hidden');
+      }
+    });
+    
+    // Populate leaderboard with workspace placeholders
+    if (workspaces.length > 0) {
+      const leaderboardContent = document.getElementById('leaderboard-content');
+      const leaderboardRows = workspaces.slice(0, 5).map((name, index) => `
+        <div class="flex items-center justify-between">
+          <div class="flex items-center gap-3">
+            <div class="w-8 h-8 ${getColor(name)} rounded-full flex items-center justify-center text-white text-xs font-bold">${getInitials(name)}</div>
+            <span class="text-sm text-gray-700">${name}</span>
+          </div>
+          <div class="flex items-center gap-2">
+            <div class="w-24 h-2 bg-gray-100 rounded-full overflow-hidden">
+              <div class="h-full bg-gray-300 rounded-full" style="width: 0%"></div>
+            </div>
+            <span class="text-sm text-gray-400">—</span>
+          </div>
+        </div>
+      `).join('');
+      leaderboardContent.innerHTML = leaderboardRows;
+      
+      // Populate workspace activity table
+      const activityBody = document.getElementById('workspace-activity-table');
+      const activityRows = workspaces.map(name => `
+        <div class="grid grid-cols-8 gap-4 px-5 py-4 border-b border-gray-50 hover:bg-gray-50 transition-colors">
+          <div class="col-span-2 flex items-center gap-3">
+            <div class="w-8 h-8 ${getColor(name)} rounded-full flex items-center justify-center text-white text-xs font-bold">${getInitials(name)}</div>
+            <span class="text-sm text-gray-700">${name}</span>
+          </div>
+          <div class="text-center text-sm text-gray-400">—</div>
+          <div class="text-center text-sm text-gray-400">—</div>
+          <div class="text-center text-sm text-gray-400">—</div>
+          <div class="text-center text-sm text-gray-400">—</div>
+          <div class="text-center text-sm text-gray-400">—</div>
+          <div class="text-center text-sm text-gray-400 flex items-center justify-center">
+            <span>—</span>
+            <i data-lucide="chevron-right" class="w-4 h-4 ml-2 text-gray-300"></i>
+          </div>
+        </div>
+      `).join('');
+      activityBody.innerHTML = activityRows;
+    } else {
+      // Empty state
+      document.getElementById('leaderboard-content').innerHTML = `
+        <div class="text-center py-8 text-gray-400">
+          <p class="text-sm">No workspace data yet</p>
+        </div>
+      `;
+      document.getElementById('workspace-activity-table').innerHTML = `
+        <div class="px-5 py-12 text-center text-gray-400">
+          <i data-lucide="bar-chart-2" class="w-8 h-8 mx-auto mb-2 opacity-50"></i>
+          <p class="text-sm">No activity data yet</p>
+          <p class="text-xs text-gray-300 mt-1">Activity will appear here once workspaces start sending campaigns</p>
+        </div>
+      `;
+    }
+    
+    // Data mode toggle
+    let currentDataMode = sessionStorage.getItem('dataMode') || 'filled';
+    
+    function setDataMode(mode) {
+      currentDataMode = mode;
+      sessionStorage.setItem('dataMode', mode);
+      
+      // Update toggle buttons
+      const emptyBtn = document.getElementById('toggle-empty');
+      const filledBtn = document.getElementById('toggle-filled');
+      
+      if (mode === 'empty') {
+        emptyBtn.className = 'px-2.5 py-1 text-xs rounded bg-gray-600 text-white';
+        filledBtn.className = 'px-2.5 py-1 text-xs rounded text-gray-400 hover:text-white';
+        renderEmptyState();
+      } else {
+        filledBtn.className = 'px-2.5 py-1 text-xs rounded bg-gray-600 text-white';
+        emptyBtn.className = 'px-2.5 py-1 text-xs rounded text-gray-400 hover:text-white';
+        renderFilledState();
+      }
+      
+      safeCreateIcons();
+    }
+    
+    function renderEmptyState() {
+      // Workspace Leaderboard - empty (UI kit style)
+      const leaderboardContent = document.getElementById('leaderboard-content');
+      if (workspaces.length > 0) {
+        leaderboardContent.innerHTML = workspaces.slice(0, 5).map(name => `
+          <div class="flex items-center gap-4 py-2">
+            <span class="text-sm text-gray-700 w-28 truncate">${name}</span>
+            <div class="flex-1 thin-progress-track">
+              <div class="thin-progress-fill" style="width: 0%; background: #E5E7EB;"></div>
+            </div>
+            <span class="text-sm text-gray-400 w-12 text-right">—</span>
+          </div>
+        `).join('');
+      }
+      
+      // Channel Usage - empty
+      document.querySelectorAll('#content-workspaces .grid-cols-4 .text-2xl').forEach(el => {
+        el.textContent = '—';
+        el.className = 'text-2xl font-bold text-gray-300';
+      });
+      
+      // Campaign Approval Rate - empty
+      document.querySelectorAll('#content-workspaces .grid-cols-3 .text-3xl').forEach(el => {
+        el.textContent = '—';
+        el.className = 'text-3xl font-bold text-gray-300';
+      });
+      
+      // Asset Usage - empty
+      const assetEmpty = document.getElementById('asset-usage-empty');
+      const assetFilled = document.getElementById('asset-usage-filled');
+      if (assetEmpty) assetEmpty.classList.remove('hidden');
+      if (assetFilled) assetFilled.classList.add('hidden');
+      
+      // Workspace Activity Table - empty
+      const activityBody = document.getElementById('workspace-activity-table');
+      if (workspaces.length > 0) {
+        activityBody.innerHTML = workspaces.map(name => `
+          <div class="grid grid-cols-8 gap-4 px-5 py-4 border-b border-gray-50 hover:bg-gray-50 transition-colors">
+            <div class="col-span-2 flex items-center gap-3">
+              <div class="w-8 h-8 ${getColor(name)} rounded-full flex items-center justify-center text-white text-xs font-bold">${getInitials(name)}</div>
+              <span class="text-sm text-gray-700">${name}</span>
+            </div>
+            <div class="text-center text-sm text-gray-400">—</div>
+            <div class="text-center text-sm text-gray-400">—</div>
+            <div class="text-center text-sm text-gray-400">—</div>
+            <div class="text-center text-sm text-gray-400">—</div>
+            <div class="text-center text-sm text-gray-400">—</div>
+            <div class="text-center text-sm text-gray-400 flex items-center justify-center">
+              <span>—</span>
+              <i data-lucide="chevron-right" class="w-4 h-4 ml-2 text-gray-300"></i>
+            </div>
+          </div>
+        `).join('');
+      }
+      
+      // Campaign Performance chart - empty
+      const campPerfEmpty = document.getElementById('campaign-perf-empty');
+      const campPerfFilled = document.getElementById('campaign-perf-filled');
+      if (campPerfEmpty) campPerfEmpty.classList.remove('hidden');
+      if (campPerfFilled) campPerfFilled.classList.add('hidden');
+      
+      // Email Performance donut - empty
+      const emailPerfEmpty = document.getElementById('email-perf-empty');
+      const emailPerfFilled = document.getElementById('email-perf-filled');
+      if (emailPerfEmpty) emailPerfEmpty.classList.remove('hidden');
+      if (emailPerfFilled) emailPerfFilled.classList.add('hidden');
+      
+      // Social Engagement donut - empty
+      const socialEngEmpty = document.getElementById('social-eng-empty');
+      const socialEngFilled = document.getElementById('social-eng-filled');
+      if (socialEngEmpty) socialEngEmpty.classList.remove('hidden');
+      if (socialEngFilled) socialEngFilled.classList.add('hidden');
+      
+      // Campaign tab - empty
+      document.getElementById('campaign-leaderboard').innerHTML = `
+        <div class="text-center py-8 text-gray-400">
+          <p class="text-sm">No campaign data yet</p>
+        </div>
+      `;
+      
+      document.getElementById('campaign-activity-table').innerHTML = `
+        <div class="px-5 py-12 text-center text-gray-400">
+          <i data-lucide="mail" class="w-8 h-8 mx-auto mb-2 opacity-50"></i>
+          <p class="text-sm">No campaign activity yet</p>
+          <p class="text-xs text-gray-300 mt-1">Campaign activity will appear here once campaigns are sent</p>
+        </div>
+      `;
+    }
+    
+    function renderFilledState() {
+      const wsNames = workspaces.length > 0 ? workspaces : ['NJ Location', 'NY Location'];
+      const percentages = [98, 82, 65, 54, 45];
+      const progressClasses = ['progress-bar-teal', 'progress-bar-blue', 'progress-bar-purple'];
+      
+      // Workspace Leaderboard - UI kit style with thin progress bars
+      const leaderboardContent = document.getElementById('leaderboard-content');
+      const deltas = ['+0.48', '+0.32', '+0.75', '+0.21', '+0.65'];
+      leaderboardContent.innerHTML = wsNames.slice(0, 5).map((name, i) => `
+        <div class="flex items-center gap-4 py-2">
+          <span class="text-sm text-gray-700 w-28 truncate">${name}</span>
+          <div class="flex-1 thin-progress-track">
+            <div class="thin-progress-fill" style="width: ${percentages[i]}%"></div>
+          </div>
+          <span class="text-sm font-medium text-teal-500 w-12 text-right">${deltas[i]}</span>
+        </div>
+      `).join('');
+      
+      // Channel Usage - filled
+      const channelData = [3, 80, 132, 0];
+      const channelEls = document.querySelectorAll('#content-workspaces .grid-cols-4 .text-center');
+      channelEls.forEach((el, i) => {
+        if (i < 4) {
+          const valueEl = el.querySelector('.text-2xl');
+          if (valueEl) {
+            valueEl.textContent = channelData[i];
+            valueEl.className = 'text-2xl font-bold text-gray-900';
+          }
+        }
+      });
+      
+      // Campaign Approval Rate - filled
+      const approvalData = [52, 45, 7];
+      const approvalEls = document.querySelectorAll('#content-workspaces .grid-cols-3 .text-center');
+      approvalEls.forEach((el, i) => {
+        if (i < 3) {
+          const valueEl = el.querySelector('.text-3xl');
+          if (valueEl) {
+            valueEl.textContent = approvalData[i];
+            valueEl.className = 'text-3xl font-bold text-gray-900';
+          }
+        }
+      });
+      
+      // Asset Usage - filled
+      const assetEmpty = document.getElementById('asset-usage-empty');
+      const assetFilled = document.getElementById('asset-usage-filled');
+      if (assetEmpty) assetEmpty.classList.add('hidden');
+      if (assetFilled) assetFilled.classList.remove('hidden');
+      
+      // Workspace Activity Table - filled
+      const activityBody = document.getElementById('workspace-activity-table');
+      const activityData = [
+        { brand: '54%', templates: '80%', emails: '25%', social: '25%', sms: '25%', auto: '—' },
+        { brand: '—', templates: '80%', emails: '25%', social: '—', sms: '—', auto: '—' },
+      ];
+      activityBody.innerHTML = wsNames.map((name, i) => {
+        const data = activityData[i % 2];
+        return `
+          <div class="grid grid-cols-8 gap-4 px-5 py-4 border-b border-gray-50 hover:bg-gray-50 transition-colors">
+            <div class="col-span-2 flex items-center gap-3">
+              <div class="w-8 h-8 ${getColor(name)} rounded-full flex items-center justify-center text-white text-xs font-bold">${getInitials(name)}</div>
+              <span class="text-sm text-gray-700">${name}</span>
+            </div>
+            <div class="text-center text-sm ${data.brand === '—' ? 'text-gray-400' : 'text-gray-700'}">${data.brand}</div>
+            <div class="text-center text-sm text-blue-500">${data.templates}</div>
+            <div class="text-center text-sm text-gray-700">${data.emails}</div>
+            <div class="text-center text-sm ${data.social === '—' ? 'text-gray-400' : 'text-gray-700'}">${data.social}</div>
+            <div class="text-center text-sm ${data.sms === '—' ? 'text-gray-400' : 'text-gray-700'}">${data.sms}</div>
+            <div class="text-center text-sm text-gray-400 flex items-center justify-center">
+              <span>${data.auto}</span>
+              <i data-lucide="chevron-right" class="w-4 h-4 ml-2 text-gray-300"></i>
+            </div>
+          </div>
+        `;
+      }).join('');
+      
+      // Campaign Performance chart - filled
+      const campPerfEmpty = document.getElementById('campaign-perf-empty');
+      const campPerfFilled = document.getElementById('campaign-perf-filled');
+      if (campPerfEmpty) campPerfEmpty.classList.add('hidden');
+      if (campPerfFilled) campPerfFilled.classList.remove('hidden');
+      
+      // Email Performance donut - filled
+      const emailPerfEmpty = document.getElementById('email-perf-empty');
+      const emailPerfFilled = document.getElementById('email-perf-filled');
+      if (emailPerfEmpty) emailPerfEmpty.classList.add('hidden');
+      if (emailPerfFilled) emailPerfFilled.classList.remove('hidden');
+      
+      // Social Engagement donut - filled
+      const socialEngEmpty = document.getElementById('social-eng-empty');
+      const socialEngFilled = document.getElementById('social-eng-filled');
+      if (socialEngEmpty) socialEngEmpty.classList.add('hidden');
+      if (socialEngFilled) socialEngFilled.classList.remove('hidden');
+      
+      // Campaign Leaderboard - UI kit style with ring indicators
+      const campaigns = [
+        { name: 'VIP Club rewards', count: '1280', label: 'Email opens', percent: 75, color: '#14B8A6' },
+        { name: 'Grand Opening', count: '2068', label: 'Social views', percent: 60, color: '#F59E0B' },
+        { name: 'Holiday Special', count: '2456', label: 'Click throughs', percent: 85, color: '#3B82F6' },
+      ];
+      const circumference = 2 * Math.PI * 18;
+      document.getElementById('campaign-leaderboard').innerHTML = campaigns.map(c => {
+        const dasharray = (c.percent / 100) * circumference;
+        return `
+        <div class="flex items-center gap-4 py-2">
+          <div class="relative w-12 h-12 flex-shrink-0">
+            <svg class="ring-progress w-12 h-12" viewBox="0 0 48 48">
+              <circle class="ring-track" cx="24" cy="24" r="18" stroke-width="4"/>
+              <circle class="ring-fill" cx="24" cy="24" r="18" stroke="${c.color}" stroke-width="4" stroke-dasharray="${dasharray} ${circumference}"/>
+            </svg>
+          </div>
+          <div class="flex-1">
+            <p class="text-lg font-bold text-gray-800">${c.count} <span class="text-sm font-normal text-gray-500">task</span></p>
+            <p class="text-xs text-gray-400">${c.label}</p>
+          </div>
+        </div>`;
+      }).join('');
+      
+      // Campaign Activity Table - filled
+      const campaignActivity = [
+        { name: 'VIP Club rewards', channel: 'Email', channelColor: 'text-blue-500', click: 643, views: 800, bounces: '1%', audience: '1.2k', likes: '—' },
+        { name: 'VIP Club rewards', channel: 'SMS', channelColor: 'text-green-500', click: '—', views: 20, bounces: '2%', audience: 54, likes: '—' },
+        { name: 'VIP Club rewards', channel: 'Facebook', channelColor: 'text-purple-500', click: '—', views: 343, bounces: '—', audience: '2.4k', likes: 123 },
+      ];
+      document.getElementById('campaign-activity-table').innerHTML = campaignActivity.map(c => `
+        <div class="grid grid-cols-8 gap-4 px-5 py-4 border-b border-gray-50 hover:bg-gray-50 transition-colors">
+          <div class="col-span-2 flex items-center gap-3">
+            <div class="w-10 h-10 bg-blue-50 rounded-lg flex items-center justify-center">
+              <i data-lucide="mail" class="w-5 h-5 text-blue-400"></i>
+            </div>
+            <span class="text-sm text-gray-700">${c.name}</span>
+          </div>
+          <div class="text-center text-sm ${c.channelColor}">${c.channel}</div>
+          <div class="text-center text-sm ${c.click === '—' ? 'text-gray-400' : 'text-gray-700'}">${c.click}</div>
+          <div class="text-center text-sm text-gray-700">${c.views}</div>
+          <div class="text-center text-sm ${c.bounces === '—' ? 'text-gray-400' : 'text-gray-700'}">${c.bounces}</div>
+          <div class="text-center text-sm text-gray-700">${c.audience}</div>
+          <div class="text-center text-sm ${c.likes === '—' ? 'text-gray-400' : 'text-gray-700'} flex items-center justify-center">
+            <span>${c.likes}</span>
+            <i data-lucide="chevron-right" class="w-4 h-4 ml-2 text-gray-300"></i>
+          </div>
+        </div>
+      `).join('');
+    }
+    
+    // Initialize Lucide icons
+    safeCreateIcons();
+    
+    // Apply persisted data mode on page load
+    setDataMode(currentDataMode);
+    
+    // Update filter pills based on URL parameters
+    updateFilterPills();
+    
+    // Check for tab parameter and switch to it
+    const tabParam = urlParams.get('tab');
+    if (tabParam && ['workspaces', 'campaigns', 'comparison'].includes(tabParam)) {
+      switchTab(tabParam);
+    }
+    
+    // Check if coming from dashboard - show loading modal
+    const source = urlParams.get('source');
+    const campaignsCount = urlParams.get('campaigns') || '47';
+    const workspacesCount = urlParams.get('workspaces') || '8';
+    const channelParam = urlParams.get('channel');
+    
+    // Update page title based on channel filter from dashboard
+    if (source === 'dashboard' && channelParam) {
+      const channelTitles = {
+        'email': 'Email Performance',
+        'social': 'Social Performance', 
+        'sms': 'SMS Performance',
+        'contacts': 'Contact Growth Report',
+        'workspaces': 'Workspace Performance'
+      };
+      const pageTitle = document.getElementById('report-page-title');
+      if (pageTitle && channelTitles[channelParam]) {
+        pageTitle.textContent = channelTitles[channelParam];
+      }
+      
+      // Update filter tag to show channel
+      const assetsTag = document.getElementById('filter-assets-tag');
+      if (assetsTag && channelParam !== 'workspaces') {
+        const channelLabels = {
+          'email': 'Email campaigns',
+          'social': 'Social posts',
+          'sms': 'SMS messages',
+          'contacts': 'All contacts'
+        };
+        assetsTag.innerHTML = `
+          <svg class="w-3 h-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect width="20" height="16" x="2" y="4" rx="2"/><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/></svg>
+          ${channelLabels[channelParam] || 'All channels'}
+        `;
+      }
+    }
+    
+    if (source === 'dashboard') {
+      showReportGeneratingModal(campaignsCount, workspacesCount);
+    }
+    
+    function showReportGeneratingModal(campaigns, workspaces) {
+      const modal = document.getElementById('report-generating-modal');
+      const campaignText = document.getElementById('generating-campaigns');
+      const workspaceText = document.getElementById('generating-workspaces');
+      const progressBar = document.getElementById('generating-progress');
+      const statusText = document.getElementById('generating-status');
+      
+      if (modal) {
+        campaignText.textContent = campaigns;
+        workspaceText.textContent = workspaces;
+        modal.classList.remove('hidden');
+        
+        // Animate progress
+        let progress = 0;
+        const steps = [
+          { p: 30, text: 'Fetching campaign data...' },
+          { p: 60, text: 'Aggregating metrics...' },
+          { p: 85, text: 'Preparing visualizations...' },
+          { p: 100, text: 'Complete!' }
+        ];
+        let stepIndex = 0;
+        
+        const interval = setInterval(() => {
+          if (stepIndex < steps.length) {
+            progress = steps[stepIndex].p;
+            progressBar.style.width = progress + '%';
+            statusText.textContent = steps[stepIndex].text;
+            stepIndex++;
+          } else {
+            clearInterval(interval);
+            setTimeout(() => {
+              modal.classList.add('hidden');
+              // Switch to campaigns tab and show detailed view
+              switchTab('campaigns');
+              setDataMode('filled');
+              showCampaignDetails();
+            }, 500);
+          }
+        }, 600);
+      }
+    }
+    
+    function showCampaignDetails() {
+      // Show the aggregate totals and campaign table
+      const detailsSection = document.getElementById('campaign-details-section');
+      if (detailsSection) {
+        detailsSection.classList.remove('hidden');
+      }
+      safeCreateIcons();
+    }
+  </script>
+  
+  <!-- Report Generating Modal -->
+  <div id="report-generating-modal" class="fixed inset-0 z-[200] hidden">
+    <div class="absolute inset-0 bg-black/50 backdrop-blur-sm"></div>
+    <div class="absolute inset-0 flex items-center justify-center p-8">
+      <div class="bg-white rounded-2xl shadow-2xl w-full max-w-md p-8 text-center">
+        <div class="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-6">
+          <svg class="w-8 h-8 text-blue-600 animate-spin" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M21 12a9 9 0 1 1-6.219-8.56"/>
+          </svg>
+        </div>
+        <h2 class="text-xl font-bold text-gray-900 mb-2">Generating Report</h2>
+        <p class="text-gray-600 mb-6">
+          Creating report from <span id="generating-campaigns" class="font-semibold text-blue-600">47</span> campaigns across <span id="generating-workspaces" class="font-semibold text-blue-600">8</span> workspaces
+        </p>
+        <div class="w-full bg-gray-100 rounded-full h-2 mb-3">
+          <div id="generating-progress" class="h-2 bg-gradient-to-r from-blue-500 to-cyan-500 rounded-full transition-all duration-500" style="width: 0%"></div>
+        </div>
+        <p id="generating-status" class="text-sm text-gray-500">Initializing...</p>
+      </div>
+    </div>
+  </div>
+  <script src="mobile-nav.js"></script>
+</body>
+</html>
+

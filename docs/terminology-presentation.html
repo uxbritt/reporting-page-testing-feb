@@ -1,0 +1,400 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Terminology & Mental Models — Teams FML Market</title>
+  <link rel="stylesheet" href="mobile-responsive.css">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            main: {
+              50: '#f0f7ff', 100: '#e0f0ff', 200: '#b9e0fe', 300: '#7cc8fd', 400: '#36aaf8',
+              500: '#0c8ce9', 600: '#006fc7', 700: '#0059a1', 800: '#054b85', 900: '#0a406e'
+            },
+            accent: {
+              50: '#faf5ff', 100: '#f3e8ff', 200: '#e9d5ff', 300: '#d8b4fe', 400: '#c084fc',
+              500: '#a855f7', 600: '#9333ea', 700: '#7c3aed', 800: '#6b21a8', 900: '#581c87'
+            }
+          },
+          fontFamily: {
+            sans: ['CTSans', 'system-ui', 'sans-serif']
+          }
+        }
+      }
+    }
+  </script>
+  <style>
+    @font-face {
+      font-family: 'CTSans';
+      src: url('fonts/CTSans-Regular.woff2') format('woff2');
+      font-weight: 400;
+      font-style: normal;
+      font-display: swap;
+    }
+    @font-face {
+      font-family: 'CTSans';
+      src: url('fonts/CTSans-Semibold.woff2') format('woff2');
+      font-weight: 600;
+      font-style: normal;
+      font-display: swap;
+    }
+    @font-face {
+      font-family: 'CTSans';
+      src: url('fonts/CTSans-Bold.woff2') format('woff2');
+      font-weight: 700;
+      font-style: normal;
+      font-display: swap;
+    }
+
+    .slide {
+      display: none;
+      animation: fadeIn 0.4s ease-out;
+    }
+    .slide.active {
+      display: flex;
+    }
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    .gradient-text {
+      background: linear-gradient(135deg, #0c8ce9 0%, #a855f7 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+    body {
+      background: linear-gradient(135deg, #0f0f1a 0%, #131825 25%, #0a0e17 50%, #0d1220 75%, #0f0f1a 100%);
+      background-attachment: fixed;
+    }
+  </style>
+</head>
+<body class="min-h-screen font-sans">
+
+  <!-- Slide Container -->
+  <div class="min-h-screen flex items-center justify-center pb-16 px-8">
+    
+    <!-- Slide 1: Title -->
+    <div id="slide-1" class="slide active flex-col items-center justify-center text-center max-w-5xl w-full">
+      <div class="mb-8">
+        <div class="flex items-center justify-center gap-3 mb-6">
+          <span class="inline-block px-4 py-1.5 bg-zinc-900 text-zinc-400 rounded-full text-sm font-medium">Teams</span>
+          <span class="inline-block px-3 py-1.5 bg-zinc-800 text-zinc-500 rounded-full text-xs font-medium">FML Market</span>
+        </div>
+        <h1 class="text-5xl font-bold text-white mb-6 leading-tight">Terminology &<br><span class="gradient-text">Mental Models</span></h1>
+        <p class="text-xl text-zinc-400">How competitors define terms vs. how users understand them</p>
+      </div>
+      <div class="flex items-center gap-3 text-zinc-400 mt-12">
+        <span class="text-sm">Use arrows or dots to navigate</span>
+      </div>
+    </div>
+
+    <!-- Slide 2: Market Research - How Competitors Use Terms -->
+    <div id="slide-2" class="slide flex-col items-center justify-center max-w-6xl w-full">
+      <div class="w-full">
+        <span class="inline-block px-3 py-1 bg-zinc-900 border border-zinc-800 text-zinc-400 rounded-full text-xs font-medium mb-4">Market Research</span>
+        <h2 class="text-4xl font-bold text-white mb-2">Competitor Terminology Patterns</h2>
+        <p class="text-lg text-zinc-500 mb-8">How 9 platforms define hierarchy terms</p>
+        
+        <div class="grid grid-cols-3 gap-6 mb-8">
+          <!-- Workspace -->
+          <div class="bg-zinc-950 border border-zinc-800 rounded-xl p-5">
+            <h3 class="text-lg font-semibold text-white mb-3">Workspace</h3>
+            <p class="text-zinc-500 text-xs mb-4">Individual account/location</p>
+            <div class="space-y-2 text-xs text-zinc-400">
+              <p>• Marketo: Workspace</p>
+              <p>• Braze: Workspace</p>
+              <p>• SOCi: Location</p>
+            </div>
+          </div>
+          
+          <!-- Organization -->
+          <div class="bg-zinc-950 border border-zinc-800 rounded-xl p-5">
+            <h3 class="text-lg font-semibold text-white mb-3">Organization</h3>
+            <p class="text-zinc-500 text-xs mb-4">Parent entity</p>
+            <div class="space-y-2 text-xs text-zinc-400">
+              <p>• HubSpot: Account</p>
+              <p>• Braze: Company</p>
+              <p>• SOCi: Brand</p>
+            </div>
+          </div>
+          
+          <!-- Dashboard -->
+          <div class="bg-zinc-950 border border-zinc-800 rounded-xl p-5">
+            <h3 class="text-lg font-semibold text-white mb-3">Dashboard</h3>
+            <p class="text-zinc-500 text-xs mb-4">Universal for overview pages</p>
+            <div class="space-y-2 text-xs text-zinc-400">
+              <p>• All platforms use this term</p>
+              <p>• Industry standard</p>
+            </div>
+          </div>
+        </div>
+        
+        <div class="text-center">
+          <a href="competitor-deep-dive.html" class="inline-flex items-center gap-2 text-zinc-400 hover:text-white text-sm transition-colors">
+            View full competitive analysis
+            <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
+          </a>
+        </div>
+      </div>
+    </div>
+
+    <!-- Slide 3: User Testing - Workspace Understanding -->
+    <div id="slide-3" class="slide flex-col items-center justify-center max-w-6xl w-full">
+      <div class="w-full">
+        <span class="inline-block px-3 py-1 bg-zinc-900 border border-zinc-800 text-zinc-400 rounded-full text-xs font-medium mb-4">User Testing</span>
+        <h2 class="text-4xl font-bold text-white mb-2">"Workspace" Mental Model</h2>
+        <p class="text-lg text-zinc-500 mb-8">User understanding from testing sessions</p>
+        
+        <div class="grid grid-cols-2 gap-6">
+          <!-- User Quotes -->
+          <div class="space-y-4">
+            <div class="bg-zinc-950 border border-zinc-800 rounded-xl p-5">
+              <p class="text-zinc-400 text-xs mb-2">honeypot13</p>
+              <p class="text-zinc-300 text-sm">"Workspace is where you get all the work done for each of those individual brands or locations."</p>
+            </div>
+            
+            <div class="bg-zinc-950 border border-zinc-800 rounded-xl p-5">
+              <p class="text-zinc-400 text-xs mb-2">elite314</p>
+              <p class="text-zinc-300 text-sm">"A workspace would be kind of like my specific account."</p>
+            </div>
+          </div>
+          
+          <!-- Analysis -->
+          <div class="bg-zinc-950 border border-zinc-800 rounded-xl p-5">
+            <h4 class="text-white font-semibold mb-3">Finding</h4>
+            <p class="text-zinc-400 text-sm mb-4">Users correctly understood "Workspace" as individual account/location containers where work happens.</p>
+            <p class="text-zinc-500 text-xs">Positive feedback: "I actually like how you guys are terming the workspace"</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Slide 4: User Testing - Organization Understanding -->
+    <div id="slide-4" class="slide flex-col items-center justify-center max-w-6xl w-full">
+      <div class="w-full">
+        <span class="inline-block px-3 py-1 bg-zinc-900 border border-zinc-800 text-zinc-400 rounded-full text-xs font-medium mb-4">User Testing</span>
+        <h2 class="text-4xl font-bold text-white mb-2">"Organization" Mental Model</h2>
+        <p class="text-lg text-zinc-500 mb-8">User understanding from testing sessions</p>
+        
+        <div class="grid grid-cols-2 gap-6">
+          <!-- User Quotes -->
+          <div class="space-y-4">
+            <div class="bg-zinc-950 border border-zinc-800 rounded-xl p-5">
+              <p class="text-zinc-400 text-xs mb-2">victorialeo</p>
+              <p class="text-zinc-300 text-sm">"An organization is gonna be like UPS. Workspaces are kind of under the organization umbrella."</p>
+            </div>
+            
+            <div class="bg-zinc-950 border border-zinc-800 rounded-xl p-5">
+              <p class="text-zinc-400 text-xs mb-2">BitterK</p>
+              <p class="text-zinc-300 text-sm">"Organization shows overall dashboard for the company. Workspaces show all the various team groups."</p>
+            </div>
+          </div>
+          
+          <!-- Analysis -->
+          <div class="bg-zinc-950 border border-zinc-800 rounded-xl p-5">
+            <h4 class="text-white font-semibold mb-3">Finding</h4>
+            <p class="text-zinc-400 text-sm">Users correctly identified organization as the top-level parent entity with clear hierarchy understanding.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Slide 5: User Testing - Hub vs Organization -->
+    <div id="slide-5" class="slide flex-col items-center justify-center max-w-6xl w-full">
+      <div class="w-full">
+        <span class="inline-block px-3 py-1 bg-zinc-900 border border-zinc-800 text-zinc-400 rounded-full text-xs font-medium mb-4">User Testing</span>
+        <h2 class="text-4xl font-bold text-white mb-2">"Hub" vs "Organization"</h2>
+        <p class="text-lg text-zinc-500 mb-6">Comparing hierarchy term effectiveness</p>
+        
+        <!-- Recommendation - At Top -->
+        <div class="bg-zinc-950 border border-zinc-800 rounded-xl p-5 mb-8">
+          <p class="text-white font-medium text-sm mb-2">Recommendation</p>
+          <p class="text-zinc-400 text-sm">Use <strong>"Organization"</strong> for top-level entity. Avoid "Hub" — ambiguous (used for multiple levels) and conflicts with HubSpot mental models.</p>
+        </div>
+        
+        <div class="bg-zinc-950 border border-zinc-800 rounded-xl p-6">
+          <h3 class="text-white font-semibold mb-4">Confusion Points</h3>
+          
+          <div class="space-y-4">
+            <!-- Confusion 1 -->
+            <div class="pb-4 border-b border-zinc-800">
+              <p class="text-zinc-500 text-xs mb-2">elite314</p>
+              <p class="text-zinc-300 text-sm mb-2">"Now I know that if I go and click into a different hub, it'll take me to different workspaces."</p>
+              <p class="text-zinc-500 text-xs">→ Used "Hub" to mean mid-level folders (Northeast Hub), not organization</p>
+            </div>
+            
+            <!-- Confusion 2 -->
+            <div class="pb-4 border-b border-zinc-800">
+              <p class="text-zinc-500 text-xs mb-2">elite314</p>
+              <p class="text-zinc-300 text-sm mb-2">"I would explain a hub as a central location... the hub will be named after that and it could have multiple workspaces within the hub."</p>
+              <p class="text-zinc-500 text-xs">→ Conflated regional folders with organization-level concept</p>
+            </div>
+            
+            <!-- Confusion 3 -->
+            <div class="pb-4 border-b border-zinc-800">
+              <p class="text-zinc-500 text-xs mb-2">honeypot13</p>
+              <p class="text-zinc-300 text-sm mb-2">"I think the difference between hub and workspace in my mind is going to be Hub is like my command center."</p>
+              <p class="text-zinc-500 text-xs">→ Initially called it "hub", then used "organization" interchangeably when navigating</p>
+            </div>
+            
+            <!-- Confusion 4 -->
+            <div>
+              <p class="text-zinc-500 text-xs mb-2">elite314</p>
+              <p class="text-zinc-300 text-sm mb-2">"Was it clear you were moving to a mid-level hub? I'm not sure what mid-level means so no."</p>
+              <p class="text-zinc-500 text-xs">→ "Hub" terminology unclear when describing hierarchy levels</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Slide 6: Summary & Recommendations -->
+    <div id="slide-6" class="slide flex-col items-center justify-center max-w-5xl w-full">
+      <div class="w-full text-center">
+        <span class="inline-block px-3 py-1 bg-zinc-900 border border-zinc-800 text-zinc-400 rounded-full text-xs font-medium mb-4">Summary</span>
+        <h2 class="text-4xl font-bold text-white mb-3">Terminology Recommendations</h2>
+        <p class="text-lg text-zinc-500 mb-8">Based on market research + user testing</p>
+        
+        <!-- Key Insights - Moved to Top -->
+        <div class="bg-zinc-950 border border-zinc-800 rounded-xl p-6 text-left mb-8">
+          <h3 class="text-white font-semibold mb-4">Key Findings</h3>
+          <div class="grid grid-cols-2 gap-4 text-sm text-zinc-400">
+            <p>• <strong class="text-white">Workspace:</strong> Well-understood for individual accounts</p>
+            <p>• <strong class="text-white">Organization:</strong> Clear parent-level hierarchy</p>
+            <p>• <strong class="text-white">Dashboard:</strong> Universal for overview pages</p>
+            <p>• <strong class="text-white">Hub:</strong> Ambiguous — users mixed it with folders</p>
+          </div>
+        </div>
+        
+        <div class="grid grid-cols-2 gap-6">
+          <!-- Recommended -->
+          <div class="bg-zinc-950 border border-zinc-800 rounded-xl p-6 text-left">
+            <h3 class="text-white font-semibold mb-4">Recommended Terms</h3>
+            <div class="space-y-3 text-sm">
+              <div class="py-2 border-b border-zinc-800">
+                <p class="text-zinc-500 text-xs mb-1">Individual account</p>
+                <p class="text-white font-medium">Workspace</p>
+              </div>
+              <div class="py-2 border-b border-zinc-800">
+                <p class="text-zinc-500 text-xs mb-1">Parent container</p>
+                <p class="text-white font-medium">Organization</p>
+              </div>
+              <div class="py-2">
+                <p class="text-zinc-500 text-xs mb-1">Overview page</p>
+                <p class="text-white font-medium">Dashboard</p>
+              </div>
+            </div>
+          </div>
+          
+          <!-- Avoid -->
+          <div class="bg-zinc-950 border border-zinc-800 rounded-xl p-6 text-left">
+            <h3 class="text-white font-semibold mb-4">Avoid</h3>
+            <div class="space-y-3 text-sm">
+              <div class="py-2 border-b border-zinc-800">
+                <p class="text-white font-medium mb-1">Hub</p>
+                <p class="text-zinc-500 text-xs">Ambiguous — used for multiple hierarchy levels</p>
+              </div>
+              <div class="py-2">
+                <p class="text-white font-medium mb-1">Account</p>
+                <p class="text-zinc-500 text-xs">Too generic — associated with login credentials</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- Big Left Arrow -->
+  <button onclick="prevSlide()" class="fixed left-6 top-1/2 -translate-y-1/2 w-14 h-14 bg-zinc-900/80 hover:bg-zinc-800 border border-zinc-700 rounded-full flex items-center justify-center text-zinc-400 hover:text-white transition-all z-50">
+    <svg class="w-8 h-8" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m15 18-6-6 6-6"/></svg>
+  </button>
+  
+  <!-- Big Right Arrow -->
+  <button onclick="nextSlide()" class="fixed right-6 top-1/2 -translate-y-1/2 w-14 h-14 bg-zinc-900/80 hover:bg-zinc-800 border border-zinc-700 rounded-full flex items-center justify-center text-zinc-400 hover:text-white transition-all z-50">
+    <svg class="w-8 h-8" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m9 18 6-6-6-6"/></svg>
+  </button>
+
+  <!-- Navigation Footer -->
+  <div class="fixed bottom-0 left-0 right-0 h-14 bg-black/90 backdrop-blur border-t border-zinc-800 flex items-center justify-between px-6">
+    <a href="research-dashboard.html" class="flex items-center gap-2 text-zinc-400 hover:text-white text-sm transition-colors">
+      <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m12 19-7-7 7-7"/><path d="M19 12H5"/></svg> Back to Research
+    </a>
+    
+    <!-- Dots -->
+    <div class="flex items-center gap-1.5">
+      <button onclick="goToSlide(1)" class="dot w-2.5 h-2.5 rounded-full bg-white transition-all"></button>
+      <button onclick="goToSlide(2)" class="dot w-2.5 h-2.5 rounded-full bg-zinc-700 hover:bg-zinc-600 transition-all"></button>
+      <button onclick="goToSlide(3)" class="dot w-2.5 h-2.5 rounded-full bg-zinc-700 hover:bg-zinc-600 transition-all"></button>
+      <button onclick="goToSlide(4)" class="dot w-2.5 h-2.5 rounded-full bg-zinc-700 hover:bg-zinc-600 transition-all"></button>
+      <button onclick="goToSlide(5)" class="dot w-2.5 h-2.5 rounded-full bg-zinc-700 hover:bg-zinc-600 transition-all"></button>
+      <button onclick="goToSlide(6)" class="dot w-2.5 h-2.5 rounded-full bg-zinc-700 hover:bg-zinc-600 transition-all"></button>
+    </div>
+    
+    <!-- Slide Counter -->
+    <div class="flex items-center gap-2">
+      <span class="text-sm text-zinc-400">Slide</span>
+      <span id="slide-counter" class="text-sm text-white font-medium">1 / 6</span>
+    </div>
+  </div>
+
+  <script>
+    const totalSlides = 6;
+    let currentSlide = parseInt(sessionStorage.getItem('terminologySlide')) || 1;
+    if (currentSlide > totalSlides) currentSlide = 1;
+
+    // Initialize on DOM ready
+    document.addEventListener('DOMContentLoaded', function() {
+      if (currentSlide > 1) {
+        showSlide(currentSlide);
+      }
+    });
+
+    function showSlide(n) {
+      document.querySelectorAll('.slide').forEach(s => s.classList.remove('active'));
+      const slideEl = document.getElementById('slide-' + n);
+      if (!slideEl) {
+        n = 1;
+      }
+      document.getElementById('slide-' + n).classList.add('active');
+      document.getElementById('slide-counter').textContent = n + ' / ' + totalSlides;
+      
+      document.querySelectorAll('.dot').forEach((dot, i) => {
+        if (i + 1 === n) {
+          dot.classList.remove('bg-zinc-700');
+          dot.classList.add('bg-white');
+        } else {
+          dot.classList.remove('bg-white');
+          dot.classList.add('bg-zinc-700');
+        }
+      });
+      
+      currentSlide = n;
+      sessionStorage.setItem('terminologySlide', n);
+    }
+
+    function nextSlide() {
+      if (currentSlide < totalSlides) {
+        showSlide(currentSlide + 1);
+      }
+    }
+
+    function prevSlide() {
+      if (currentSlide > 1) {
+        showSlide(currentSlide - 1);
+      }
+    }
+
+    function goToSlide(n) {
+      showSlide(n);
+    }
+  </script>
+</body>
+</html>
+

@@ -1,0 +1,509 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Rise-UI Local Setup Guide — For Designers</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/tabler-icons.min.css">
+  <style>
+    @font-face {
+      font-family: 'CTSans';
+      src: url('fonts/CTSans-Regular.woff2') format('woff2');
+      font-weight: 400;
+      font-style: normal;
+      font-display: swap;
+    }
+    @font-face {
+      font-family: 'CTSans';
+      src: url('fonts/CTSans-Semibold.woff2') format('woff2');
+      font-weight: 600;
+      font-style: normal;
+      font-display: swap;
+    }
+    @font-face {
+      font-family: 'CTSans';
+      src: url('fonts/CTSans-Bold.woff2') format('woff2');
+      font-weight: 700;
+      font-style: normal;
+      font-display: swap;
+    }
+
+    html { scroll-behavior: smooth; }
+    
+    body {
+      font-family: 'CTSans', system-ui, -apple-system, sans-serif;
+      background: linear-gradient(180deg, #0f172a 0%, #1e293b 100%);
+      min-height: 100vh;
+    }
+
+    .step-card {
+      background: rgba(255, 255, 255, 0.03);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 16px;
+      transition: all 0.3s ease;
+    }
+    .step-card:hover {
+      background: rgba(255, 255, 255, 0.05);
+      border-color: rgba(255, 255, 255, 0.15);
+    }
+
+    .step-number {
+      width: 48px;
+      height: 48px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, #186ded, #875bf7);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 700;
+      font-size: 20px;
+      color: white;
+      flex-shrink: 0;
+    }
+
+    .tip-box {
+      background: rgba(23, 178, 106, 0.1);
+      border: 1px solid rgba(23, 178, 106, 0.3);
+      border-radius: 8px;
+      padding: 16px;
+    }
+    .warning-box {
+      background: rgba(247, 144, 9, 0.1);
+      border: 1px solid rgba(247, 144, 9, 0.3);
+      border-radius: 8px;
+      padding: 16px;
+    }
+
+    .copy-btn {
+      background: rgba(255, 255, 255, 0.1);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      color: #c9d1d9;
+      padding: 6px 12px;
+      border-radius: 6px;
+      font-size: 12px;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+    .copy-btn:hover {
+      background: rgba(255, 255, 255, 0.15);
+    }
+    .copy-btn.copied {
+      background: rgba(23, 178, 106, 0.2);
+      border-color: rgba(23, 178, 106, 0.5);
+      color: #7ee787;
+    }
+
+    .hero-gradient {
+      background: linear-gradient(135deg, #186ded 0%, #875bf7 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .time-badge {
+      background: rgba(135, 91, 247, 0.2);
+      color: #c4b5fd;
+      padding: 4px 12px;
+      border-radius: 20px;
+      font-size: 12px;
+      font-weight: 600;
+    }
+
+    .checklist-item {
+      display: flex;
+      align-items: flex-start;
+      gap: 12px;
+      padding: 12px 0;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    }
+    .checklist-item:last-child { border-bottom: none; }
+    .checklist-checkbox {
+      width: 24px;
+      height: 24px;
+      border: 2px solid rgba(255, 255, 255, 0.3);
+      border-radius: 6px;
+      flex-shrink: 0;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .checklist-checkbox:hover { border-color: #186ded; }
+    .checklist-checkbox.checked {
+      background: #17b26a;
+      border-color: #17b26a;
+    }
+    .checklist-checkbox.checked i { opacity: 1; }
+    .checklist-checkbox i {
+      color: white;
+      font-size: 14px;
+      opacity: 0;
+      transition: opacity 0.2s ease;
+    }
+
+    @keyframes fadeInUp {
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    .animate-fade-in-up { animation: fadeInUp 0.6s ease forwards; }
+    .delay-100 { animation-delay: 0.1s; opacity: 0; }
+    .delay-200 { animation-delay: 0.2s; opacity: 0; }
+    .delay-300 { animation-delay: 0.3s; opacity: 0; }
+  </style>
+</head>
+<body class="text-white antialiased">
+
+  <!-- Sticky Navigation -->
+  <nav class="sticky top-0 backdrop-blur-xl bg-slate-900/80 border-b border-white/10 z-50">
+    <div class="max-w-3xl mx-auto px-6 py-4 flex items-center justify-between">
+      <div class="flex items-center gap-3">
+        <div class="w-8 h-8 rounded-lg bg-gradient-to-br from-blue-500 to-purple-500 flex items-center justify-center">
+          <svg class="w-full h-full p-1.5" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5">
+            <path d="M12 2L2 7l10 5 10-5-10-5z"/>
+            <path d="M2 17l10 5 10-5"/>
+            <path d="M2 12l10 5 10-5"/>
+          </svg>
+        </div>
+        <span class="font-semibold text-lg">Rise-UI Setup</span>
+      </div>
+      <span class="time-badge"><i class="ti ti-clock mr-1"></i> ~20 min</span>
+    </div>
+  </nav>
+
+  <!-- Hero Section -->
+  <header class="pt-16 pb-12 px-6">
+    <div class="max-w-3xl mx-auto text-center">
+      <p class="text-blue-400 text-sm font-semibold mb-4 animate-fade-in-up">FOR DESIGN TEAM MEMBERS</p>
+      <h1 class="text-4xl md:text-5xl font-bold mb-6 hero-gradient animate-fade-in-up delay-100">
+        Rise-UI Local Setup
+      </h1>
+      <p class="text-lg text-gray-400 max-w-xl mx-auto mb-8 animate-fade-in-up delay-200">
+        Get Rise-UI running on your Mac in 4 simple steps. <strong class="text-white">Cursor AI</strong> will guide you through the technical parts!
+      </p>
+      <div class="animate-fade-in-up delay-300">
+        <img src="setup-guide-assets/rise-ui-web-app.png" alt="Rise-UI Web App" class="w-full max-w-2xl mx-auto rounded-xl border border-white/20 shadow-2xl shadow-purple-500/10">
+      </div>
+    </div>
+  </header>
+
+  <!-- Quick Overview -->
+  <section class="px-6 pb-8">
+    <div class="max-w-3xl mx-auto">
+      <div class="step-card p-5 animate-fade-in-up delay-300">
+        <div class="flex items-center justify-center gap-2 md:gap-4 text-sm flex-wrap">
+          <span class="flex items-center gap-1.5 text-yellow-300"><i class="ti ti-shield-check"></i> Prerequisites</span>
+          <i class="ti ti-arrow-right text-gray-600"></i>
+          <span class="flex items-center gap-1.5 text-purple-300"><i class="ti ti-brand-github"></i> GitHub Desktop</span>
+          <i class="ti ti-arrow-right text-gray-600"></i>
+          <span class="flex items-center gap-1.5 text-blue-300"><i class="ti ti-sparkles"></i> Mac Setup</span>
+          <i class="ti ti-arrow-right text-gray-600"></i>
+          <span class="flex items-center gap-1.5 text-green-300"><i class="ti ti-rocket"></i> Run Rise-UI</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Main Content -->
+  <main class="px-6 pb-16">
+    <div class="max-w-3xl mx-auto space-y-8">
+
+      <!-- Step 1: Prerequisites -->
+      <section class="step-card p-6 md:p-8">
+        <div class="flex items-start gap-5 mb-6">
+          <div class="step-number">1</div>
+          <div class="flex-1">
+            <h2 class="text-xl font-bold mb-1">Prerequisites</h2>
+            <p class="text-gray-400 text-sm">Get access to everything you need before starting.</p>
+          </div>
+        </div>
+
+        <div class="space-y-4">
+          <!-- VPN -->
+          <div class="p-4 bg-white/5 rounded-lg border border-white/10">
+            <div class="flex items-start gap-4 mb-4">
+              <div class="w-10 h-10 rounded-lg bg-yellow-500/20 flex items-center justify-center flex-shrink-0">
+                <i class="ti ti-shield-check text-yellow-400 text-xl"></i>
+              </div>
+              <div class="flex-1">
+                <p class="font-semibold text-white">Connect to VPN</p>
+                <p class="text-gray-400 text-sm">Make sure you're logged into the company VPN.</p>
+              </div>
+            </div>
+            <img src="setup-guide-assets/vpn.png" alt="VPN connection" class="w-48 rounded-lg border border-white/10">
+          </div>
+
+          <!-- Make Me Admin -->
+          <div class="flex items-start gap-4 p-4 bg-white/5 rounded-lg border border-white/10">
+            <div class="w-10 h-10 rounded-lg bg-yellow-500/20 flex items-center justify-center flex-shrink-0">
+              <i class="ti ti-key text-yellow-400 text-xl"></i>
+            </div>
+            <div class="flex-1">
+              <p class="font-semibold text-white">Get Admin Access</p>
+              <p class="text-gray-400 text-sm">Search for <strong class="text-white">"Make Me Admin"</strong> on your Mac, open it, click "Make me an admin", and enter your password. This gives you temporary permission to install software.</p>
+            </div>
+          </div>
+
+          <!-- Verify Access -->
+          <div class="p-4 bg-white/5 rounded-lg border border-white/10">
+            <div class="flex items-start gap-4 mb-4">
+              <div class="w-10 h-10 rounded-lg bg-cyan-500/20 flex items-center justify-center flex-shrink-0">
+                <i class="ti ti-link text-cyan-400 text-xl"></i>
+              </div>
+              <div class="flex-1">
+                <p class="font-semibold text-white mb-2">Verify you can access these links</p>
+                <div class="flex flex-wrap gap-2">
+                  <a href="https://github.roving.com/ES/mac-setup" target="_blank" class="inline-flex items-center gap-1.5 px-3 py-1.5 bg-white/5 hover:bg-white/10 rounded text-sm border border-white/10 transition-colors">
+                    mac-setup <i class="ti ti-external-link text-xs text-gray-500"></i>
+                  </a>
+                  <a href="https://github.roving.com/rise/rise-ui" target="_blank" class="inline-flex items-center gap-1.5 px-3 py-1.5 bg-white/5 hover:bg-white/10 rounded text-sm border border-white/10 transition-colors">
+                    rise-ui <i class="ti ti-external-link text-xs text-gray-500"></i>
+                  </a>
+                  <a href="https://artifactory.roving.com/ui/packages" target="_blank" class="inline-flex items-center gap-1.5 px-3 py-1.5 bg-white/5 hover:bg-white/10 rounded text-sm border border-white/10 transition-colors">
+                    artifactory <i class="ti ti-external-link text-xs text-gray-500"></i>
+                  </a>
+                </div>
+                <p class="text-gray-500 text-xs mt-2">Can't access? Ask in <a href="https://constantcontact.slack.com/channels/design-x-cursor" class="text-purple-400 hover:underline">#design-x-cursor</a> or email <a href="mailto:Ithelp@constantcontact.com" class="text-cyan-400 hover:underline">Ithelp@constantcontact.com</a></p>
+              </div>
+            </div>
+            <div class="grid grid-cols-3 gap-3 mt-4">
+              <div class="text-center">
+                <img src="setup-guide-assets/mac-setup-repo.png" alt="mac-setup repo" class="w-full rounded-lg border border-white/10 mb-1">
+                <p class="text-gray-500 text-xs">mac-setup</p>
+              </div>
+              <div class="text-center">
+                <img src="setup-guide-assets/rise-ui-git-repo.png" alt="rise-ui repo" class="w-full rounded-lg border border-white/10 mb-1">
+                <p class="text-gray-500 text-xs">rise-ui</p>
+              </div>
+              <div class="text-center">
+                <img src="setup-guide-assets/artifactory.png" alt="Artifactory" class="w-full rounded-lg border border-white/10 mb-1">
+                <p class="text-gray-500 text-xs">artifactory</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Step 2: GitHub Desktop -->
+      <section class="step-card p-6 md:p-8">
+        <div class="flex items-start gap-5 mb-6">
+          <div class="step-number">2</div>
+          <div class="flex-1">
+            <h2 class="text-xl font-bold mb-1">Install GitHub Desktop</h2>
+            <p class="text-gray-400 text-sm">A visual app for downloading code — no command line needed!</p>
+          </div>
+        </div>
+
+        <div class="space-y-4">
+          <div class="flex items-center gap-4">
+            <a href="https://desktop.github.com/download/" target="_blank" class="inline-flex items-center gap-2 px-5 py-2.5 bg-purple-600 hover:bg-purple-500 rounded-lg text-white font-medium transition-colors">
+              <i class="ti ti-download"></i>
+              Download GitHub Desktop
+            </a>
+          </div>
+          <p class="text-gray-400 text-sm">Install the app, then open it and <strong class="text-white">sign in with your GitHub Enterprise account</strong> (github.roving.com).</p>
+          <img src="setup-guide-assets/gihubdesktopapp.png" alt="GitHub Desktop app" class="max-w-md rounded-lg border border-white/10 mt-4">
+        </div>
+      </section>
+
+      <!-- Step 3: Clone Mac Setup + Cursor -->
+      <section class="step-card p-6 md:p-8 border-2 border-purple-500/30 bg-purple-500/5">
+        <div class="flex items-start gap-5 mb-6">
+          <div class="step-number" style="background: linear-gradient(135deg, #875bf7, #3b82f6);">3</div>
+          <div class="flex-1">
+            <h2 class="text-xl font-bold mb-1">Clone Mac Setup & Let Cursor Guide You</h2>
+            <p class="text-gray-400 text-sm">Cursor AI will walk you through installing developer tools.</p>
+          </div>
+        </div>
+
+        <div class="space-y-5">
+          <!-- Clone -->
+          <div>
+            <p class="font-medium text-white mb-3">In GitHub Desktop:</p>
+            <div class="bg-white/5 rounded-lg p-4 border border-white/10 space-y-2 text-sm text-gray-300">
+              <p>1. Go to <strong class="text-white">File → Clone Repository</strong></p>
+              <p>2. Click the <strong class="text-white">URL</strong> tab</p>
+              <p>3. Paste: <code class="bg-black/30 px-2 py-0.5 rounded text-cyan-300">https://github.roving.com/ES/mac-setup</code>
+                <button class="copy-btn inline-flex ml-2" onclick="copyCommand(this, 'https://github.roving.com/ES/mac-setup')"><i class="ti ti-copy"></i></button>
+              </p>
+              <p>4. Click <strong class="text-white">Clone</strong></p>
+            </div>
+            <img src="setup-guide-assets/mac-setup-repo.png" alt="Mac setup repository" class="max-w-md rounded-lg border border-white/10 mt-4">
+          </div>
+
+          <!-- Open in Cursor -->
+          <div>
+            <p class="font-medium text-white mb-3">Then open in Cursor:</p>
+            <div class="bg-white/5 rounded-lg p-4 border border-white/10 text-sm text-gray-300">
+              <p>Open <strong class="text-white">Cursor</strong> → <strong class="text-white">File → Open Folder</strong> → select the <code class="bg-black/30 px-1.5 py-0.5 rounded text-xs">mac-setup</code> folder</p>
+            </div>
+          </div>
+
+          <!-- Ask Cursor -->
+          <div class="bg-gradient-to-r from-purple-600/20 to-blue-600/20 rounded-lg p-5 border border-purple-500/30">
+            <p class="font-medium text-white mb-3 flex items-center gap-2">
+              <i class="ti ti-sparkles text-purple-400"></i>
+              Ask Cursor:
+            </p>
+            <div class="bg-black/40 rounded-lg p-4 border border-white/10">
+              <p class="text-white font-mono text-sm">"Review this mac-setup guide and help me get my Mac configured for Rise-UI development."</p>
+            </div>
+            <p class="text-gray-400 text-xs mt-3">Cursor will read the docs and walk you through installing Xcode, Homebrew, Node.js, etc.</p>
+          </div>
+        </div>
+      </section>
+
+      <!-- Step 4: Clone Rise-UI & Run -->
+      <section class="step-card p-6 md:p-8 border-2 border-green-500/30 bg-green-500/5">
+        <div class="flex items-start gap-5 mb-6">
+          <div class="step-number" style="background: linear-gradient(135deg, #17b26a, #06b6d4);">4</div>
+          <div class="flex-1">
+            <h2 class="text-xl font-bold mb-1">Clone Rise-UI & Run the App</h2>
+            <p class="text-gray-400 text-sm">The final step — get the app running locally!</p>
+          </div>
+        </div>
+
+        <div class="space-y-5">
+          <!-- Clone -->
+          <div>
+            <p class="font-medium text-white mb-3">In GitHub Desktop:</p>
+            <div class="bg-white/5 rounded-lg p-4 border border-white/10 space-y-2 text-sm text-gray-300">
+              <p>1. Go to <strong class="text-white">File → Clone Repository</strong></p>
+              <p>2. Click the <strong class="text-white">URL</strong> tab</p>
+              <p>3. Paste: <code class="bg-black/30 px-2 py-0.5 rounded text-green-300">https://github.roving.com/rise/rise-ui</code>
+                <button class="copy-btn inline-flex ml-2" onclick="copyCommand(this, 'https://github.roving.com/rise/rise-ui')"><i class="ti ti-copy"></i></button>
+              </p>
+              <p>4. Click <strong class="text-white">Clone</strong> (this may take a few minutes)</p>
+            </div>
+            <img src="setup-guide-assets/rise-ui-git-repo.png" alt="Rise-UI repository" class="max-w-md rounded-lg border border-white/10 mt-4">
+          </div>
+
+          <!-- Open in Cursor -->
+          <div>
+            <p class="font-medium text-white mb-3">Then open in Cursor:</p>
+            <div class="bg-white/5 rounded-lg p-4 border border-white/10 text-sm text-gray-300">
+              <p>Open <strong class="text-white">Cursor</strong> → <strong class="text-white">File → Open Folder</strong> → select the <code class="bg-black/30 px-1.5 py-0.5 rounded text-xs">rise-ui</code> folder</p>
+            </div>
+          </div>
+
+          <!-- Ask Cursor -->
+          <div class="bg-gradient-to-r from-green-600/20 to-cyan-600/20 rounded-lg p-5 border border-green-500/30">
+            <p class="font-medium text-white mb-3 flex items-center gap-2">
+              <i class="ti ti-sparkles text-green-400"></i>
+              Ask Cursor:
+            </p>
+            <div class="bg-black/40 rounded-lg p-4 border border-white/10">
+              <p class="text-white font-mono text-sm">"Help me install dependencies and run this Rise-UI app locally."</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Success -->
+        <div class="mt-6 p-5 rounded-xl bg-gradient-to-r from-green-500/20 to-cyan-500/20 border border-green-500/40">
+          <div class="flex items-start gap-4 mb-4">
+            <div class="w-10 h-10 rounded-full bg-green-500 flex items-center justify-center flex-shrink-0">
+              <i class="ti ti-check text-white text-xl"></i>
+            </div>
+            <div>
+              <h3 class="text-lg font-bold text-white mb-1">You're done! 🎉</h3>
+              <p class="text-gray-300 text-sm">
+                Once running, open <strong class="text-green-300">http://localhost:4200</strong> in your browser.
+              </p>
+            </div>
+          </div>
+          <img src="setup-guide-assets/rise-ui-web-app.png" alt="Rise-UI Web App running locally" class="w-full rounded-lg border border-white/20">
+        </div>
+      </section>
+
+      <!-- Checklist -->
+      <section class="step-card p-6 md:p-8">
+        <h2 class="text-lg font-bold mb-4 flex items-center gap-2">
+          <i class="ti ti-checkbox text-purple-400"></i>
+          Progress Checklist
+        </h2>
+        <div class="space-y-0">
+          <div class="checklist-item" onclick="toggleCheckbox(this)">
+            <div class="checklist-checkbox" data-key="vpn"><i class="ti ti-check"></i></div>
+            <p class="font-medium">Connected to VPN</p>
+          </div>
+          <div class="checklist-item" onclick="toggleCheckbox(this)">
+            <div class="checklist-checkbox" data-key="admin"><i class="ti ti-check"></i></div>
+            <p class="font-medium">Got admin access (Make Me Admin)</p>
+          </div>
+          <div class="checklist-item" onclick="toggleCheckbox(this)">
+            <div class="checklist-checkbox" data-key="access"><i class="ti ti-check"></i></div>
+            <p class="font-medium">Verified access to internal links</p>
+          </div>
+          <div class="checklist-item" onclick="toggleCheckbox(this)">
+            <div class="checklist-checkbox" data-key="github-desktop"><i class="ti ti-check"></i></div>
+            <p class="font-medium">Installed GitHub Desktop & signed in</p>
+          </div>
+          <div class="checklist-item" onclick="toggleCheckbox(this)">
+            <div class="checklist-checkbox" data-key="mac-setup"><i class="ti ti-check"></i></div>
+            <p class="font-medium">Completed Mac setup with Cursor</p>
+          </div>
+          <div class="checklist-item" onclick="toggleCheckbox(this)">
+            <div class="checklist-checkbox" data-key="rise-ui"><i class="ti ti-check"></i></div>
+            <p class="font-medium">Rise-UI running locally 🎉</p>
+          </div>
+        </div>
+      </section>
+
+      <!-- Help Section -->
+      <section class="text-center py-6">
+        <p class="text-gray-400 mb-4">Need help? Ask in Slack:</p>
+        <a href="https://constantcontact.slack.com/channels/design-x-cursor" target="_blank" class="inline-flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-purple-600/20 to-blue-600/20 hover:from-purple-600/30 hover:to-blue-600/30 border border-purple-500/30 rounded-lg transition-colors">
+          <i class="ti ti-brand-slack text-purple-400"></i>
+          <span>#design-x-cursor</span>
+        </a>
+      </section>
+
+    </div>
+  </main>
+
+  <!-- Footer -->
+  <footer class="border-t border-white/10 py-6 px-6">
+    <div class="max-w-3xl mx-auto text-center">
+      <p class="text-gray-600 text-xs">Rise-UI Local Setup Guide · Last updated February 2026</p>
+    </div>
+  </footer>
+
+  <script>
+    function copyCommand(button, text) {
+      navigator.clipboard.writeText(text).then(() => {
+        button.innerHTML = '<i class="ti ti-check"></i>';
+        button.classList.add('copied');
+        setTimeout(() => {
+          button.innerHTML = '<i class="ti ti-copy"></i>';
+          button.classList.remove('copied');
+        }, 2000);
+      });
+    }
+
+    function toggleCheckbox(item) {
+      const checkbox = item.querySelector('.checklist-checkbox');
+      const key = 'setup-checklist-' + checkbox.dataset.key;
+      checkbox.classList.toggle('checked');
+      if (checkbox.classList.contains('checked')) {
+        localStorage.setItem(key, 'true');
+      } else {
+        localStorage.removeItem(key);
+      }
+    }
+
+    document.addEventListener('DOMContentLoaded', () => {
+      document.querySelectorAll('.checklist-checkbox').forEach(checkbox => {
+        const key = 'setup-checklist-' + checkbox.dataset.key;
+        if (localStorage.getItem(key) === 'true') {
+          checkbox.classList.add('checked');
+        }
+      });
+    });
+  </script>
+
+</body>
+</html>

@@ -1,0 +1,291 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Competitor Deep Dive — Teams FML Market</title>
+  <link rel="stylesheet" href="mobile-responsive.css">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['CTSans', 'system-ui', 'sans-serif']
+          }
+        }
+      }
+    }
+  </script>
+  <style>
+    @font-face {
+      font-family: 'CTSans';
+      src: url('fonts/CTSans-Regular.woff2') format('woff2');
+      font-weight: 400;
+    }
+    @font-face {
+      font-family: 'CTSans';
+      src: url('fonts/CTSans-Semibold.woff2') format('woff2');
+      font-weight: 600;
+    }
+    @font-face {
+      font-family: 'CTSans';
+      src: url('fonts/CTSans-Bold.woff2') format('woff2');
+      font-weight: 700;
+    }
+    body {
+      background: linear-gradient(135deg, #0f0f1a 0%, #131825 25%, #0a0e17 50%, #0d1220 75%, #0f0f1a 100%);
+      background-attachment: fixed;
+    }
+  </style>
+</head>
+<body class="min-h-screen font-sans text-white">
+
+  <!-- Header -->
+  <div class="sticky top-0 z-50 bg-black/90 backdrop-blur border-b border-zinc-800">
+    <div class="max-w-6xl mx-auto px-6 py-4 flex items-center justify-between">
+      <a href="report-clickthrough.html" class="flex items-center gap-2 text-zinc-400 hover:text-white text-sm transition-colors">
+        <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m12 19-7-7 7-7"/><path d="M19 12H5"/></svg>
+        Back to Research
+      </a>
+      <div class="flex items-center gap-3">
+        <span class="px-3 py-1 bg-zinc-800 text-zinc-400 rounded-full text-xs">Teams</span>
+        <span class="px-2 py-1 bg-zinc-800/50 text-zinc-500 rounded-full text-xs">FML Market</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Content -->
+  <div class="max-w-6xl mx-auto px-6 py-12">
+    
+    <!-- Title -->
+    <div class="text-center mb-12">
+      <span class="inline-block px-3 py-1 bg-zinc-900 text-zinc-400 rounded-full text-xs font-medium mb-4">Competitive Analysis</span>
+      <h1 class="text-4xl font-bold text-white mb-3">Competitor Deep Dive</h1>
+      <p class="text-lg text-zinc-400">Detailed platform comparison for FML market research</p>
+    </div>
+
+    <!-- Section 1: 9 Platforms Analyzed -->
+    <div class="mb-16">
+      <h2 class="text-2xl font-bold text-white mb-2">9 Platforms Analyzed</h2>
+      <p class="text-zinc-400 mb-6">Enterprise marketing automation & local marketing leaders</p>
+      
+      <div class="bg-black border border-zinc-800 rounded-xl overflow-hidden mb-4">
+        <table class="w-full text-sm">
+          <thead>
+            <tr class="border-b border-zinc-800">
+              <th class="text-left p-4 text-zinc-400 font-medium">Platform</th>
+              <th class="text-left p-4 text-zinc-400 font-medium">Structure</th>
+              <th class="text-center p-4 text-zinc-400 font-medium">Nesting</th>
+              <th class="text-center p-4 text-zinc-400 font-medium">Permissions</th>
+              <th class="text-center p-4 text-zinc-400 font-medium">AI</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr class="border-b border-zinc-800/50">
+              <td class="p-4"><a href="https://help.salesforce.com/s/articleView?id=mc_overview_business_units.htm&type=5" target="_blank" class="text-white hover:underline">Salesforce MC</a></td>
+              <td class="p-4 text-zinc-300">Business Units</td>
+              <td class="text-center p-4 text-zinc-300">Unlimited</td>
+              <td class="text-center p-4"><span class="text-zinc-300">✓</span></td>
+              <td class="text-center p-4"><span class="text-zinc-400">✓</span></td>
+            </tr>
+            <tr class="border-b border-zinc-800/50">
+              <td class="p-4"><a href="https://experienceleague.adobe.com/en/docs/marketo/using/product-docs/administration/workspaces-and-person-partitions/understanding-workspaces-and-person-partitions" target="_blank" class="text-white hover:underline">Marketo</a></td>
+              <td class="p-4 text-zinc-300">Workspaces + Partitions</td>
+              <td class="text-center p-4 text-zinc-300">2 levels</td>
+              <td class="text-center p-4"><span class="text-zinc-300">✓</span></td>
+              <td class="text-center p-4"><span class="text-zinc-400">✓</span></td>
+            </tr>
+            <tr class="border-b border-zinc-800/50">
+              <td class="p-4"><a href="https://docs.oracle.com/en/cloud/saas/marketing/eloqua-user/Help/SecurityGroups/SecurityGroups.htm" target="_blank" class="text-white hover:underline">Eloqua</a></td>
+              <td class="p-4 text-zinc-300">Security Groups</td>
+              <td class="text-center p-4 text-zinc-300">Unlimited</td>
+              <td class="text-center p-4"><span class="text-zinc-300">✓</span></td>
+              <td class="text-center p-4"><span class="text-zinc-600">—</span></td>
+            </tr>
+            <tr class="border-b border-zinc-800/50">
+              <td class="p-4"><a href="https://knowledge.hubspot.com/account-management/set-up-business-units" target="_blank" class="text-white hover:underline">HubSpot</a></td>
+              <td class="p-4 text-zinc-300">Business Units</td>
+              <td class="text-center p-4 text-zinc-300">1 level</td>
+              <td class="text-center p-4"><span class="text-zinc-300">✓</span></td>
+              <td class="text-center p-4"><span class="text-zinc-400">✓</span></td>
+            </tr>
+            <tr class="border-b border-zinc-800/50">
+              <td class="p-4"><a href="https://www.braze.com/docs/user_guide/administrative/app_settings/workspaces/" target="_blank" class="text-white hover:underline">Braze</a></td>
+              <td class="p-4 text-zinc-300">Workspaces</td>
+              <td class="text-center p-4 text-zinc-300">1 level</td>
+              <td class="text-center p-4"><span class="text-zinc-300">✓</span></td>
+              <td class="text-center p-4"><span class="text-white font-bold">✓✓</span></td>
+            </tr>
+            <tr class="border-b border-zinc-800/50 bg-zinc-900/30">
+              <td class="p-4"><a href="https://www.ansira.com/platform" target="_blank" class="text-white hover:underline">Ansira</a> <span class="text-zinc-500 text-xs">(+ BrandMuscle)</span></td>
+              <td class="p-4 text-zinc-300">Franchise Networks</td>
+              <td class="text-center p-4 text-zinc-300">Unlimited</td>
+              <td class="text-center p-4"><span class="text-zinc-300">✓</span></td>
+              <td class="text-center p-4"><span class="text-zinc-400">✓</span></td>
+            </tr>
+            <tr class="border-b border-zinc-800/50 bg-zinc-900/30">
+              <td class="p-4"><a href="https://www.meetsoci.com/" target="_blank" class="text-white hover:underline">SOCi</a></td>
+              <td class="p-4 text-zinc-300">Locations + Brands</td>
+              <td class="text-center p-4 text-zinc-300">2 levels</td>
+              <td class="text-center p-4"><span class="text-zinc-300">✓</span></td>
+              <td class="text-center p-4"><span class="text-white font-bold">✓✓</span></td>
+            </tr>
+            <tr class="border-b border-zinc-800/50 bg-zinc-900/30">
+              <td class="p-4"><a href="https://www.klaviyo.com/features/portfolios" target="_blank" class="text-white hover:underline">Klaviyo</a></td>
+              <td class="p-4 text-zinc-300">Portfolios</td>
+              <td class="text-center p-4 text-zinc-300">1 level</td>
+              <td class="text-center p-4"><span class="text-zinc-300">✓</span></td>
+              <td class="text-center p-4"><span class="text-zinc-400">✓</span></td>
+            </tr>
+            <tr class="bg-zinc-900/30">
+              <td class="p-4"><a href="https://mailchimp.com/help/about-mailchimp-accounts/" target="_blank" class="text-white hover:underline">Mailchimp</a></td>
+              <td class="p-4 text-zinc-300">Audiences</td>
+              <td class="text-center p-4 text-zinc-300">1 level</td>
+              <td class="text-center p-4"><span class="text-zinc-300">✓</span></td>
+              <td class="text-center p-4"><span class="text-zinc-400">✓</span></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      
+      <div class="bg-zinc-900/50 border border-zinc-800 rounded-xl p-4">
+        <p class="text-zinc-300 text-sm"><span class="text-white font-semibold">Key Pattern:</span> All platforms use hierarchical structures — Business Units, Workspaces, Locations, or Partitions. Flat models don't scale beyond ~50 accounts.</p>
+      </div>
+    </div>
+
+    <!-- Section 2: Market Leaders by Vertical -->
+    <div class="mb-16">
+      <h2 class="text-2xl font-bold text-white mb-2">Market Leaders by Vertical</h2>
+      <p class="text-zinc-400 mb-6">Multi-location platforms solving rollup & hierarchy (2025–2026)</p>
+      
+      <div class="bg-black border border-zinc-800 rounded-xl overflow-hidden mb-4">
+        <table class="w-full text-sm">
+          <thead>
+            <tr class="border-b border-zinc-800">
+              <th class="text-left p-4 text-zinc-400 font-medium w-28">Category</th>
+              <th class="text-left p-4 text-zinc-400 font-medium w-40">The "Hub"</th>
+              <th class="text-left p-4 text-zinc-400 font-medium">Scale</th>
+              <th class="text-left p-4 text-zinc-400 font-medium">Core Rollup Function</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr class="border-b border-zinc-800/50">
+              <td class="p-4 text-zinc-400 font-medium">Operations</td>
+              <td class="p-4 text-white font-semibold">FranConnect</td>
+              <td class="p-4"><span class="text-white font-semibold">1.3M+ Locations</span> <span class="text-zinc-500">/ 1,500+ Brands</span></td>
+              <td class="p-4 text-zinc-300">Legal compliance, royalty collections, unit development</td>
+            </tr>
+            <tr class="border-b border-zinc-800/50">
+              <td class="p-4 text-zinc-400 font-medium">Marketing</td>
+              <td class="p-4 text-white font-semibold">Ansira <span class="text-zinc-500 text-xs">(+ BrandMuscle)</span></td>
+              <td class="p-4"><span class="text-white font-semibold">1.5M+ Active Users</span></td>
+              <td class="p-4 text-zinc-300">Local ad spend (Co-op) and brand-approved templates</td>
+            </tr>
+            <tr class="border-b border-zinc-800/50">
+              <td class="p-4 text-zinc-400 font-medium">Social / AI</td>
+              <td class="p-4 text-white font-semibold">SOCi</td>
+              <td class="p-4"><span class="text-white font-semibold">1,000+ Brands</span> <span class="text-zinc-500">/ 150k AI Agents</span></td>
+              <td class="p-4 text-zinc-300">Reputation, reviews, and social posting for every store</td>
+            </tr>
+            <tr class="border-b border-zinc-800/50">
+              <td class="p-4 text-zinc-400 font-medium">Trades/Field</td>
+              <td class="p-4 text-white font-semibold">ServiceTitan</td>
+              <td class="p-4"><span class="text-white font-semibold">9,500+ Large Enterprises</span></td>
+              <td class="p-4 text-zinc-300">Rollup of every service van, invoice, and GPS coordinate</td>
+            </tr>
+            <tr>
+              <td class="p-4 text-zinc-400 font-medium">Restaurants</td>
+              <td class="p-4 text-white font-semibold">Crunchtime</td>
+              <td class="p-4"><span class="text-white font-semibold">100,000+ Restaurants</span></td>
+              <td class="p-4 text-zinc-300">Real-time food waste and labor cost rollup</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      
+      <div class="bg-zinc-900/50 border border-zinc-800 rounded-xl p-4">
+        <p class="text-zinc-300 text-sm"><span class="text-white font-semibold">Pattern:</span> Every vertical has a dominant "hub" platform that owns the rollup view across all locations. Email marketing is an opportunity.</p>
+      </div>
+    </div>
+
+    <!-- Section 3: Feature Comparison Matrix -->
+    <div class="mb-16">
+      <h2 class="text-2xl font-bold text-white mb-2">Feature Comparison by Pillar</h2>
+      <p class="text-zinc-400 mb-6">How competitors stack up across the 4 strategic pillars</p>
+      
+      <div class="grid grid-cols-2 gap-6">
+        <!-- Navigation -->
+        <div class="bg-zinc-900/50 border border-zinc-800 rounded-xl p-5">
+          <h3 class="text-white font-semibold mb-4 flex items-center gap-2">
+            <svg class="w-5 h-5 text-zinc-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polygon points="16.24 7.76 14.12 14.12 7.76 16.24 9.88 9.88 16.24 7.76"/></svg>
+            Navigation Model
+          </h3>
+          <ul class="space-y-2 text-sm">
+            <li class="flex items-center justify-between"><span class="text-zinc-400">FranConnect</span><span class="text-white">Tree + Folders</span></li>
+            <li class="flex items-center justify-between"><span class="text-zinc-400">ServiceTitan</span><span class="text-white">Tree + Search</span></li>
+            <li class="flex items-center justify-between"><span class="text-zinc-400">SOCi</span><span class="text-white">Multi-level Folders</span></li>
+            <li class="flex items-center justify-between"><span class="text-zinc-400">Mailchimp</span><span class="text-zinc-500">Flat Dropdown</span></li>
+            <li class="flex items-center justify-between"><span class="text-zinc-400">HubSpot</span><span class="text-zinc-500">Portal Switch</span></li>
+          </ul>
+        </div>
+        
+        <!-- Reporting -->
+        <div class="bg-zinc-900/50 border border-zinc-800 rounded-xl p-5">
+          <h3 class="text-white font-semibold mb-4 flex items-center gap-2">
+            <svg class="w-5 h-5 text-zinc-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 20V10"/><path d="M12 20V4"/><path d="M6 20v-6"/></svg>
+            Roll-up Reporting
+          </h3>
+          <ul class="space-y-2 text-sm">
+            <li class="flex items-center justify-between"><span class="text-zinc-400">FranConnect</span><span class="text-white">Real-time Rollup</span></li>
+            <li class="flex items-center justify-between"><span class="text-zinc-400">Braze</span><span class="text-white">Segment Dashboards</span></li>
+            <li class="flex items-center justify-between"><span class="text-zinc-400">ServiceTitan</span><span class="text-white">Leaderboards</span></li>
+            <li class="flex items-center justify-between"><span class="text-zinc-400">Klaviyo</span><span class="text-zinc-500">Portfolio View</span></li>
+            <li class="flex items-center justify-between"><span class="text-zinc-400">Mailchimp</span><span class="text-zinc-500">Per-account Only</span></li>
+          </ul>
+        </div>
+        
+        <!-- Brand Control -->
+        <div class="bg-zinc-900/50 border border-zinc-800 rounded-xl p-5">
+          <h3 class="text-white font-semibold mb-4 flex items-center gap-2">
+            <svg class="w-5 h-5 text-zinc-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><path d="m9 12 2 2 4-4"/></svg>
+            Brand & Access Control
+          </h3>
+          <ul class="space-y-2 text-sm">
+            <li class="flex items-center justify-between"><span class="text-zinc-400">Ansira</span><span class="text-white">Locked Templates</span></li>
+            <li class="flex items-center justify-between"><span class="text-zinc-400">BrandMuscle</span><span class="text-white">Approval + Co-op</span></li>
+            <li class="flex items-center justify-between"><span class="text-zinc-400">SOCi</span><span class="text-white">Brand Kit Share</span></li>
+            <li class="flex items-center justify-between"><span class="text-zinc-400">Salesforce</span><span class="text-zinc-500">Basic Permissions</span></li>
+            <li class="flex items-center justify-between"><span class="text-zinc-400">Mailchimp</span><span class="text-zinc-500">No Locking</span></li>
+          </ul>
+        </div>
+        
+        <!-- AI -->
+        <div class="bg-zinc-900/50 border border-zinc-800 rounded-xl p-5">
+          <h3 class="text-white font-semibold mb-4 flex items-center gap-2">
+            <svg class="w-5 h-5 text-zinc-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m12 3-1.912 5.813a2 2 0 0 1-1.275 1.275L3 12l5.813 1.912a2 2 0 0 1 1.275 1.275L12 21l1.912-5.813a2 2 0 0 1 1.275-1.275L21 12l-5.813-1.912a2 2 0 0 1-1.275-1.275L12 3Z"/></svg>
+            AI Capabilities
+          </h3>
+          <ul class="space-y-2 text-sm">
+            <li class="flex items-center justify-between"><span class="text-zinc-400">Braze</span><span class="text-white">Full Suite (Predictive + Gen)</span></li>
+            <li class="flex items-center justify-between"><span class="text-zinc-400">SOCi</span><span class="text-white">AI Content + Agents</span></li>
+            <li class="flex items-center justify-between"><span class="text-zinc-400">Klaviyo</span><span class="text-white">Predictive Segments</span></li>
+            <li class="flex items-center justify-between"><span class="text-zinc-400">Mailchimp</span><span class="text-zinc-500">Subject Lines</span></li>
+            <li class="flex items-center justify-between"><span class="text-zinc-400">Eloqua</span><span class="text-zinc-500">None</span></li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <!-- Back Button -->
+    <div class="text-center pt-8 border-t border-zinc-800">
+      <a href="report-clickthrough.html" class="inline-flex items-center gap-2 px-6 py-3 bg-zinc-800 hover:bg-zinc-700 text-white rounded-xl font-medium transition-colors">
+        <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m12 19-7-7 7-7"/><path d="M19 12H5"/></svg>
+        Back to Research Presentation
+      </a>
+    </div>
+  </div>
+
+</body>
+</html>
+

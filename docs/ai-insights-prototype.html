@@ -1,0 +1,513 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Insights Tile - Prototype | AFC Franchise</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        main: {
+                            50: '#f6fcff', 100: '#e6f8ff', 200: '#d6eafe', 300: '#a6d3fd',
+                            400: '#65abff', 500: '#468af1', 600: '#186ded',
+                            700: '#085fe2', 800: '#1357be', 900: '#0046ae', 950: '#0b3c85'
+                        },
+                        neutral: {
+                            50: '#fcfcfd', 100: '#f7f9fd', 200: '#f0f4fa',
+                            300: '#dce2ec', 400: '#c9d0de', 500: '#8d9bb6',
+                            600: '#6b7492', 700: '#63708a', 800: '#5d687e', 900: '#3f4b63', 950: '#313b4d'
+                        },
+                        success: {
+                            50: '#f6fef9', 100: '#ecfdf3', 200: '#dbfae6', 300: '#a9efc5',
+                            400: '#75e0a7', 500: '#47cd89', 600: '#17b26a',
+                            700: '#079455', 800: '#067647', 900: '#085d3a'
+                        },
+                        danger: {
+                            50: '#fffafa', 100: '#fef3f2', 200: '#fee4e2', 300: '#fecdca',
+                            400: '#fda29b', 500: '#fe5a58', 600: '#f04438',
+                            700: '#d92d20', 800: '#b42318', 900: '#912018'
+                        },
+                        warning: {
+                            50: '#fffcf5', 100: '#fff8eb', 200: '#fff2de', 300: '#ffdaaf',
+                            400: '#ffca8d', 500: '#ffb26b', 600: '#f79009',
+                            700: '#e97420', 800: '#d55b03', 900: '#93370d'
+                        },
+                        accent: {
+                            50: '#fbfaff', 100: '#f5f3ff', 200: '#ece9fe', 300: '#ddd6fe',
+                            400: '#c3b5fd', 500: '#a48afb', 600: '#875bf7',
+                            700: '#7839ee', 800: '#6927da', 900: '#5720b7'
+                        }
+                    },
+                    fontFamily: {
+                        sans: ['CTSans', 'system-ui', 'sans-serif']
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        @font-face {
+            font-family: 'CTSans';
+            src: url('https://uxbritt.github.io/teams-workspaces-future-vision/fonts/CTSans-Regular.woff2') format('woff2');
+            font-weight: 400;
+            font-style: normal;
+            font-display: swap;
+        }
+        @font-face {
+            font-family: 'CTSans';
+            src: url('https://uxbritt.github.io/teams-workspaces-future-vision/fonts/CTSans-Semibold.woff2') format('woff2');
+            font-weight: 600;
+            font-style: normal;
+            font-display: swap;
+        }
+        @font-face {
+            font-family: 'CTSans';
+            src: url('https://uxbritt.github.io/teams-workspaces-future-vision/fonts/CTSans-Bold.woff2') format('woff2');
+            font-weight: 700;
+            font-style: normal;
+            font-display: swap;
+        }
+        
+        body {
+            font-family: 'CTSans', system-ui, sans-serif;
+        }
+    </style>
+</head>
+<body class="bg-neutral-100 min-h-screen p-8">
+    <!-- Header -->
+    <div class="max-w-4xl mx-auto mb-6">
+        <div class="flex items-center justify-between mb-4">
+            <div>
+                <h1 class="text-xl font-semibold text-neutral-900 mb-1">AI Insights Tile</h1>
+                <p class="text-sm text-neutral-500">AFC Franchise (puid: 1138651860215) • Data exploration prototype</p>
+            </div>
+        </div>
+        
+        <!-- Data Source Notice -->
+        <div class="bg-warning-50 border border-warning-200 rounded-lg p-4 mb-4">
+            <div class="flex items-start gap-3">
+                <svg class="w-5 h-5 text-warning-600 flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                <div>
+                    <p class="text-sm font-medium text-warning-800">Sample Data — Snowflake Connection Required</p>
+                    <p class="text-sm text-warning-700 mt-1">This prototype uses <strong>hardcoded sample data</strong> for AFC Franchise child accounts. To connect to live Snowflake data, we need one of:</p>
+                    <ul class="text-sm text-warning-700 mt-2 list-disc list-inside space-y-1">
+                        <li><strong>Snowflake REST API endpoint</strong> — URL for the insights query</li>
+                        <li><strong>CSV/JSON export</strong> — Exported query results to embed</li>
+                        <li><strong>SQL query</strong> — The query to structure data input</li>
+                    </ul>
+                    <p class="text-xs text-warning-600 mt-2">Contact Britt to integrate live data.</p>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Tabs -->
+        <div class="flex gap-1 border-b border-neutral-200">
+            <button onclick="showTab('tile')" id="tab-tile" class="tab-btn px-4 py-2 text-sm font-medium text-main-600 border-b-2 border-main-600 -mb-px">
+                Tile Preview
+            </button>
+            <button onclick="showTab('data')" id="tab-data" class="tab-btn px-4 py-2 text-sm font-medium text-neutral-500 hover:text-neutral-700 border-b-2 border-transparent -mb-px">
+                Insights Data Table
+            </button>
+            <button onclick="showTab('templates')" id="tab-templates" class="tab-btn px-4 py-2 text-sm font-medium text-neutral-500 hover:text-neutral-700 border-b-2 border-transparent -mb-px">
+                Insight Templates
+            </button>
+        </div>
+    </div>
+
+    <!-- TAB 1: Tile Preview -->
+    <div id="panel-tile" class="tab-panel max-w-4xl mx-auto">
+        <div class="max-w-lg mx-auto">
+            <div class="bg-white rounded-2xl border border-neutral-100 p-5 shadow-sm flex flex-col" style="min-height: 380px;">
+                <!-- Header -->
+                <div class="flex items-center justify-between mb-4 flex-shrink-0 relative">
+                    <div class="flex items-center gap-2">
+                        <svg width="0" height="0" aria-hidden="true"><defs><linearGradient id="ai-gradient-card" x1="0" y1="0" x2="24" y2="24" gradientUnits="userSpaceOnUse"><stop stop-color="#186ded"></stop><stop stop-color="#875bf7" offset="85%"></stop></linearGradient></defs></svg>
+                        <svg class="w-4 h-4" fill="none" stroke="url(#ai-gradient-card)" stroke-width="1.5" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><path d="M9.937 15.5A2 2 0 0 0 8.5 14.063l-6.135-1.582a.5.5 0 0 1 0-.962L8.5 9.936A2 2 0 0 0 9.937 8.5l1.582-6.135a.5.5 0 0 1 .963 0L14.063 8.5A2 2 0 0 0 15.5 9.937l6.135 1.581a.5.5 0 0 1 0 .964L15.5 14.063a2 2 0 0 0-1.437 1.437l-1.582 6.135a.5.5 0 0 1-.963 0z"></path><path d="M20 3v4"></path><path d="M22 5h-4"></path><path d="M4 17v2"></path><path d="M5 18H3"></path></svg>
+                        <h3 id="ai-insights-title" class="text-base font-medium text-neutral-800">Here are today's insights</h3>
+                    </div>
+                    <button onclick="toggleRefreshSettings()" class="text-xs text-neutral-500 hover:text-neutral-700 flex items-center gap-1 transition-colors">
+                        <svg class="w-3 h-3" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                        <span id="refresh-time-label">Refreshes at 6:00 AM</span>
+                        <svg class="w-3 h-3" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="m6 9 6 6 6-6"/></svg>
+                    </button>
+                    <!-- Refresh Time Dropdown -->
+                    <div id="refresh-settings-menu" class="hidden absolute right-0 top-full mt-1 w-40 bg-white rounded-lg shadow-lg border border-neutral-200 py-1 z-20">
+                        <p class="px-3 py-1.5 text-xs font-medium text-neutral-500 uppercase tracking-wide">Refresh time</p>
+                        <button onclick="setRefreshTime('6:00 AM')" class="w-full text-left px-3 py-2 text-sm hover:bg-neutral-50">6:00 AM</button>
+                        <button onclick="setRefreshTime('8:00 AM')" class="w-full text-left px-3 py-2 text-sm hover:bg-neutral-50">8:00 AM</button>
+                        <button onclick="setRefreshTime('12:00 PM')" class="w-full text-left px-3 py-2 text-sm hover:bg-neutral-50">12:00 PM</button>
+                        <button onclick="setRefreshTime('6:00 PM')" class="w-full text-left px-3 py-2 text-sm hover:bg-neutral-50">6:00 PM</button>
+                    </div>
+                </div>
+                
+                <!-- Scrollable Insights List -->
+                <div id="ai-insights-list" class="space-y-2 flex-1">
+                    <!-- Insights will be rendered here -->
+                </div>
+            </div>
+        </div>
+
+        <!-- Data Editor Panel -->
+        <div class="max-w-lg mx-auto mt-8">
+            <div class="bg-white rounded-2xl border border-neutral-200 p-5 shadow-sm">
+                <h2 class="text-base font-semibold text-neutral-900 mb-4">Edit Insights Data</h2>
+                
+                <div class="space-y-4">
+                    <div class="p-3 bg-neutral-50 rounded-lg">
+                        <label class="block text-xs font-medium text-neutral-600 mb-1">Insight 1</label>
+                        <textarea id="insight-1" rows="2" class="w-full px-3 py-2 text-sm border border-neutral-300 rounded-lg focus:ring-2 focus:ring-main-500 focus:border-main-500"><a href="#">Greenway Market MA</a> is performing <span class="font-medium text-success-600">+20%</span> above its 30‑day average.</textarea>
+                    </div>
+                    <div class="p-3 bg-neutral-50 rounded-lg">
+                        <label class="block text-xs font-medium text-neutral-600 mb-1">Insight 2</label>
+                        <textarea id="insight-2" rows="2" class="w-full px-3 py-2 text-sm border border-neutral-300 rounded-lg focus:ring-2 focus:ring-main-500 focus:border-main-500">Engagement increased after the <span class="font-medium">Jan 12 Holiday Campaign</span> in <a href="#">Living Root Kitchen NY</a>.</textarea>
+                    </div>
+                    <div class="p-3 bg-neutral-50 rounded-lg">
+                        <label class="block text-xs font-medium text-neutral-600 mb-1">Insight 3</label>
+                        <textarea id="insight-3" rows="2" class="w-full px-3 py-2 text-sm border border-neutral-300 rounded-lg focus:ring-2 focus:ring-main-500 focus:border-main-500"><span class="font-medium text-warning-600">2 teams</span> haven't sent a campaign in 10 days: <a href="#">Greenway Market RI</a> and <a href="#">PureField Produce VT</a>.</textarea>
+                    </div>
+                </div>
+                
+                <div class="mt-4 flex gap-2">
+                    <button onclick="updateInsights()" class="px-4 py-2 bg-main-600 hover:bg-main-700 text-white text-sm font-medium rounded-lg transition-colors">Update Insights</button>
+                    <button onclick="resetInsights()" class="px-4 py-2 text-neutral-600 hover:text-neutral-900 text-sm font-medium rounded-lg border border-neutral-200 hover:border-neutral-300 transition-colors">Reset</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- TAB 2: Insights Data Table -->
+    <div id="panel-data" class="tab-panel hidden">
+        <div class="max-w-4xl mx-auto">
+            <div class="bg-white rounded-2xl border border-neutral-200 shadow-sm overflow-hidden">
+                <!-- Table Header -->
+                <div class="px-5 py-4 border-b border-neutral-100 flex items-center justify-between">
+                    <div>
+                        <h2 class="text-base font-semibold text-neutral-900">High-Value Insight Recommendations</h2>
+                        <p class="text-sm text-neutral-500">AFC Franchise child accounts • Last 30 days</p>
+                    </div>
+                    <div class="flex items-center gap-2">
+                        <select id="metric-filter" class="text-sm border border-neutral-300 rounded-lg px-3 py-1.5 focus:ring-2 focus:ring-main-500">
+                            <option value="all">All Metrics</option>
+                            <option value="click_rate">Click Rate</option>
+                            <option value="open_rate">Open Rate</option>
+                            <option value="bounce_rate">Bounce Rate</option>
+                        </select>
+                        <select id="type-filter" class="text-sm border border-neutral-300 rounded-lg px-3 py-1.5 focus:ring-2 focus:ring-main-500">
+                            <option value="all">All Types</option>
+                            <option value="trend">Trend</option>
+                            <option value="benchmark">Benchmark</option>
+                            <option value="minmax">Min/Max</option>
+                            <option value="campaign">Campaign</option>
+                        </select>
+                    </div>
+                </div>
+                
+                <!-- Table -->
+                <div class="overflow-x-auto">
+                    <table class="w-full text-sm">
+                        <thead class="bg-neutral-50 text-left">
+                            <tr>
+                                <th class="px-5 py-3 font-medium text-neutral-600">Child Account</th>
+                                <th class="px-5 py-3 font-medium text-neutral-600">Insight Type</th>
+                                <th class="px-5 py-3 font-medium text-neutral-600">Metric</th>
+                                <th class="px-5 py-3 font-medium text-neutral-600">Delta</th>
+                                <th class="px-5 py-3 font-medium text-neutral-600">Generated Insight</th>
+                                <th class="px-5 py-3 font-medium text-neutral-600">Priority</th>
+                                <th class="px-5 py-3 font-medium text-neutral-600"></th>
+                            </tr>
+                        </thead>
+                        <tbody id="insights-table-body" class="divide-y divide-neutral-100">
+                            <!-- Rows rendered by JS -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- TAB 3: Insight Templates Reference -->
+    <div id="panel-templates" class="tab-panel hidden">
+        <div class="max-w-4xl mx-auto">
+            <div class="bg-white rounded-2xl border border-neutral-200 p-6 shadow-sm">
+                <h2 class="text-base font-semibold text-neutral-900 mb-4">Insight Template Patterns</h2>
+                <p class="text-sm text-neutral-600 mb-6">These templates are used to generate high-value insights from child account performance data.</p>
+                
+                <div class="space-y-4">
+                    <!-- Template 1: 30-day comparison -->
+                    <div class="p-4 bg-neutral-50 rounded-lg border-l-4 border-main-500">
+                        <p class="text-xs font-medium text-neutral-500 uppercase tracking-wide mb-1">30-Day Period Comparison</p>
+                        <p class="text-sm text-neutral-800 font-mono bg-white px-3 py-2 rounded mt-2">[Child account]'s 30-day [metric] is [% delta] higher/lower than the previous 30 days.</p>
+                        <p class="text-xs text-neutral-500 mt-2">Example: <span class="text-neutral-700">AFC Boston's 30-day click rate is +15% higher than the previous 30 days.</span></p>
+                    </div>
+                    
+                    <!-- Template 2: Monthly trend -->
+                    <div class="p-4 bg-neutral-50 rounded-lg border-l-4 border-accent-500">
+                        <p class="text-xs font-medium text-neutral-500 uppercase tracking-wide mb-1">Monthly Trend</p>
+                        <p class="text-sm text-neutral-800 font-mono bg-white px-3 py-2 rounded mt-2">[Child account]'s [metric] is trending [% delta] higher/lower compared to last month.</p>
+                        <p class="text-xs text-neutral-500 mt-2">Example: <span class="text-neutral-700">AFC Denver's open rate is trending +8% higher compared to last month.</span></p>
+                    </div>
+                    
+                    <!-- Template 3: Benchmark comparison -->
+                    <div class="p-4 bg-neutral-50 rounded-lg border-l-4 border-success-500">
+                        <p class="text-xs font-medium text-neutral-500 uppercase tracking-wide mb-1">Benchmark Comparison</p>
+                        <p class="text-sm text-neutral-800 font-mono bg-white px-3 py-2 rounded mt-2">[Child account]'s [metric] is [% delta] above/below benchmark this month.</p>
+                        <p class="text-xs text-neutral-500 mt-2">Example: <span class="text-neutral-700">AFC Seattle's click rate is +12% above benchmark this month.</span></p>
+                    </div>
+                    
+                    <!-- Template 4: Min/Max -->
+                    <div class="p-4 bg-neutral-50 rounded-lg border-l-4 border-warning-500">
+                        <p class="text-xs font-medium text-neutral-500 uppercase tracking-wide mb-1">Highest/Lowest Performer</p>
+                        <p class="text-sm text-neutral-800 font-mono bg-white px-3 py-2 rounded mt-2">[Child account] has the highest/lowest [metric] this month.</p>
+                        <p class="text-xs text-neutral-500 mt-2">Example: <span class="text-neutral-700">AFC Miami has the highest open rate this month.</span></p>
+                    </div>
+                    
+                    <!-- Template 5: Campaign performance -->
+                    <div class="p-4 bg-neutral-50 rounded-lg border-l-4 border-danger-500">
+                        <p class="text-xs font-medium text-neutral-500 uppercase tracking-wide mb-1">Campaign Performance</p>
+                        <p class="text-sm text-neutral-800 font-mono bg-white px-3 py-2 rounded mt-2">[Child account]'s [Campaign name] has a [% delta] higher/lower [metric] than average this month.</p>
+                        <p class="text-xs text-neutral-500 mt-2">Example: <span class="text-neutral-700">AFC Chicago's "Winter Sale" has a +25% higher click rate than average this month.</span></p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Default insights data
+        const defaultInsights = [
+            `<a href="#" class="font-medium hover:underline hover:text-main-600 transition-colors">Greenway Market MA</a> is performing <span class="font-medium text-success-600">+20%</span> above its 30‑day average.`,
+            `Engagement increased after the <span class="font-medium">Jan 12 Holiday Campaign</span> in <a href="#" class="font-medium hover:underline hover:text-main-600 transition-colors">Living Root Kitchen NY</a>.`,
+            `<span class="font-medium text-warning-600">2 teams</span> haven't sent a campaign in 10 days: <a href="#" class="font-medium hover:underline hover:text-main-600 transition-colors">Greenway Market RI</a> and <a href="#" class="font-medium hover:underline hover:text-main-600 transition-colors">PureField Produce VT</a>.`
+        ];
+        
+        // Templates
+        const templates = {
+            performance: [
+                `<a href="#" class="font-medium hover:underline hover:text-main-600 transition-colors">Living Root Kitchen NJ</a> is your <span class="font-medium text-success-600">top performer</span> this week with 8.2% click rate.`,
+                `<span class="font-medium text-success-600">3 accounts</span> exceeded their engagement benchmarks in the last 7 days.`,
+                `Open rates are <span class="font-medium text-success-600">up 12%</span> across all accounts compared to last month.`
+            ],
+            warning: [
+                `<span class="font-medium text-warning-600">PureField Produce VT</span> has a click rate <span class="font-medium text-warning-600">below benchmark</span> at 1.8%.`,
+                `<span class="font-medium text-warning-600">4 campaigns</span> are scheduled to send at the same time tomorrow.`,
+                `<a href="#" class="font-medium hover:underline hover:text-main-600 transition-colors">Greenway Market RI</a> hasn't updated their contact list in <span class="font-medium text-warning-600">30 days</span>.`
+            ],
+            opportunity: [
+                `Accounts similar to <a href="#" class="font-medium hover:underline hover:text-main-600 transition-colors">Living Root Kitchen NY</a> see <span class="font-medium text-accent-600">+15% higher</span> engagement with personalized subject lines.`,
+                `<span class="font-medium text-accent-600">Tuesday mornings</span> show the highest open rates across your organization.`,
+                `Adding product images could boost click rates by <span class="font-medium text-accent-600">up to 23%</span> based on similar accounts.`
+            ],
+            engagement: [
+                `<a href="#" class="font-medium hover:underline hover:text-main-600 transition-colors">Greenway Market CT</a> saw a <span class="font-medium text-main-600">spike in engagement</span> after their seasonal promotion.`,
+                `Reply rates are <span class="font-medium text-main-600">3x higher</span> when using question-based subject lines.`,
+                `<span class="font-medium text-main-600">Best send time:</span> Your audience is most active between 9-11 AM EST.`
+            ]
+        };
+        
+        function renderInsights(insights) {
+            const container = document.getElementById('ai-insights-list');
+            container.innerHTML = insights.map(text => `
+                <div class="bg-neutral-50 rounded-lg p-3 hover:bg-neutral-100 transition-colors group">
+                    <p class="text-sm text-neutral-700 mb-2">${text}</p>
+                    <div class="flex items-center justify-end">
+                        <div class="flex items-center gap-1">
+                            <button onclick="rateInsight(this, 'up')" class="p-1.5 rounded text-neutral-400 hover:text-success-600 hover:bg-success-50 transition-colors">
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M14 10h4.764a2 2 0 011.789 2.894l-3.5 7A2 2 0 0115.263 21h-4.017c-.163 0-.326-.02-.485-.06L7 20m7-10V5a2 2 0 00-2-2h-.095c-.5 0-.905.405-.905.905 0 .714-.211 1.412-.608 2.006L7 11v9m7-10h-2M7 20H5a2 2 0 01-2-2v-6a2 2 0 012-2h2.5"/></svg>
+                            </button>
+                            <button onclick="rateInsight(this, 'down')" class="p-1.5 rounded text-neutral-400 hover:text-danger-600 hover:bg-danger-50 transition-colors">
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M10 14H5.236a2 2 0 01-1.789-2.894l3.5-7A2 2 0 018.736 3h4.018a2 2 0 01.485.06l3.76.94m-7 10v5a2 2 0 002 2h.096c.5 0 .905-.405.905-.904 0-.715.211-1.413.608-2.008L17 13V4m-7 10h2m5-10h2a2 2 0 012 2v6a2 2 0 01-2 2h-2.5"/></svg>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            `).join('');
+        }
+        
+        function updateInsights() {
+            const insights = [
+                document.getElementById('insight-1').value,
+                document.getElementById('insight-2').value,
+                document.getElementById('insight-3').value
+            ];
+            renderInsights(insights);
+        }
+        
+        function resetInsights() {
+            document.getElementById('insight-1').value = defaultInsights[0];
+            document.getElementById('insight-2').value = defaultInsights[1];
+            document.getElementById('insight-3').value = defaultInsights[2];
+            renderInsights(defaultInsights);
+        }
+        
+        function loadTemplate(type) {
+            const templateData = templates[type];
+            document.getElementById('insight-1').value = templateData[0];
+            document.getElementById('insight-2').value = templateData[1];
+            document.getElementById('insight-3').value = templateData[2];
+            renderInsights(templateData);
+        }
+        
+        function toggleRefreshSettings() {
+            const menu = document.getElementById('refresh-settings-menu');
+            menu.classList.toggle('hidden');
+        }
+        
+        function setRefreshTime(time) {
+            document.getElementById('refresh-time-label').textContent = `Refreshes at ${time}`;
+            document.getElementById('refresh-settings-menu').classList.add('hidden');
+        }
+        
+        function rateInsight(button, rating) {
+            const card = button.closest('.bg-neutral-50');
+            if (rating === 'up') {
+                card.style.borderLeft = '3px solid #17b26a';
+                button.classList.add('text-success-600');
+            } else {
+                card.style.borderLeft = '3px solid #f04438';
+                button.classList.add('text-danger-600');
+            }
+        }
+        
+        // Close dropdown when clicking outside
+        document.addEventListener('click', (e) => {
+            const menu = document.getElementById('refresh-settings-menu');
+            if (!e.target.closest('[onclick="toggleRefreshSettings()"]') && !menu.contains(e.target)) {
+                menu.classList.add('hidden');
+            }
+        });
+        
+        // Tab switching
+        function showTab(tabName) {
+            // Hide all panels
+            document.querySelectorAll('.tab-panel').forEach(p => p.classList.add('hidden'));
+            // Show selected panel
+            document.getElementById(`panel-${tabName}`).classList.remove('hidden');
+            
+            // Update tab buttons
+            document.querySelectorAll('.tab-btn').forEach(btn => {
+                btn.classList.remove('text-main-600', 'border-main-600');
+                btn.classList.add('text-neutral-500', 'border-transparent');
+            });
+            const activeTab = document.getElementById(`tab-${tabName}`);
+            activeTab.classList.remove('text-neutral-500', 'border-transparent');
+            activeTab.classList.add('text-main-600', 'border-main-600');
+        }
+        
+        // AFC Franchise Sample Data (puid: 1138651860215)
+        const afcInsightsData = [
+            // 30-day period comparisons
+            { account: "AFC Boston", type: "trend", metric: "click_rate", delta: "+15%", direction: "higher", priority: "high", campaign: null },
+            { account: "AFC Denver", type: "trend", metric: "open_rate", delta: "+8%", direction: "higher", priority: "medium", campaign: null },
+            { account: "AFC Phoenix", type: "trend", metric: "click_rate", delta: "-12%", direction: "lower", priority: "high", campaign: null },
+            { account: "AFC Seattle", type: "trend", metric: "bounce_rate", delta: "-5%", direction: "lower", priority: "low", campaign: null },
+            
+            // Benchmark comparisons
+            { account: "AFC Miami", type: "benchmark", metric: "open_rate", delta: "+18%", direction: "above", priority: "high", campaign: null },
+            { account: "AFC Chicago", type: "benchmark", metric: "click_rate", delta: "+12%", direction: "above", priority: "medium", campaign: null },
+            { account: "AFC Dallas", type: "benchmark", metric: "click_rate", delta: "-8%", direction: "below", priority: "high", campaign: null },
+            { account: "AFC Atlanta", type: "benchmark", metric: "open_rate", delta: "-3%", direction: "below", priority: "low", campaign: null },
+            
+            // Min/Max performers
+            { account: "AFC Miami", type: "minmax", metric: "open_rate", delta: "45.2%", direction: "highest", priority: "high", campaign: null },
+            { account: "AFC Boston", type: "minmax", metric: "click_rate", delta: "8.7%", direction: "highest", priority: "high", campaign: null },
+            { account: "AFC Phoenix", type: "minmax", metric: "click_rate", delta: "1.2%", direction: "lowest", priority: "high", campaign: null },
+            { account: "AFC Dallas", type: "minmax", metric: "open_rate", delta: "18.5%", direction: "lowest", priority: "medium", campaign: null },
+            
+            // Campaign performance
+            { account: "AFC Chicago", type: "campaign", metric: "click_rate", delta: "+25%", direction: "higher", priority: "high", campaign: "Winter Sale" },
+            { account: "AFC Seattle", type: "campaign", metric: "open_rate", delta: "+32%", direction: "higher", priority: "high", campaign: "Valentine's Special" },
+            { account: "AFC Denver", type: "campaign", metric: "click_rate", delta: "-15%", direction: "lower", priority: "medium", campaign: "Monthly Newsletter" },
+            { account: "AFC Atlanta", type: "campaign", metric: "open_rate", delta: "+10%", direction: "higher", priority: "low", campaign: "New Year Promo" },
+        ];
+        
+        // Generate insight text from data
+        function generateInsightText(row) {
+            const metricLabels = {
+                click_rate: "click rate",
+                open_rate: "open rate",
+                bounce_rate: "bounce rate"
+            };
+            const metric = metricLabels[row.metric];
+            
+            switch(row.type) {
+                case 'trend':
+                    return `<a href="#" class="font-medium hover:underline hover:text-main-600">${row.account}</a>'s 30-day ${metric} is <span class="font-medium ${row.direction === 'higher' ? 'text-success-600' : 'text-warning-600'}">${row.delta}</span> ${row.direction} than the previous 30 days.`;
+                case 'benchmark':
+                    return `<a href="#" class="font-medium hover:underline hover:text-main-600">${row.account}</a>'s ${metric} is <span class="font-medium ${row.direction === 'above' ? 'text-success-600' : 'text-warning-600'}">${row.delta}</span> ${row.direction} benchmark this month.`;
+                case 'minmax':
+                    return `<a href="#" class="font-medium hover:underline hover:text-main-600">${row.account}</a> has the <span class="font-medium ${row.direction === 'highest' ? 'text-success-600' : 'text-warning-600'}">${row.direction}</span> ${metric} (${row.delta}) this month.`;
+                case 'campaign':
+                    return `<a href="#" class="font-medium hover:underline hover:text-main-600">${row.account}</a>'s "<span class="font-medium">${row.campaign}</span>" has a <span class="font-medium ${row.direction === 'higher' ? 'text-success-600' : 'text-warning-600'}">${row.delta}</span> ${row.direction} ${metric} than average this month.`;
+                default:
+                    return '';
+            }
+        }
+        
+        // Render table
+        function renderInsightsTable(data = afcInsightsData) {
+            const tbody = document.getElementById('insights-table-body');
+            const metricFilter = document.getElementById('metric-filter').value;
+            const typeFilter = document.getElementById('type-filter').value;
+            
+            const filtered = data.filter(row => {
+                if (metricFilter !== 'all' && row.metric !== metricFilter) return false;
+                if (typeFilter !== 'all' && row.type !== typeFilter) return false;
+                return true;
+            });
+            
+            tbody.innerHTML = filtered.map(row => {
+                const priorityColors = {
+                    high: 'bg-danger-100 text-danger-700',
+                    medium: 'bg-warning-100 text-warning-700',
+                    low: 'bg-neutral-100 text-neutral-600'
+                };
+                const typeLabels = {
+                    trend: 'Trend',
+                    benchmark: 'Benchmark',
+                    minmax: 'Min/Max',
+                    campaign: 'Campaign'
+                };
+                const metricLabels = {
+                    click_rate: 'Click Rate',
+                    open_rate: 'Open Rate',
+                    bounce_rate: 'Bounce Rate'
+                };
+                
+                return `
+                    <tr class="hover:bg-neutral-50">
+                        <td class="px-5 py-3 font-medium text-neutral-900">${row.account}</td>
+                        <td class="px-5 py-3"><span class="px-2 py-0.5 text-xs rounded-full bg-neutral-100 text-neutral-600">${typeLabels[row.type]}</span></td>
+                        <td class="px-5 py-3 text-neutral-600">${metricLabels[row.metric]}</td>
+                        <td class="px-5 py-3"><span class="font-medium ${row.direction === 'higher' || row.direction === 'above' || row.direction === 'highest' ? 'text-success-600' : 'text-warning-600'}">${row.delta}</span></td>
+                        <td class="px-5 py-3 text-neutral-700 max-w-md">${generateInsightText(row)}</td>
+                        <td class="px-5 py-3"><span class="px-2 py-0.5 text-xs rounded-full ${priorityColors[row.priority]}">${row.priority}</span></td>
+                        <td class="px-5 py-3">
+                            <button onclick="useInsight(this)" class="text-main-600 hover:text-main-700 text-sm font-medium hover:underline">Use</button>
+                        </td>
+                    </tr>
+                `;
+            }).join('');
+        }
+        
+        // Use insight from table
+        function useInsight(button) {
+            const row = button.closest('tr');
+            const insightText = row.querySelector('td:nth-child(5)').innerHTML;
+            document.getElementById('insight-1').value = insightText;
+            showTab('tile');
+            updateInsights();
+        }
+        
+        // Filter change handlers
+        document.getElementById('metric-filter')?.addEventListener('change', () => renderInsightsTable());
+        document.getElementById('type-filter')?.addEventListener('change', () => renderInsightsTable());
+        
+        // Initialize
+        renderInsights(defaultInsights);
+        renderInsightsTable();
+    </script>
+</body>
+</html>

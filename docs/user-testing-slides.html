@@ -1,0 +1,585 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>V2 Navigation User Testing Report — CTCT for Teams</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            main: {
+              50: '#f0f7ff', 100: '#e0f0ff', 200: '#b9e0fe', 300: '#7cc8fd', 400: '#36aaf8',
+              500: '#0c8ce9', 600: '#006fc7', 700: '#0059a1', 800: '#054b85', 900: '#0a406e'
+            },
+            accent: {
+              50: '#faf5ff', 100: '#f3e8ff', 200: '#e9d5ff', 300: '#d8b4fe', 400: '#c084fc',
+              500: '#a855f7', 600: '#9333ea', 700: '#7c3aed', 800: '#6b21a8', 900: '#581c87'
+            }
+          },
+          fontFamily: {
+            sans: ['CTSans', 'system-ui', 'sans-serif']
+          }
+        }
+      }
+    }
+  </script>
+  <style>
+    @font-face {
+      font-family: 'CTSans';
+      src: url('fonts/CTSans-Regular.woff2') format('woff2');
+      font-weight: 400;
+      font-style: normal;
+      font-display: swap;
+    }
+    @font-face {
+      font-family: 'CTSans';
+      src: url('fonts/CTSans-Semibold.woff2') format('woff2');
+      font-weight: 600;
+      font-style: normal;
+      font-display: swap;
+    }
+    @font-face {
+      font-family: 'CTSans';
+      src: url('fonts/CTSans-Bold.woff2') format('woff2');
+      font-weight: 700;
+      font-style: normal;
+      font-display: swap;
+    }
+
+    .slide {
+      display: none;
+      animation: fadeIn 0.4s ease-out;
+    }
+    .slide.active {
+      display: flex;
+    }
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    .gradient-text {
+      background: linear-gradient(135deg, #06b6d4 0%, #3B82F6 50%, #8B5CF6 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+    body {
+      background: linear-gradient(135deg, #0f0f1a 0%, #131825 25%, #0a0e17 50%, #0d1220 75%, #0f0f1a 100%);
+      background-attachment: fixed;
+      transition: background 0.3s ease;
+      color: #fafafa;
+    }
+    .card-glow {
+      transition: all 0.3s ease;
+    }
+    .card-glow:hover {
+      transform: translateY(-2px);
+    }
+    .slide-card {
+      background: rgba(15, 23, 42, 0.6);
+      border: 1px solid rgba(100, 116, 139, 0.3);
+      backdrop-filter: blur(12px);
+    }
+  </style>
+</head>
+<body class="min-h-screen font-sans bg-black text-white">
+
+  <!-- Slide Container -->
+  <div class="min-h-screen flex items-center justify-center pb-16 px-8">
+    
+    <!-- Slide 1: Title (with color accent) -->
+    <div id="slide-1" class="slide cover-slide active flex-col items-center justify-center text-center max-w-5xl w-full">
+      <div class="mb-8">
+        <span class="inline-block px-4 py-1.5 bg-zinc-900 border border-zinc-800 text-zinc-400 rounded-full text-sm font-medium mb-6">CTCT for Teams — User Testing Report</span>
+        <h1 class="text-5xl font-bold text-white mb-6 leading-tight">V2 Workspace Navigation<br><span class="gradient-text">User Testing Report</span></h1>
+        <p class="text-xl text-zinc-400 mb-8">Folder-based navigation with qualified multi-account participants</p>
+        <div class="flex items-center justify-center gap-8 text-sm">
+          <div class="text-center">
+            <div class="text-3xl font-bold text-main-400">12</div>
+            <div class="text-zinc-500">Unmoderated</div>
+          </div>
+          <div class="text-center">
+            <div class="text-3xl font-bold text-accent-400">2</div>
+            <div class="text-zinc-500">Moderated (Qualified)</div>
+          </div>
+          <div class="text-center">
+            <div class="text-3xl font-bold text-white">3</div>
+            <div class="text-zinc-500">Key Recs</div>
+          </div>
+        </div>
+      </div>
+      <div class="flex items-center gap-3 text-zinc-500 mt-8">
+        <span class="text-sm">Click anywhere to continue</span>
+      </div>
+    </div>
+
+    <!-- Slide 2: Session Recording + Key Recommendations -->
+    <div id="slide-2" class="slide flex-col items-center justify-center max-w-6xl w-full">
+      <div class="w-full">
+        <div class="text-center mb-6">
+          <span class="inline-block px-3 py-1 bg-zinc-900 border border-zinc-800 text-zinc-400 rounded-full text-xs font-medium mb-3">Summary</span>
+          <h2 class="text-3xl font-bold text-white mb-2">Session Recording & Key Findings</h2>
+          <p class="text-zinc-500">Based on 2 qualified moderated + 12 unmoderated sessions</p>
+        </div>
+        
+        <div class="grid grid-cols-2 gap-6">
+          <!-- Video Left -->
+          <div class="bg-zinc-950 border border-zinc-800 rounded-2xl overflow-hidden">
+            <video 
+              id="session-video"
+              controls 
+              autoplay
+              muted
+              class="w-full aspect-video"
+              onloadedmetadata="this.playbackRate = 2.0;"
+            >
+              <source src="assets/jan9 - test session 2 - Brit Teams workspace navigation.mp4" type="video/mp4">
+              Your browser does not support the video tag.
+            </video>
+            <div class="p-4 border-t border-zinc-800">
+              <p class="text-zinc-400 text-sm"><strong class="text-white">Unmoderated Session:</strong> V2 Workspace Navigation — Jan 9, 2026</p>
+            </div>
+          </div>
+          
+          <!-- Recommendations Right -->
+          <div class="space-y-4">
+            <div class="bg-zinc-950 border border-emerald-800/30 rounded-xl p-5">
+              <div class="flex items-start gap-4">
+                <div class="w-10 h-10 bg-emerald-900/30 border border-emerald-800/50 rounded-lg flex items-center justify-center flex-shrink-0">
+                  <span class="text-xl font-bold text-emerald-400">1</span>
+                </div>
+                <div>
+                  <h3 class="text-white font-semibold mb-1">V2 Navigation Works</h3>
+                  <p class="text-zinc-500 text-sm">97% task success rate. Users found navigation "very simple" with "no issues."</p>
+                </div>
+              </div>
+            </div>
+            
+            <div class="bg-zinc-950 border border-zinc-800 rounded-xl p-5">
+              <div class="flex items-start gap-4">
+                <div class="w-10 h-10 bg-zinc-900 border border-zinc-800 rounded-lg flex items-center justify-center flex-shrink-0">
+                  <span class="text-xl font-bold text-white">2</span>
+                </div>
+                <div>
+                  <h3 class="text-white font-semibold mb-1">Target Experienced Users</h3>
+                  <p class="text-zinc-500 text-sm">Both qualified participants rated 5/5 confidence. Prior enterprise experience creates instant comprehension.</p>
+                </div>
+              </div>
+            </div>
+            
+            <div class="bg-zinc-950 border border-zinc-800 rounded-xl p-5">
+              <div class="flex items-start gap-4">
+                <div class="w-10 h-10 bg-zinc-900 border border-zinc-800 rounded-lg flex items-center justify-center flex-shrink-0">
+                  <span class="text-xl font-bold text-white">3</span>
+                </div>
+                <div>
+                  <h3 class="text-white font-semibold mb-1">Minor Hierarchy Polish</h3>
+                  <p class="text-zinc-500 text-sm">One failure on workspace navigation. Consider clearer visual cues for folder → workspace drilling.</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Slide 3: Unmoderated Results Summary -->
+    <div id="slide-3" class="slide flex-col items-center justify-center max-w-5xl w-full">
+      <div class="w-full text-center">
+        <span class="inline-block px-3 py-1 bg-zinc-900 border border-zinc-800 text-zinc-400 rounded-full text-xs font-medium mb-4">Unmoderated Testing</span>
+        <h2 class="text-4xl font-bold text-white mb-3">12 Participants Summary</h2>
+        <p class="text-lg text-zinc-500 mb-8">V2 Workspace Navigation task performance</p>
+        
+        <div class="grid grid-cols-3 gap-5 text-left mb-6">
+          <div class="bg-zinc-950 border border-emerald-800/50 rounded-xl p-5 text-center">
+            <div class="text-4xl font-bold text-emerald-400 mb-2">97%</div>
+            <div class="text-white font-medium mb-1">Overall Success Rate</div>
+            <div class="text-zinc-500 text-sm">35/36 tasks completed</div>
+          </div>
+          
+          <div class="bg-zinc-950 border border-zinc-800 rounded-xl p-5 text-center">
+            <div class="text-4xl font-bold text-white mb-2">0:25</div>
+            <div class="text-white font-medium mb-1">Avg Task Time</div>
+            <div class="text-zinc-500 text-sm">Consistent across all tasks</div>
+          </div>
+          
+          <div class="bg-zinc-950 border border-zinc-800 rounded-xl p-5 text-center">
+            <div class="text-4xl font-bold text-white mb-2">2.3</div>
+            <div class="text-white font-medium mb-1">Avg Page Views</div>
+            <div class="text-zinc-500 text-sm">Efficient navigation paths</div>
+          </div>
+        </div>
+        
+        <div class="bg-zinc-950 border border-zinc-800 rounded-xl p-5 text-left">
+          <h3 class="text-white font-semibold mb-3">Task Breakdown</h3>
+          <div class="space-y-3">
+            <div class="flex items-center justify-between">
+              <span class="text-zinc-400">Task 1: Sign up for Teams plan</span>
+              <span class="px-3 py-1 bg-emerald-900/50 border border-emerald-700/50 text-emerald-400 text-xs rounded-full">100% (12/12)</span>
+            </div>
+            <div class="flex items-center justify-between">
+              <span class="text-zinc-400">Task 2: Navigate to NY Workspace</span>
+              <span class="px-3 py-1 bg-amber-900/50 border border-amber-700/50 text-amber-400 text-xs rounded-full">91.7% (11/12)</span>
+            </div>
+            <div class="flex items-center justify-between">
+              <span class="text-zinc-400">Task 3: Navigate to Org Dashboard</span>
+              <span class="px-3 py-1 bg-emerald-900/50 border border-emerald-700/50 text-emerald-400 text-xs rounded-full">100% (12/12)</span>
+            </div>
+          </div>
+        </div>
+        
+        <div class="mt-6 p-4 bg-zinc-950 border border-zinc-800 rounded-xl">
+          <p class="text-zinc-400 text-sm"><strong class="text-amber-400">1 failure point:</strong> Task 2 (Navigate to NY Workspace) — P4 gave up after 38 seconds with only 2 page views. Indicates hierarchy navigation requires clearer visual cues.</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Slide 4: victorialeo Success Case -->
+    <div id="slide-4" class="slide flex-col items-center justify-center max-w-5xl w-full">
+      <div class="w-full text-center">
+        <span class="inline-block px-3 py-1 bg-zinc-900 border border-zinc-800 text-zinc-400 rounded-full text-xs font-medium mb-4">Success Case</span>
+        <h2 class="text-4xl font-bold text-white mb-3">Moderated Session: victorialeo</h2>
+        <p class="text-lg text-zinc-500 mb-8">Qualified participant with extensive multi-location experience</p>
+        
+        <div class="bg-zinc-950 border border-zinc-800 rounded-2xl p-8 text-left max-w-3xl mx-auto">
+          <div class="flex items-start gap-6">
+            <div class="w-16 h-16 bg-zinc-900 border border-zinc-700 rounded-2xl flex items-center justify-center flex-shrink-0">
+              <span class="text-2xl font-bold text-white">VL</span>
+            </div>
+            <div class="flex-1">
+              <div class="flex items-center gap-3 mb-3">
+                <h3 class="text-white font-bold text-xl">victorialeo</h3>
+                <span class="px-2 py-0.5 bg-emerald-800 border border-emerald-700 text-emerald-400 text-xs rounded-full">5/5 Confidence</span>
+              </div>
+              <p class="text-zinc-400 mb-4">33F | $150K+ | Managed <strong class="text-white">70 locations</strong> across <strong class="text-white">5 states</strong> | 8+ enterprise accounts</p>
+              
+              <div class="bg-zinc-900 border border-zinc-800 rounded-xl p-4 mb-4">
+                <p class="text-zinc-300 italic">"I think it's very easy to navigate. I don't think it's very difficult to understand. It makes sense."</p>
+              </div>
+              
+              <div class="bg-zinc-900 border border-zinc-800 rounded-xl p-4 mb-4">
+                <p class="text-zinc-300 italic">"It was very clear to me where I needed to click. I found the UPS New York workspace almost immediately."</p>
+              </div>
+              
+              <div class="grid grid-cols-3 gap-3 text-center">
+                <div class="bg-zinc-900 border border-zinc-800 rounded-lg p-3">
+                  <div class="text-white font-semibold">Very Easy</div>
+                  <div class="text-zinc-600 text-xs">All Tasks</div>
+                </div>
+                <div class="bg-zinc-900 border border-zinc-800 rounded-lg p-3">
+                  <div class="text-white font-semibold">Intuitive</div>
+                  <div class="text-zinc-600 text-xs">Hierarchy</div>
+                </div>
+                <div class="bg-zinc-900 border border-zinc-800 rounded-lg p-3">
+                  <div class="text-white font-semibold">No Issues</div>
+                  <div class="text-zinc-600 text-xs">25+ Workspaces</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        
+        <div class="mt-6 p-4 bg-zinc-950 border border-zinc-800 rounded-xl max-w-2xl mx-auto">
+          <p class="text-zinc-400 text-sm"><strong class="text-white">Key Insight:</strong> Users with prior enterprise multi-location experience immediately understand the folder/workspace hierarchy without additional guidance.</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Slide 5: BitterK Success Case -->
+    <div id="slide-5" class="slide flex-col items-center justify-center max-w-5xl w-full">
+      <div class="w-full text-center">
+        <span class="inline-block px-3 py-1 bg-zinc-900 border border-zinc-800 text-zinc-400 rounded-full text-xs font-medium mb-4">Success Case</span>
+        <h2 class="text-4xl font-bold text-white mb-3">Moderated Session: BitterK</h2>
+        <p class="text-lg text-zinc-500 mb-8">Second qualified participant with multi-account experience</p>
+        
+        <div class="bg-zinc-950 border border-zinc-800 rounded-2xl p-8 text-left max-w-3xl mx-auto">
+          <div class="flex items-start gap-6">
+            <div class="w-16 h-16 bg-zinc-900 border border-zinc-700 rounded-2xl flex items-center justify-center flex-shrink-0">
+              <span class="text-2xl font-bold text-white">BK</span>
+            </div>
+            <div class="flex-1">
+              <div class="flex items-center gap-3 mb-3">
+                <h3 class="text-white font-bold text-xl">BitterK</h3>
+                <span class="px-2 py-0.5 bg-emerald-800 border border-emerald-700 text-emerald-400 text-xs rounded-full">5/5 Confidence</span>
+              </div>
+              <p class="text-zinc-400 mb-4">59M | $150K+ | Managed <strong class="text-white">10-12 accounts</strong> using <strong class="text-white">HubSpot</strong></p>
+              
+              <div class="bg-zinc-900 border border-zinc-800 rounded-xl p-4 mb-4">
+                <p class="text-zinc-300 italic">"It's very simple. No issues. I don't have a whole lot of comments because there's not a whole lot to mess up."</p>
+              </div>
+              
+              <div class="bg-zinc-900 border border-zinc-800 rounded-xl p-4 mb-4">
+                <p class="text-zinc-300 italic">"We're used to the idea of expanding and shrinking things. So you just click a folder? Oh, there's five workspaces. I can click on it, open it up. So no issues."</p>
+              </div>
+              
+              <div class="grid grid-cols-3 gap-3 text-center">
+                <div class="bg-zinc-900 border border-zinc-800 rounded-lg p-3">
+                  <div class="text-white font-semibold">Very Easy</div>
+                  <div class="text-zinc-600 text-xs">All Tasks</div>
+                </div>
+                <div class="bg-zinc-900 border border-zinc-800 rounded-lg p-3">
+                  <div class="text-white font-semibold">Clear</div>
+                  <div class="text-zinc-600 text-xs">Hierarchy</div>
+                </div>
+                <div class="bg-zinc-900 border border-zinc-800 rounded-lg p-3">
+                  <div class="text-white font-semibold">Familiar</div>
+                  <div class="text-zinc-600 text-xs">Folder Pattern</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        
+        <div class="mt-6 p-4 bg-zinc-950 border border-zinc-800 rounded-xl max-w-2xl mx-auto">
+          <p class="text-zinc-400 text-sm"><strong class="text-white">Key Insight:</strong> Users with prior multi-account platform experience (HubSpot, enterprise tools) immediately grasped the folder/workspace hierarchy without guidance.</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Slide 6: Moderated Sessions Table -->
+    <div id="slide-6" class="slide flex-col items-center justify-center max-w-5xl w-full">
+      <div class="w-full text-center">
+        <span class="inline-block px-3 py-1 bg-zinc-900 border border-zinc-800 text-zinc-400 rounded-full text-xs font-medium mb-4">Qualified Participants</span>
+        <h2 class="text-4xl font-bold text-white mb-3">Moderated Sessions</h2>
+        <p class="text-lg text-zinc-500 mb-8">2 participants with multi-account experience (met screening criteria)</p>
+        
+        <div class="bg-zinc-950 border border-zinc-800 rounded-2xl overflow-hidden">
+          <table class="w-full text-left">
+            <thead class="bg-zinc-900">
+              <tr>
+                <th class="px-5 py-3 text-xs text-zinc-500 uppercase tracking-wide">Version</th>
+                <th class="px-5 py-3 text-xs text-zinc-500 uppercase tracking-wide">Participant</th>
+                <th class="px-5 py-3 text-xs text-zinc-500 uppercase tracking-wide">Experience</th>
+                <th class="px-5 py-3 text-xs text-zinc-500 uppercase tracking-wide">Confidence</th>
+                <th class="px-5 py-3 text-xs text-zinc-500 uppercase tracking-wide">Link</th>
+              </tr>
+            </thead>
+            <tbody class="divide-y divide-zinc-800">
+              <tr class="hover:bg-zinc-900/50 bg-emerald-900/20">
+                <td class="px-5 py-4"><span class="px-2 py-1 bg-zinc-900 border border-zinc-700 text-white text-xs rounded">V2</span></td>
+                <td class="px-5 py-4 text-white font-semibold">victorialeo <span class="text-zinc-600 text-sm">(33F)</span></td>
+                <td class="px-5 py-4 text-emerald-400 font-medium">70 locations</td>
+                <td class="px-5 py-4 text-white font-semibold">5/5</td>
+                <td class="px-5 py-4"><a href="https://app.usertesting.com/v/ec2a026c-b0fc-440f-a319-f0773bedc8d6?encrypted_video_handle=3f771c91-ef0a-4fdf-9912-1ac594b12494#!/transcript" target="_blank" class="text-zinc-400 hover:text-white text-sm underline">View</a></td>
+              </tr>
+              <tr class="hover:bg-zinc-900/50 bg-emerald-900/20">
+                <td class="px-5 py-4"><span class="px-2 py-1 bg-zinc-900 border border-zinc-700 text-white text-xs rounded">V2</span></td>
+                <td class="px-5 py-4 text-white font-semibold">BitterK <span class="text-zinc-600 text-sm">(59M)</span></td>
+                <td class="px-5 py-4 text-emerald-400 font-medium">10-12 accounts</td>
+                <td class="px-5 py-4 text-white font-semibold">5/5</td>
+                <td class="px-5 py-4 text-zinc-700 text-sm">—</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        
+        <div class="mt-6 p-4 bg-zinc-900/50 border border-zinc-800 rounded-xl text-left">
+          <p class="text-sm text-zinc-400"><span class="text-white font-medium">Screening criteria:</span> Participants must have prior experience managing multiple business accounts or locations. 5 participants excluded due to lack of multi-account experience.</p>
+        </div>
+        
+        <div class="mt-8 flex items-center justify-center gap-4">
+          <a href="option-b-northstar-empty.html" class="px-5 py-2.5 bg-white hover:bg-zinc-200 text-black rounded-lg text-sm font-medium transition-colors">
+            Explore Live Prototype
+          </a>
+        </div>
+      </div>
+    </div>
+
+    <!-- Slide 7: Quantitative Metrics -->
+    <div id="slide-7" class="slide flex-col items-center justify-center max-w-5xl w-full">
+      <div class="w-full text-center">
+        <span class="inline-block px-3 py-1 bg-zinc-900 border border-zinc-800 text-zinc-400 rounded-full text-xs font-medium mb-4">Quantitative Data</span>
+        <h2 class="text-4xl font-bold text-white mb-3">Task Performance Metrics</h2>
+        <p class="text-lg text-zinc-500 mb-8">Unmoderated Testing — 12 participants</p>
+        
+        <!-- Task 1 -->
+        <div class="bg-zinc-950 border border-zinc-800 rounded-2xl p-6 mb-4">
+          <div class="flex items-center justify-between mb-4">
+            <h3 class="text-white font-semibold text-left">Task 1: Sign up for a Teams plan</h3>
+            <span class="px-3 py-1 bg-emerald-900/50 border border-emerald-700/50 text-emerald-400 text-xs rounded-full">100% Success</span>
+          </div>
+          <div class="grid grid-cols-4 gap-4">
+            <div class="bg-zinc-900 border border-zinc-800 rounded-xl p-4 text-center">
+              <div class="text-3xl font-bold text-emerald-400">12/12</div>
+              <div class="text-zinc-500 text-xs mt-1">Completed</div>
+            </div>
+            <div class="bg-zinc-900 border border-zinc-800 rounded-xl p-4 text-center">
+              <div class="text-3xl font-bold text-white">0:25</div>
+              <div class="text-zinc-500 text-xs mt-1">Avg Time</div>
+            </div>
+            <div class="bg-zinc-900 border border-zinc-800 rounded-xl p-4 text-center">
+              <div class="text-3xl font-bold text-white">1.2</div>
+              <div class="text-zinc-500 text-xs mt-1">Avg Page Views</div>
+            </div>
+            <div class="bg-zinc-900 border border-zinc-800 rounded-xl p-4 text-center">
+              <div class="text-3xl font-bold text-white">3.3</div>
+              <div class="text-zinc-500 text-xs mt-1">Avg Interactions</div>
+            </div>
+          </div>
+        </div>
+        
+        <!-- Task 2 -->
+        <div class="bg-zinc-950 border border-zinc-800 rounded-2xl p-6 mb-4">
+          <div class="flex items-center justify-between mb-4">
+            <h3 class="text-white font-semibold text-left">Task 2: Navigate to NY Workspace</h3>
+            <span class="px-3 py-1 bg-amber-900/50 border border-amber-700/50 text-amber-400 text-xs rounded-full">91.7% Success</span>
+          </div>
+          <div class="grid grid-cols-4 gap-4">
+            <div class="bg-zinc-900 border border-zinc-800 rounded-xl p-4 text-center">
+              <div class="text-3xl font-bold text-amber-400">11/12</div>
+              <div class="text-zinc-500 text-xs mt-1">Completed</div>
+            </div>
+            <div class="bg-zinc-900 border border-zinc-800 rounded-xl p-4 text-center">
+              <div class="text-3xl font-bold text-white">0:25</div>
+              <div class="text-zinc-500 text-xs mt-1">Avg Time</div>
+            </div>
+            <div class="bg-zinc-900 border border-zinc-800 rounded-xl p-4 text-center">
+              <div class="text-3xl font-bold text-white">3.1</div>
+              <div class="text-zinc-500 text-xs mt-1">Avg Page Views</div>
+            </div>
+            <div class="bg-zinc-900 border border-zinc-800 rounded-xl p-4 text-center">
+              <div class="text-3xl font-bold text-white">2.5</div>
+              <div class="text-zinc-500 text-xs mt-1">Avg Interactions</div>
+            </div>
+          </div>
+          <div class="mt-3 text-left">
+            <p class="text-zinc-500 text-xs"><span class="text-amber-400">1 failure:</span> P4 — 2 page views, gave up after 38 seconds</p>
+          </div>
+        </div>
+        
+        <!-- Task 3 -->
+        <div class="bg-zinc-950 border border-zinc-800 rounded-2xl p-6">
+          <div class="flex items-center justify-between mb-4">
+            <h3 class="text-white font-semibold text-left">Task 3: Navigate to Org Dashboard</h3>
+            <span class="px-3 py-1 bg-emerald-900/50 border border-emerald-700/50 text-emerald-400 text-xs rounded-full">100% Success</span>
+          </div>
+          <div class="grid grid-cols-4 gap-4">
+            <div class="bg-zinc-900 border border-zinc-800 rounded-xl p-4 text-center">
+              <div class="text-3xl font-bold text-emerald-400">12/12</div>
+              <div class="text-zinc-500 text-xs mt-1">Completed</div>
+            </div>
+            <div class="bg-zinc-900 border border-zinc-800 rounded-xl p-4 text-center">
+              <div class="text-3xl font-bold text-white">0:25</div>
+              <div class="text-zinc-500 text-xs mt-1">Avg Time</div>
+            </div>
+            <div class="bg-zinc-900 border border-zinc-800 rounded-xl p-4 text-center">
+              <div class="text-3xl font-bold text-white">1.4</div>
+              <div class="text-zinc-500 text-xs mt-1">Avg Page Views</div>
+            </div>
+            <div class="bg-zinc-900 border border-zinc-800 rounded-xl p-4 text-center">
+              <div class="text-3xl font-bold text-white">3.2</div>
+              <div class="text-zinc-500 text-xs mt-1">Avg Interactions</div>
+            </div>
+          </div>
+          <div class="mt-3 text-left">
+            <p class="text-zinc-500 text-xs"><span class="text-zinc-400">Note:</span> P2 & P15 had 9 interactions each — explored before succeeding</p>
+          </div>
+        </div>
+        
+        <div class="mt-6 p-4 bg-zinc-950 border border-zinc-800 rounded-xl">
+          <p class="text-zinc-400 text-sm"><strong class="text-white">Key Finding:</strong> Workspace navigation (Task 2) shows the only friction point. One participant failed entirely, and several took longer paths. Aligns with moderated findings on hierarchy confusion.</p>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- Big Left Arrow -->
+  <button onclick="prevSlide()" class="fixed left-6 top-1/2 -translate-y-1/2 w-14 h-14 bg-zinc-900 hover:bg-zinc-800 border border-zinc-700 rounded-full flex items-center justify-center text-zinc-400 hover:text-white transition-all z-50">
+    <svg class="w-8 h-8" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m15 18-6-6 6-6"/></svg>
+  </button>
+  
+  <!-- Big Right Arrow -->
+  <button onclick="nextSlide()" class="fixed right-6 top-1/2 -translate-y-1/2 w-14 h-14 bg-zinc-900 hover:bg-zinc-800 border border-zinc-700 rounded-full flex items-center justify-center text-zinc-400 hover:text-white transition-all z-50">
+    <svg class="w-8 h-8" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m9 18 6-6-6-6"/></svg>
+  </button>
+
+  <!-- Navigation Footer -->
+  <div class="fixed bottom-0 left-0 right-0 px-8 py-4 flex items-center justify-between bg-gradient-to-t from-black to-transparent">
+    <a href="research-hub.html" class="text-zinc-600 hover:text-white text-sm transition-colors">Back to Research</a>
+    
+    <div class="flex items-center gap-1.5">
+      <button onclick="goToSlide(1)" class="dot w-2.5 h-2.5 rounded-full bg-white transition-all"></button>
+      <button onclick="goToSlide(2)" class="dot w-2.5 h-2.5 rounded-full bg-zinc-700 hover:bg-zinc-600 transition-all"></button>
+      <button onclick="goToSlide(3)" class="dot w-2.5 h-2.5 rounded-full bg-zinc-700 hover:bg-zinc-600 transition-all"></button>
+      <button onclick="goToSlide(4)" class="dot w-2.5 h-2.5 rounded-full bg-zinc-700 hover:bg-zinc-600 transition-all"></button>
+      <button onclick="goToSlide(5)" class="dot w-2.5 h-2.5 rounded-full bg-zinc-700 hover:bg-zinc-600 transition-all"></button>
+      <button onclick="goToSlide(6)" class="dot w-2.5 h-2.5 rounded-full bg-zinc-700 hover:bg-zinc-600 transition-all"></button>
+      <button onclick="goToSlide(7)" class="dot w-2.5 h-2.5 rounded-full bg-zinc-700 hover:bg-zinc-600 transition-all"></button>
+    </div>
+    
+    <div class="flex items-center gap-2">
+      <span class="text-sm text-zinc-600">Slide</span>
+      <span id="slide-counter" class="text-sm text-white font-medium">1 / 7</span>
+    </div>
+  </div>
+
+  <script>
+    const totalSlides = 7;
+    let currentSlide = parseInt(sessionStorage.getItem('userTestingSlide')) || 1;
+    if (currentSlide > totalSlides) currentSlide = 1;
+
+    function showSlide(n) {
+      document.querySelectorAll('.slide').forEach(s => s.classList.remove('active'));
+      const slideEl = document.getElementById('slide-' + n);
+      if (!slideEl) {
+        n = 1;
+      }
+      const activeSlide = document.getElementById('slide-' + n);
+      activeSlide.classList.add('active');
+      
+      // Toggle body background based on cover slide
+      if (activeSlide.classList.contains('cover-slide')) {
+        document.body.classList.add('cover-active');
+      } else {
+        document.body.classList.remove('cover-active');
+      }
+      
+      document.getElementById('slide-counter').textContent = n + ' / ' + totalSlides;
+      
+      document.querySelectorAll('.dot').forEach((dot, i) => {
+        if (i + 1 === n) {
+          dot.classList.remove('bg-zinc-700');
+          dot.classList.add('bg-white');
+        } else {
+          dot.classList.remove('bg-white');
+          dot.classList.add('bg-zinc-700');
+        }
+      });
+      
+      currentSlide = n;
+      sessionStorage.setItem('userTestingSlide', n);
+    }
+
+    function nextSlide() {
+      if (currentSlide < totalSlides) {
+        showSlide(currentSlide + 1);
+      }
+    }
+
+    function prevSlide() {
+      if (currentSlide > 1) {
+        showSlide(currentSlide - 1);
+      }
+    }
+
+    function goToSlide(n) {
+      showSlide(n);
+    }
+
+    if (currentSlide > 1) {
+      showSlide(currentSlide);
+    }
+
+    // Click anywhere to advance
+    document.querySelector('.min-h-screen').addEventListener('click', (e) => {
+      if (!e.target.closest('a') && !e.target.closest('button')) {
+        nextSlide();
+      }
+    });
+  </script>
+</body>
+</html>

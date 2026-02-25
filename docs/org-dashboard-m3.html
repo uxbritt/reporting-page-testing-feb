@@ -1,0 +1,2961 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Org Dashboard — V1.2 (MVP Updates)</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['CTSans', 'system-ui', 'sans-serif'],
+                    },
+                    colors: {
+                        main: {
+                            50: '#f6fcff',
+                            100: '#e6f8ff',
+                            200: '#d6eafe',
+                            300: '#a6d3fd',
+                            400: '#65abff',
+                            500: '#468af1',
+                            600: '#186ded',
+                            700: '#085fe2',
+                            800: '#1357be',
+                            900: '#0046ae',
+                            950: '#0b3c85',
+                        },
+                        neutral: {
+                            50: '#fcfcfd',
+                            100: '#f7f9fd',
+                            200: '#f0f4fa',
+                            300: '#dce2ec',
+                            400: '#c9d0de',
+                            500: '#8d9bb6',
+                            600: '#6b7492',
+                            700: '#63708a',
+                            800: '#5d687e',
+                            900: '#3f4b63',
+                            950: '#313b4d',
+                        },
+                        success: {
+                            400: '#75e0a7',
+                            500: '#47cd89',
+                            600: '#17b26a',
+                            700: '#079455',
+                            800: '#067647',
+                        },
+                        danger: {
+                            400: '#fda29b',
+                            600: '#f04438',
+                        },
+                        warning: {
+                            400: '#ffca8d',
+                        },
+                        accent: {
+                            500: '#a48afb',
+                        },
+                    },
+                },
+            },
+        }
+    </script>
+    <style>
+        /* Change Indicator Badges */
+        .change-indicator {
+            display: inline-flex;
+            align-items: center;
+            padding: 0.125rem 0.375rem;
+            border-radius: 0.25rem;
+            font-size: 0.75rem;
+            font-weight: 500;
+        }
+        .change-indicator.positive {
+            background-color: #ecfdf3;
+            color: #079455;
+        }
+        .change-indicator.negative {
+            background-color: #fef3f2;
+            color: #d92d20;
+        }
+        
+        /* AI Insight Card Thumbs - Show on Hover */
+        .insight-card .insight-thumbs {
+            opacity: 0;
+            transition: opacity 0.2s ease;
+        }
+        .insight-card:hover .insight-thumbs {
+            opacity: 1;
+        }
+        
+        /* Sidenav Collapse Styles */
+        .sidenav-expanded {
+            width: 16rem;
+            transition: width 0.3s ease-in-out;
+        }
+        .sidenav-collapsed {
+            width: 4rem;
+            transition: width 0.3s ease-in-out;
+        }
+        .sidenav-collapsed .sidenav-label,
+        .sidenav-collapsed .sidenav-chevron,
+        .sidenav-collapsed .sidenav-section-header,
+        .sidenav-collapsed .sidenav-children,
+        .sidenav-collapsed .sidenav-child-item {
+            opacity: 0;
+            width: 0;
+            overflow: hidden;
+            display: none;
+            transition: opacity 0.2s ease-in-out;
+        }
+        .sidenav-collapsed .sidenav-create-btn {
+            padding-left: 0;
+            padding-right: 0;
+            justify-content: center;
+        }
+        .sidenav-collapsed nav {
+            padding-left: 0.25rem;
+            padding-right: 0.25rem;
+        }
+        .sidenav-collapsed nav ul li a,
+        .sidenav-collapsed nav ul li button {
+            justify-content: center;
+            padding-left: 0.5rem;
+            padding-right: 0.5rem;
+        }
+        .sidenav-collapsed nav ul li a > div,
+        .sidenav-collapsed nav ul li button > div {
+            justify-content: center;
+        }
+        .sidenav-toggle-btn {
+            z-index: 100;
+        }
+        
+        /* Developer Mode Styles */
+        .dev-mode .dev-inspect {
+            position: relative;
+            outline: 2px dashed transparent;
+            transition: outline-color 0.15s ease;
+        }
+        .dev-mode .dev-inspect:hover {
+            outline-color: #7839ee;
+            outline-offset: 2px;
+        }
+        .dev-mode .dev-inspect:hover .dev-tooltip {
+            opacity: 1;
+            visibility: visible;
+            transform: translateY(0);
+        }
+        
+        /* Spacing Debug Mode */
+        .dev-spacing [class*="p-"], .dev-spacing [class*="px-"], .dev-spacing [class*="py-"],
+        .dev-spacing [class*="pl-"], .dev-spacing [class*="pr-"], .dev-spacing [class*="pt-"], .dev-spacing [class*="pb-"] {
+            background-image: repeating-linear-gradient(
+                90deg,
+                rgba(16, 185, 129, 0.08) 0px,
+                rgba(16, 185, 129, 0.08) 1px,
+                transparent 1px,
+                transparent 4px
+            ), repeating-linear-gradient(
+                0deg,
+                rgba(16, 185, 129, 0.08) 0px,
+                rgba(16, 185, 129, 0.08) 1px,
+                transparent 1px,
+                transparent 4px
+            );
+            outline: 1px solid rgba(16, 185, 129, 0.3);
+        }
+        .dev-spacing [class*="m-"], .dev-spacing [class*="mx-"], .dev-spacing [class*="my-"],
+        .dev-spacing [class*="ml-"], .dev-spacing [class*="mr-"], .dev-spacing [class*="mt-"], .dev-spacing [class*="mb-"] {
+            outline: 1px dashed rgba(251, 146, 60, 0.5);
+        }
+        .dev-spacing [class*="gap-"] {
+            outline: 1px solid rgba(139, 92, 246, 0.4);
+        }
+        .dev-spacing .dev-spacing-label {
+            display: block !important;
+        }
+        .dev-spacing-label {
+            display: none;
+            position: absolute;
+            top: -18px;
+            left: 0;
+            padding: 2px 6px;
+            background: #1e1e2e;
+            border-radius: 3px;
+            font-family: 'SF Mono', Monaco, monospace;
+            font-size: 9px;
+            color: #a6e3a1;
+            white-space: nowrap;
+            z-index: 1000;
+            pointer-events: none;
+        }
+        
+        /* Dev Mode Toggle Panel */
+        .dev-panel {
+            display: none;
+            align-items: center;
+            gap: 8px;
+            margin-left: 12px;
+            padding-left: 12px;
+            border-left: 1px solid #404040;
+        }
+        .dev-mode .dev-panel {
+            display: flex;
+        }
+        .dev-toggle-btn {
+            padding: 4px 10px;
+            background: #27272a;
+            border: 1px solid #3f3f46;
+            border-radius: 4px;
+            font-family: 'SF Mono', Monaco, monospace;
+            font-size: 10px;
+            color: #a1a1aa;
+            cursor: pointer;
+            transition: all 0.15s ease;
+        }
+        .dev-toggle-btn:hover {
+            background: #3f3f46;
+            color: #e4e4e7;
+        }
+        .dev-toggle-btn.active {
+            background: #10b981;
+            border-color: #10b981;
+            color: #fff;
+        }
+        .dev-toggle-btn.active.spacing {
+            background: #10b981;
+        }
+        .dev-toggle-btn.active.grid {
+            background: #8b5cf6;
+        }
+        
+        /* Spacing Legend */
+        .dev-legend {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-family: 'SF Mono', Monaco, monospace;
+            font-size: 9px;
+            color: #71717a;
+        }
+        .dev-legend-item {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+        .dev-legend-swatch {
+            width: 10px;
+            height: 10px;
+            border-radius: 2px;
+        }
+        .dev-legend-swatch.padding {
+            background: rgba(16, 185, 129, 0.3);
+            border: 1px solid rgba(16, 185, 129, 0.6);
+        }
+        .dev-legend-swatch.margin {
+            background: transparent;
+            border: 1px dashed rgba(251, 146, 60, 0.7);
+        }
+        .dev-legend-swatch.gap {
+            background: rgba(139, 92, 246, 0.3);
+            border: 1px solid rgba(139, 92, 246, 0.6);
+        }
+        .dev-tooltip {
+            position: absolute;
+            bottom: calc(100% + 8px);
+            left: 0;
+            z-index: 1000;
+            min-width: 280px;
+            padding: 12px;
+            background: #1e1e2e;
+            border: 1px solid #313244;
+            border-radius: 8px;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.3);
+            opacity: 0;
+            visibility: hidden;
+            transform: translateY(4px);
+            transition: all 0.2s ease;
+            font-family: 'SF Mono', Monaco, monospace;
+            font-size: 11px;
+            color: #cdd6f4;
+        }
+        .dev-tooltip::after {
+            content: '';
+            position: absolute;
+            top: 100%;
+            left: 20px;
+            border: 6px solid transparent;
+            border-top-color: #1e1e2e;
+        }
+        .dev-tooltip-header {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            margin-bottom: 8px;
+            padding-bottom: 8px;
+            border-bottom: 1px solid #313244;
+        }
+        .dev-tooltip-component {
+            color: #cba6f7;
+            font-weight: 600;
+        }
+        .dev-tooltip-row {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 4px;
+        }
+        .dev-tooltip-label {
+            color: #6c7086;
+        }
+        .dev-tooltip-value {
+            color: #89b4fa;
+        }
+        .dev-tooltip-color {
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+        }
+        .dev-tooltip-swatch {
+            width: 12px;
+            height: 12px;
+            border-radius: 2px;
+            border: 1px solid rgba(255,255,255,0.2);
+        }
+        .dev-tooltip-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            margin-top: 8px;
+            padding: 6px 10px;
+            background: #313244;
+            border-radius: 4px;
+            color: #89dceb;
+            text-decoration: none;
+            transition: background 0.15s ease;
+        }
+        .dev-tooltip-link:hover {
+            background: #45475a;
+        }
+
+        /* CT Sans Font Family */
+        @font-face {
+            font-family: 'CTSans';
+            src: url('fonts/CTSans-Regular.woff2') format('woff2');
+            font-weight: 400;
+            font-style: normal;
+            font-display: swap;
+        }
+
+        @font-face {
+            font-family: 'CTSans';
+            src: url('fonts/CTSans-Semibold.woff2') format('woff2');
+            font-weight: 600;
+            font-style: normal;
+            font-display: swap;
+        }
+
+        @font-face {
+            font-family: 'CTSans';
+            src: url('fonts/CTSans-Bold.woff2') format('woff2');
+            font-weight: 700;
+            font-style: normal;
+            font-display: swap;
+        }
+
+        body {
+            font-family: 'CTSans', system-ui, sans-serif;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+        }
+
+        .custom-scrollbar::-webkit-scrollbar {
+            width: 8px;
+        }
+        
+        .custom-scrollbar::-webkit-scrollbar-track {
+            background: #f1f1f1;
+        }
+        
+        .custom-scrollbar::-webkit-scrollbar-thumb {
+            background: #888;
+            border-radius: 4px;
+        }
+        
+        .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+            background: #555;
+        }
+
+        /* North Star Dashboard Widget Styles */
+        :root {
+            /* Donut - Main blues (dark to light) */
+            --donut-1: #0b3c85;
+            --donut-2: #1357be;
+            --donut-3: #468af1;
+            --donut-4: #a6d3fd;
+            
+            /* Leaderboards - Success greens (dark to light) */
+            --workspace-1: #067647;
+            --workspace-2: #079455;
+            --workspace-3: #17b26a;
+            --workspace-low-1: #75e0a7;
+            --workspace-low-2: #a9efc5;
+        }
+
+        /* Donut Chart Styles */
+        .donut-container {
+            position: relative;
+        }
+        .donut-segment {
+            cursor: pointer;
+            transition: opacity 0.15s ease, stroke-width 0.15s ease;
+        }
+        .donut-segment:hover {
+            stroke-width: 8;
+        }
+        .donut-container:has(.donut-segment:hover) .donut-segment:not(:hover) {
+            opacity: 0.4;
+        }
+    </style>
+</head>
+<body class="bg-neutral-100">
+    <!-- Author Bar -->
+    <div class="fixed bottom-0 left-0 right-0 h-12 bg-neutral-950 flex items-center justify-between px-6 z-[100]">
+        <div class="flex items-center gap-4">
+            <span class="text-white font-semibold text-lg">V1.2</span>
+            <span class="text-neutral-500 text-sm">MVP Updates</span>
+            <!-- Dev Mode Toggle -->
+            <button 
+                id="dev-mode-toggle"
+                onclick="toggleDevMode()"
+                class="ml-4 px-3 py-1 bg-neutral-800 hover:bg-neutral-700 text-neutral-500 hover:text-white rounded-md text-xs font-mono transition-colors flex items-center gap-2"
+            >
+                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4"/></svg>
+                <span id="dev-mode-label">Dev Mode</span>
+            </button>
+            
+            <!-- Dev Mode Sub-toggles -->
+            <div class="dev-panel">
+                <button id="spacing-toggle" onclick="toggleSpacing()" class="dev-toggle-btn spacing">
+                    <span class="flex items-center gap-1.5">
+                        <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 8V4m0 0h4M4 4l5 5m11-1V4m0 0h-4m4 0l-5 5M4 16v4m0 0h4m-4 0l5-5m11 5l-5-5m5 5v-4m0 4h-4"/></svg>
+                        Spacing
+                    </span>
+                </button>
+                <div class="dev-legend">
+                    <div class="dev-legend-item">
+                        <span class="dev-legend-swatch padding"></span>
+                        <span>padding</span>
+                    </div>
+                    <div class="dev-legend-item">
+                        <span class="dev-legend-swatch margin"></span>
+                        <span>margin</span>
+                    </div>
+                    <div class="dev-legend-item">
+                        <span class="dev-legend-swatch gap"></span>
+                        <span>gap</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="flex items-center gap-3">
+            <a href="v1.html" class="px-4 py-1.5 bg-neutral-700 hover:bg-neutral-600 text-white rounded-lg text-sm font-medium transition-colors">V1.0 - Production</a>
+            <a href="v1.2.html" class="px-4 py-1.5 bg-main-600 text-white rounded-lg text-sm font-medium">V1.2 - MVP</a>
+            <a href="http://localhost:3000/option-b-northstar-empty.html?role=global&data=filled" class="px-4 py-1.5 bg-neutral-700 hover:bg-neutral-600 text-white rounded-lg text-sm font-medium transition-colors">Vx - Future</a>
+        </div>
+    </div>
+
+    <!-- Top Navigation Bar -->
+    <nav class="bg-white border-b border-neutral-300 px-4 md:px-6 lg:px-8 py-3 flex items-center justify-between">
+        <!-- Left Side - Logo & Hamburger -->
+        <div class="flex items-center">
+            <!-- Hamburger Menu - Mobile Only -->
+            <button 
+                onclick="toggleSidebar()"
+                class="lg:hidden p-2 text-neutral-600 hover:text-neutral-900 rounded-md hover:bg-neutral-200 transition-colors mr-3"
+                aria-label="Menu"
+            >
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
+                </svg>
+            </button>
+            
+            <!-- Logo -->
+            <img 
+                src="assets/ctctLogo.png" 
+                alt="Constant Contact" 
+                class="w-10 h-10 object-contain"
+            />
+        </div>
+        
+        <!-- Right Side - User Menu -->
+        <div class="flex items-center gap-3">
+            <!-- AI Assistant Button -->
+            <button onclick="openAIAssistant('general')" class="hidden sm:flex items-center gap-2 px-4 py-1.5 text-main-900 bg-gradient-to-r from-main-50 to-accent-100 hover:from-main-100 hover:to-accent-200 border border-main-200 rounded-md font-medium text-sm transition-colors">
+                <svg width="0" height="0" aria-hidden="true"><defs><linearGradient id="ai-gradient-btn" x1="0" y1="0" x2="24" y2="24" gradientUnits="userSpaceOnUse"><stop stop-color="#186ded"></stop><stop stop-color="#875bf7" offset="85%"></stop></linearGradient></defs></svg>
+                <svg class="w-4 h-4" fill="none" stroke="url(#ai-gradient-btn)" stroke-width="1.5" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><path d="M9.937 15.5A2 2 0 0 0 8.5 14.063l-6.135-1.582a.5.5 0 0 1 0-.962L8.5 9.936A2 2 0 0 0 9.937 8.5l1.582-6.135a.5.5 0 0 1 .963 0L14.063 8.5A2 2 0 0 0 15.5 9.937l6.135 1.581a.5.5 0 0 1 0 .964L15.5 14.063a2 2 0 0 0-1.437 1.437l-1.582 6.135a.5.5 0 0 1-.963 0z"></path><path d="M20 3v4"></path><path d="M22 5h-4"></path><path d="M4 17v2"></path><path d="M5 18H3"></path></svg>
+                <span>AI assistant</span>
+            </button>
+
+            <!-- User Profile -->
+            <button class="flex items-center gap-2 hover:bg-neutral-100 rounded-md px-2 py-1.5 transition-colors">
+                <div class="w-8 h-8 bg-neutral-800 rounded-full flex items-center justify-center">
+                    <span class="text-sm font-medium text-white user-initials">EH</span>
+                </div>
+                <span class="text-sm font-medium text-neutral-900 hidden md:inline org-name-display">Evergreen Harvest Co.</span>
+                <svg class="w-4 h-4 text-neutral-600 hidden md:block" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m19 9-7 7-7-7" />
+                </svg>
+            </button>
+            
+            <!-- Help Icon - Hidden on small mobile -->
+            <button class="hidden sm:inline-flex items-center justify-center rounded-lg transition-colors focus:outline-none hover:bg-neutral-200 p-2.5" aria-label="help">
+                <div class="relative inline-flex items-center justify-center rounded-full outline outline-1.5 outline-offset-0 outline-main-300">
+                    <svg stroke="currentColor" fill="currentColor" stroke-width="1.5" viewBox="0 0 512 512" class="w-6 h-6 opacity-80 text-main-600" height="1em" width="1em" xmlns="http://www.w3.org/2000/svg">
+                        <path fill="none" stroke-miterlimit="10" stroke-width="32" d="M256 80a176 176 0 1 0 176 176A176 176 0 0 0 256 80z"></path>
+                        <path fill="none" stroke-linecap="round" stroke-miterlimit="10" stroke-width="28" d="M200 202.29s.84-17.5 19.57-32.57C230.68 160.77 244 158.18 256 158c10.93-.14 20.69 1.67 26.53 4.45 10 4.76 29.47 16.38 29.47 41.09 0 26-17 37.81-36.37 50.8S251 281.43 251 296"></path>
+                        <circle cx="250" cy="348" r="20"></circle>
+                </svg>
+                </div>
+            </button>
+        </div>
+    </nav>
+
+    <!-- Main Container -->
+    <div class="flex min-h-screen pb-20">
+        <!-- Sidebar Backdrop (Mobile) -->
+        <div 
+            id="sidebar-backdrop" 
+            class="hidden fixed inset-0 bg-black bg-opacity-50 z-40 lg:hidden"
+            onclick="toggleSidebar()"
+        ></div>
+        
+        <!-- Left Sidebar Navigation - Rendered by component -->
+        <aside 
+            id="sidebar"
+            class="fixed lg:static inset-y-0 left-0 transform -translate-x-full lg:translate-x-0 transition-all duration-300 ease-in-out z-50 lg:z-auto w-64 bg-white border-r border-neutral-200 flex flex-col relative group sidenav-expanded overflow-visible"
+        >
+            <div id="sidebar-content" class="relative h-full overflow-visible"></div>
+        </aside>
+        <script src="components/left-nav.js"></script>
+
+        <!-- Main Content Area - North Star Dashboard -->
+        <main class="flex-1 overflow-y-auto">
+            <!-- Hero Header with Gradient - extends behind widgets -->
+            <div class="relative">
+                <!-- Gradient Background - fades out vertically -->
+                <div class="absolute inset-0 h-64" style="background: linear-gradient(100deg, #4f8cda 0%, #5ba8b8 25%, #6dbf9e 50%, #8dd4a8 75%, #b8e6c4 100%); -webkit-mask-image: linear-gradient(to bottom, black 50%, transparent 100%); mask-image: linear-gradient(to bottom, black 50%, transparent 100%);"></div>
+                
+                <!-- Header Content -->
+                <div class="relative px-8 pt-8 pb-8">
+                    <div class="max-w-7xl flex items-start justify-between">
+                        <div>
+                            <h1 class="text-2xl font-bold text-white mb-1">Welcome, <span class="welcome-name">Gail</span>!</h1>
+                            <p class="text-white/90">Comprehensive performance insights across all your accounts</p>
+                        </div>
+                                </div>
+                </div>
+
+                <!-- Dashboard Content - widgets float on gradient -->
+                <div class="relative px-8 pt-4 pb-6">
+                    <div class="max-w-7xl mx-auto">
+                        <!-- Dashboard Grid -->
+                        <div class="grid gap-6 items-start" style="grid-template-columns: 1fr 1fr;">
+                            <!-- Left Column -->
+                            <div class="flex flex-col gap-5 w-full min-w-0">
+                                <!-- Unified Date Range Selector for Left Column (Page Mode) -->
+                                <div id="page-date-filter" class="bg-white rounded-2xl border border-neutral-100 px-5 py-4 shadow-sm flex items-center justify-between">
+                                    <div class="flex items-center bg-neutral-50 rounded-lg p-0.5 border border-neutral-200">
+                                        <button onclick="setColumnDateRange('1w')" id="column-range-1w" class="column-range-btn px-3 py-1.5 text-xs font-medium rounded-md transition-all text-neutral-500 hover:text-neutral-700">Last 7 days</button>
+                                        <button onclick="setColumnDateRange('1m')" id="column-range-1m" class="column-range-btn px-3 py-1.5 text-xs font-medium rounded-md transition-all text-neutral-900 bg-white shadow-sm">Last 30 days</button>
+                                        <button onclick="setColumnDateRange('3m')" id="column-range-3m" class="column-range-btn px-3 py-1.5 text-xs font-medium rounded-md transition-all text-neutral-500 hover:text-neutral-700">Last 90 days</button>
+                                    </div>
+                                    <button class="px-3 py-1.5 text-xs font-medium text-main-600 hover:text-main-700 bg-main-50 hover:bg-main-100 border border-main-200 rounded-lg transition-colors">
+                                        Create report
+                                    </button>
+                                </div>
+                        <!-- Account Performance -->
+                        <div class="bg-white rounded-2xl border border-neutral-100 p-5 shadow-sm flex flex-col" style="height: 380px;">
+                            <div class="flex items-center justify-between mb-4">
+                                <h3 class="text-base font-medium text-neutral-800">Performance leaderboard</h3>
+                                <div class="flex items-center gap-2">
+                                    <!-- Performance Type Dropdown -->
+                                <div class="relative">
+                                        <button onclick="togglePerformanceType()" class="flex items-center gap-1.5 px-2.5 py-1.5 text-xs text-neutral-600 hover:text-neutral-900 bg-neutral-50 hover:bg-neutral-100 border border-neutral-200 rounded-lg transition-colors">
+                                            <span id="performance-type-label">Account performance</span>
+                                        <svg xmlns="http://www.w3.org/2000/svg" class="w-3 h-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg>
+                                    </button>
+                                        <div id="performance-type-menu" class="hidden absolute left-0 top-full mt-1 w-48 bg-white rounded-lg shadow-lg border border-neutral-200 py-1 z-20">
+                                            <button onclick="selectPerformanceType('account')" class="w-full text-left px-3 py-2 text-sm hover:bg-neutral-50 flex items-center gap-2">
+                                                <svg id="type-check-account" class="w-4 h-4 text-main-600" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>
+                                                <span>Account performance</span>
+                                        </button>
+                                            <button onclick="selectPerformanceType('email')" class="w-full text-left px-3 py-2 text-sm hover:bg-neutral-50 flex items-center gap-2">
+                                                <svg id="type-check-email" class="w-4 h-4 text-transparent" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>
+                                                <span>Email campaigns</span>
+                                        </button>
+                                            <button onclick="selectPerformanceType('sms')" class="w-full text-left px-3 py-2 text-sm hover:bg-neutral-50 flex items-center gap-2">
+                                                <svg id="type-check-sms" class="w-4 h-4 text-transparent" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>
+                                                <span>SMS campaigns</span>
+                                        </button>
+                                            <button onclick="selectPerformanceType('social')" class="w-full text-left px-3 py-2 text-sm hover:bg-neutral-50 flex items-center gap-2">
+                                                <svg id="type-check-social" class="w-4 h-4 text-transparent" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>
+                                                <span>Social posts</span>
+                                        </button>
+                                            <button onclick="selectPerformanceType('automation')" class="w-full text-left px-3 py-2 text-sm hover:bg-neutral-50 flex items-center gap-2">
+                                                <svg id="type-check-automation" class="w-4 h-4 text-transparent" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>
+                                                <span>Automations</span>
+                                        </button>
+                                        </div>
+                                    </div>
+                                    <!-- Metric Filter -->
+                                    <div class="relative">
+                                        <button onclick="togglePerformanceFilter()" class="flex items-center gap-1.5 px-2.5 py-1.5 text-xs text-neutral-600 hover:text-neutral-900 bg-neutral-50 hover:bg-neutral-100 border border-neutral-200 rounded-lg transition-colors">
+                                            <span id="performance-filter-label">Click rate</span>
+                                        <svg xmlns="http://www.w3.org/2000/svg" class="w-3 h-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg>
+                                    </button>
+                                    <div id="performance-filter-menu" class="hidden absolute right-0 top-full mt-1 w-44 bg-white rounded-lg shadow-lg border border-neutral-200 py-1 z-20">
+                                        <!-- Dynamic metrics based on performance type -->
+                                        <div id="metric-options">
+                                            <button onclick="selectPerformanceMetric('click_rate')" class="w-full text-left px-3 py-2 text-sm hover:bg-neutral-50 flex items-center gap-2">
+                                                <svg id="metric-check-click_rate" class="w-4 h-4 text-main-600" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>
+                                            <span>Click rate</span>
+                                        </button>
+                                            <button onclick="selectPerformanceMetric('open_rate')" class="w-full text-left px-3 py-2 text-sm hover:bg-neutral-50 flex items-center gap-2">
+                                                <svg id="metric-check-open_rate" class="w-4 h-4 text-transparent" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>
+                                                <span>Open rate</span>
+                                        </button>
+                                            <button onclick="selectPerformanceMetric('bounce_rate')" class="w-full text-left px-3 py-2 text-sm hover:bg-neutral-50 flex items-center gap-2">
+                                                <svg id="metric-check-bounce_rate" class="w-4 h-4 text-transparent" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>
+                                                <span>Bounce rate</span>
+                                            </button>
+                                            <button onclick="selectPerformanceMetric('unsubscribe_rate')" class="w-full text-left px-3 py-2 text-sm hover:bg-neutral-50 flex items-center gap-2">
+                                                <svg id="metric-check-unsubscribe_rate" class="w-4 h-4 text-transparent" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>
+                                                <span>Unsubscribe rate</span>
+                                        </button>
+                                        </div>
+                                    </div>
+                                    </div>
+                                    <!-- Card-level date filter (Card Mode) -->
+                                    <div class="card-date-filter items-center bg-white rounded-lg p-0.5 border border-neutral-200 shadow-sm hidden">
+                                        <button onclick="setCardDateRange('performance', '1w')" id="performance-range-1w" class="px-2.5 py-1 text-xs font-medium rounded-md transition-all text-neutral-500 hover:text-neutral-700">7 days</button>
+                                        <button onclick="setCardDateRange('performance', '1m')" id="performance-range-1m" class="px-2.5 py-1 text-xs font-medium rounded-md transition-all text-neutral-900 bg-neutral-100 shadow-sm">30 days</button>
+                                        <button onclick="setCardDateRange('performance', '3m')" id="performance-range-3m" class="px-2.5 py-1 text-xs font-medium rounded-md transition-all text-neutral-500 hover:text-neutral-700">90 days</button>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <!-- Highest -->
+                            <p class="text-xs font-medium text-neutral-500 mb-2">Highest</p>
+                            <div id="leaderboard-highest" class="space-y-2.5 mb-4">
+                                <div class="flex items-center gap-3">
+                                    <a href="#" id="high-1-name" class="text-sm text-neutral-700 w-40 flex-shrink-0 hover:underline hover:text-main-600 cursor-pointer transition-colors">Living Root Kitchen NJ</a>
+                                    <div class="flex-1 h-1.5 bg-neutral-100 rounded-full">
+                                        <div id="high-1-bar" class="h-full rounded-full bg-success-600 transition-all" style="width: 85%"></div>
+                                    </div>
+                                    <span id="high-1-value" class="text-xs font-medium text-neutral-600 w-10 text-right flex-shrink-0">8.2%</span>
+                                </div>
+                                <div class="flex items-center gap-3">
+                                    <a href="#" id="high-2-name" class="text-sm text-neutral-700 w-40 flex-shrink-0 hover:underline hover:text-main-600 cursor-pointer transition-colors">Living Root Kitchen NY</a>
+                                    <div class="flex-1 h-1.5 bg-neutral-100 rounded-full">
+                                        <div id="high-2-bar" class="h-full rounded-full bg-success-500 transition-all" style="width: 72%"></div>
+                                    </div>
+                                    <span id="high-2-value" class="text-xs font-medium text-neutral-600 w-10 text-right flex-shrink-0">7.1%</span>
+                                </div>
+                                <div class="flex items-center gap-3">
+                                    <a href="#" id="high-3-name" class="text-sm text-neutral-700 w-40 flex-shrink-0 hover:underline hover:text-main-600 cursor-pointer transition-colors">Greenway Market CT</a>
+                                    <div class="flex-1 h-1.5 bg-neutral-100 rounded-full">
+                                        <div id="high-3-bar" class="h-full rounded-full bg-success-400 transition-all" style="width: 58%"></div>
+                                    </div>
+                                    <span id="high-3-value" class="text-xs font-medium text-neutral-600 w-10 text-right flex-shrink-0">5.8%</span>
+                                </div>
+                            </div>
+
+                            <!-- Lowest -->
+                            <p class="text-xs font-medium text-neutral-500 mb-2">Lowest</p>
+                            <div id="leaderboard-lowest" class="space-y-2.5">
+                                <div class="flex items-center gap-3">
+                                    <a href="#" id="low-1-name" class="text-sm text-neutral-700 w-40 flex-shrink-0 hover:underline hover:text-main-600 cursor-pointer transition-colors">PureField Produce VT</a>
+                                    <div class="flex-1 h-1.5 bg-neutral-100 rounded-full">
+                                        <div id="low-1-bar" class="h-full rounded-full bg-warning-400 transition-all" style="width: 18%; min-width: 4px"></div>
+                                    </div>
+                                    <span id="low-1-value" class="text-xs font-medium text-neutral-600 w-10 text-right flex-shrink-0">1.8%</span>
+                                </div>
+                                <div class="flex items-center gap-3">
+                                    <a href="#" id="low-2-name" class="text-sm text-neutral-700 w-40 flex-shrink-0 hover:underline hover:text-main-600 cursor-pointer transition-colors">Greenway Market RI</a>
+                                    <div class="flex-1 h-1.5 bg-neutral-100 rounded-full">
+                                        <div id="low-2-bar" class="h-full rounded-full bg-warning-400 transition-all" style="width: 22%; min-width: 4px"></div>
+                                    </div>
+                                    <span id="low-2-value" class="text-xs font-medium text-neutral-600 w-10 text-right flex-shrink-0">2.2%</span>
+                                </div>
+                                <div class="flex items-center gap-3">
+                                    <a href="#" id="low-3-name" class="text-sm text-neutral-700 w-40 flex-shrink-0 hover:underline hover:text-main-600 cursor-pointer transition-colors">PureField Produce ME</a>
+                                    <div class="flex-1 h-1.5 bg-neutral-100 rounded-full">
+                                        <div id="low-3-bar" class="h-full rounded-full bg-warning-400 transition-all" style="width: 28%; min-width: 4px"></div>
+                                    </div>
+                                    <span id="low-3-value" class="text-xs font-medium text-neutral-600 w-10 text-right flex-shrink-0">2.8%</span>
+                                </div>
+                            </div>
+                            <!-- Footer -->
+                            <div class="mt-auto pt-3 flex items-center justify-end gap-1.5">
+                                <div class="relative group">
+                                    <button class="text-neutral-400 hover:text-neutral-600 transition-colors">
+                                        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4"/><path d="M12 8h.01"/></svg>
+                                    </button>
+                                    <!-- Tooltip -->
+                                    <div class="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 px-3 py-2 bg-neutral-800 text-white text-xs rounded-lg opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all whitespace-nowrap z-50">
+                                        Benchmark based on overall accounts average from previous date range
+                                        <div class="absolute top-full left-1/2 -translate-x-1/2 border-4 border-transparent border-t-neutral-800"></div>
+                                    </div>
+                                </div>
+                                <p id="performance-benchmark" class="text-xs text-neutral-500">Based on benchmark of 4.6%</p>
+                            </div>
+                        </div>
+
+                        <!-- Email Engagement - with trend lines and expanded date filter -->
+                        <div class="metrics-card bg-white rounded-2xl border border-neutral-100 pt-5 px-5 pb-6 shadow-sm" style="height: 220px;">
+                            <div class="flex items-start justify-between mb-4">
+                                <div>
+                                    <h3 id="email-title" class="text-base font-medium text-neutral-800">Email engagement</h3>
+                                    <p id="email-subtitle" class="text-xs text-neutral-500 mt-0.5">in the last 30 days</p>
+                                </div>
+                                <!-- Filter Button -->
+                                <div class="relative flex-shrink-0">
+                                    <button onclick="toggleCardFilter('email')" class="p-2 rounded-lg hover:bg-neutral-100 transition-colors text-neutral-500 hover:text-neutral-700" title="Filter options">
+                                        <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18"/><path d="M7 12h10"/><path d="M10 18h4"/></svg>
+                                    </button>
+                                    <div id="email-filter-menu" class="hidden absolute right-0 top-full mt-1 w-44 bg-white rounded-xl shadow-xl border border-neutral-200 py-2 z-[80]">
+                                        <p class="text-[10px] font-semibold text-neutral-400 uppercase tracking-wider px-3 py-1.5">Time period</p>
+                                        <button onclick="setCardFilter('email', 'today')" class="card-filter-btn w-full text-left px-3 py-1.5 text-sm hover:bg-neutral-50 flex items-center gap-2" data-range="today">
+                                            <svg class="card-filter-check w-4 h-4 text-transparent" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>
+                                            <span>Today</span>
+                                        </button>
+                                        <button onclick="setCardFilter('email', 'yesterday')" class="card-filter-btn w-full text-left px-3 py-1.5 text-sm hover:bg-neutral-50 flex items-center gap-2" data-range="yesterday">
+                                            <svg class="card-filter-check w-4 h-4 text-transparent" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>
+                                            <span>Yesterday</span>
+                                        </button>
+                                        <button onclick="setCardFilter('email', '7d')" class="card-filter-btn w-full text-left px-3 py-1.5 text-sm hover:bg-neutral-50 flex items-center gap-2" data-range="7d">
+                                            <svg class="card-filter-check w-4 h-4 text-transparent" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>
+                                            <span>Last 7 days</span>
+                                        </button>
+                                        <button onclick="setCardFilter('email', '30d')" class="card-filter-btn w-full text-left px-3 py-1.5 text-sm hover:bg-neutral-50 flex items-center gap-2" data-range="30d">
+                                            <svg class="card-filter-check w-4 h-4 text-main-600" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>
+                                            <span>Last 30 days</span>
+                                        </button>
+                                        <button onclick="setCardFilter('email', '90d')" class="card-filter-btn w-full text-left px-3 py-1.5 text-sm hover:bg-neutral-50 flex items-center gap-2" data-range="90d">
+                                            <svg class="card-filter-check w-4 h-4 text-transparent" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>
+                                            <span>Last 90 days</span>
+                                        </button>
+                                        <button onclick="setCardFilter('email', 'ytd')" class="card-filter-btn w-full text-left px-3 py-1.5 text-sm hover:bg-neutral-50 flex items-center gap-2" data-range="ytd">
+                                            <svg class="card-filter-check w-4 h-4 text-transparent" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>
+                                            <span>Year to date</span>
+                                        </button>
+                                        <button onclick="setCardFilter('email', '12m')" class="card-filter-btn w-full text-left px-3 py-1.5 text-sm hover:bg-neutral-50 flex items-center gap-2" data-range="12m">
+                                            <svg class="card-filter-check w-4 h-4 text-transparent" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>
+                                            <span>Last 12 months</span>
+                                        </button>
+                                        <div class="border-t border-neutral-100 my-1"></div>
+                                        <button onclick="openCustomDatePicker('email')" class="card-filter-btn w-full text-left px-3 py-1.5 text-sm hover:bg-neutral-50 flex items-center gap-2">
+                                            <svg class="w-4 h-4 text-neutral-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
+                                            <span>Custom range...</span>
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="grid grid-cols-2 gap-x-4 gap-y-3">
+                                <div>
+                                    <div class="flex items-center justify-between">
+                                        <div class="flex items-baseline gap-2">
+                                            <p id="email-open-rate" class="text-xl font-bold text-neutral-900">36.5%</p>
+                                            <span class="change-indicator positive"><span id="email-opens-count">460</span></span>
+                                        </div>
+                                        <svg class="w-12 h-6" viewBox="0 0 48 24" fill="none"><path d="M2 20 L8 16 L14 18 L20 12 L26 10 L32 8 L38 5 L46 2" stroke="#17b26a" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                                    </div>
+                                    <p class="text-xs text-neutral-500 mt-0.5 uppercase tracking-wide">Open rate</p>
+                                </div>
+                                <div>
+                                    <div class="flex items-center justify-between">
+                                        <div class="flex items-baseline gap-2">
+                                            <p id="email-click-rate" class="text-xl font-bold text-neutral-900">34.3%</p>
+                                            <span class="change-indicator positive"><span id="email-clicks-count">432</span></span>
+                                        </div>
+                                        <svg class="w-12 h-6" viewBox="0 0 48 24" fill="none"><path d="M2 16 L8 15 L14 14 L20 13 L26 12 L32 10 L38 9 L46 7" stroke="#17b26a" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                                    </div>
+                                    <p class="text-xs text-neutral-500 mt-0.5 uppercase tracking-wide">Click rate</p>
+                                </div>
+                                <div>
+                                    <div class="flex items-center justify-between">
+                                        <div class="flex items-baseline gap-2">
+                                            <p id="email-bounce-rate" class="text-xl font-bold text-neutral-900">2.5%</p>
+                                            <span class="change-indicator negative"><span id="email-bounces-count">32</span></span>
+                                        </div>
+                                        <svg class="w-12 h-6" viewBox="0 0 48 24" fill="none"><path d="M2 10 L8 11 L14 10 L20 12 L26 11 L32 13 L38 12 L46 14" stroke="#f04438" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                                    </div>
+                                    <p class="text-xs text-neutral-500 mt-0.5 uppercase tracking-wide">Bounce rate</p>
+                                </div>
+                                <div>
+                                    <div class="flex items-center justify-between">
+                                        <div class="flex items-baseline gap-2">
+                                            <p id="email-sends-total" class="text-xl font-bold text-neutral-900">1,260</p>
+                                            <span class="change-indicator positive"><span id="email-sends-trend">+8%</span></span>
+                                        </div>
+                                        <svg class="w-12 h-6" viewBox="0 0 48 24" fill="none"><path d="M2 18 L8 14 L14 16 L20 10 L26 12 L32 8 L38 6 L46 4" stroke="#17b26a" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                                    </div>
+                                    <p class="text-xs text-neutral-500 mt-0.5 uppercase tracking-wide">Total sends</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Contact Growth - with trend lines and expanded date filter -->
+                        <div class="metrics-card bg-white rounded-2xl border border-neutral-100 pt-5 px-5 pb-6 shadow-sm" style="height: 220px;">
+                            <div class="flex items-start justify-between mb-4">
+                                <div>
+                                    <h3 id="contacts-title" class="text-base font-medium text-neutral-800">Contact growth</h3>
+                                    <p id="contacts-subtitle" class="text-xs text-neutral-500 mt-0.5">in the last 30 days</p>
+                                </div>
+                                <!-- Filter Button -->
+                                <div class="relative flex-shrink-0">
+                                    <button onclick="toggleCardFilter('contacts')" class="p-2 rounded-lg hover:bg-neutral-100 transition-colors text-neutral-500 hover:text-neutral-700" title="Filter options">
+                                        <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18"/><path d="M7 12h10"/><path d="M10 18h4"/></svg>
+                                    </button>
+                                    <div id="contacts-filter-menu" class="hidden absolute right-0 top-full mt-1 w-44 bg-white rounded-xl shadow-xl border border-neutral-200 py-2 z-[80]">
+                                        <p class="text-[10px] font-semibold text-neutral-400 uppercase tracking-wider px-3 py-1.5">Time period</p>
+                                        <button onclick="setCardFilter('contacts', 'today')" class="card-filter-btn w-full text-left px-3 py-1.5 text-sm hover:bg-neutral-50 flex items-center gap-2" data-range="today">
+                                            <svg class="card-filter-check w-4 h-4 text-transparent" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>
+                                            <span>Today</span>
+                                        </button>
+                                        <button onclick="setCardFilter('contacts', 'yesterday')" class="card-filter-btn w-full text-left px-3 py-1.5 text-sm hover:bg-neutral-50 flex items-center gap-2" data-range="yesterday">
+                                            <svg class="card-filter-check w-4 h-4 text-transparent" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>
+                                            <span>Yesterday</span>
+                                        </button>
+                                        <button onclick="setCardFilter('contacts', '7d')" class="card-filter-btn w-full text-left px-3 py-1.5 text-sm hover:bg-neutral-50 flex items-center gap-2" data-range="7d">
+                                            <svg class="card-filter-check w-4 h-4 text-transparent" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>
+                                            <span>Last 7 days</span>
+                                        </button>
+                                        <button onclick="setCardFilter('contacts', '30d')" class="card-filter-btn w-full text-left px-3 py-1.5 text-sm hover:bg-neutral-50 flex items-center gap-2" data-range="30d">
+                                            <svg class="card-filter-check w-4 h-4 text-main-600" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>
+                                            <span>Last 30 days</span>
+                                        </button>
+                                        <button onclick="setCardFilter('contacts', '90d')" class="card-filter-btn w-full text-left px-3 py-1.5 text-sm hover:bg-neutral-50 flex items-center gap-2" data-range="90d">
+                                            <svg class="card-filter-check w-4 h-4 text-transparent" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>
+                                            <span>Last 90 days</span>
+                                        </button>
+                                        <button onclick="setCardFilter('contacts', 'ytd')" class="card-filter-btn w-full text-left px-3 py-1.5 text-sm hover:bg-neutral-50 flex items-center gap-2" data-range="ytd">
+                                            <svg class="card-filter-check w-4 h-4 text-transparent" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>
+                                            <span>Year to date</span>
+                                        </button>
+                                        <button onclick="setCardFilter('contacts', '12m')" class="card-filter-btn w-full text-left px-3 py-1.5 text-sm hover:bg-neutral-50 flex items-center gap-2" data-range="12m">
+                                            <svg class="card-filter-check w-4 h-4 text-transparent" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>
+                                            <span>Last 12 months</span>
+                                        </button>
+                                        <div class="border-t border-neutral-100 my-1"></div>
+                                        <button onclick="openCustomDatePicker('contacts')" class="card-filter-btn w-full text-left px-3 py-1.5 text-sm hover:bg-neutral-50 flex items-center gap-2">
+                                            <svg class="w-4 h-4 text-neutral-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
+                                            <span>Custom range...</span>
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="grid grid-cols-2 gap-x-4 gap-y-3">
+                                <div>
+                                    <div class="flex items-center justify-between">
+                                        <div class="flex items-baseline gap-2">
+                                            <p id="contact-growth-rate" class="text-xl font-bold text-neutral-900">+3.1%</p>
+                                            <span class="change-indicator positive"><span id="contact-new-count">1,321</span></span>
+                                        </div>
+                                        <svg class="w-12 h-6" viewBox="0 0 48 24" fill="none"><path d="M2 20 L8 18 L14 16 L20 15 L26 12 L32 10 L38 6 L46 3" stroke="#17b26a" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                                    </div>
+                                    <p class="text-xs text-neutral-500 mt-0.5 uppercase tracking-wide">Growth rate</p>
+                                </div>
+                                <div>
+                                    <div class="flex items-center justify-between">
+                                        <div class="flex items-baseline gap-2">
+                                            <p id="contact-active-rate" class="text-xl font-bold text-neutral-900">89.8%</p>
+                                            <span class="change-indicator positive"><span id="contact-active-count">38,240</span></span>
+                                        </div>
+                                        <svg class="w-12 h-6" viewBox="0 0 48 24" fill="none"><path d="M2 17 L8 15 L14 16 L20 13 L26 12 L32 10 L38 8 L46 6" stroke="#17b26a" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                                    </div>
+                                    <p class="text-xs text-neutral-500 mt-0.5 uppercase tracking-wide">Active rate</p>
+                                </div>
+                                <div>
+                                    <div class="flex items-center justify-between">
+                                        <div class="flex items-baseline gap-2">
+                                            <p id="contact-churn-rate" class="text-xl font-bold text-neutral-900">0.16%</p>
+                                            <span class="change-indicator negative"><span id="contact-unsub-count">68</span></span>
+                                        </div>
+                                        <svg class="w-12 h-6" viewBox="0 0 48 24" fill="none"><path d="M2 8 L8 10 L14 9 L20 12 L26 11 L32 14 L38 13 L46 16" stroke="#f04438" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                                    </div>
+                                    <p class="text-xs text-neutral-500 mt-0.5 uppercase tracking-wide">Churn rate</p>
+                                </div>
+                                <div>
+                                    <div class="flex items-center justify-between">
+                                        <div class="flex items-baseline gap-2">
+                                            <p id="contact-total" class="text-xl font-bold text-neutral-900">42,580</p>
+                                            <span class="change-indicator positive"><span id="contact-total-trend">+3%</span></span>
+                                        </div>
+                                        <svg class="w-12 h-6" viewBox="0 0 48 24" fill="none"><path d="M2 18 L8 16 L14 17 L20 14 L26 13 L32 11 L38 9 L46 6" stroke="#17b26a" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                                    </div>
+                                    <p class="text-xs text-neutral-500 mt-0.5 uppercase tracking-wide">Total contacts</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- SMS Engagement - with trend lines and expanded date filter -->
+                        <div class="metrics-card bg-white rounded-2xl border border-neutral-100 pt-5 px-5 pb-6 shadow-sm" style="height: 220px;">
+                            <div class="flex items-start justify-between mb-4">
+                                <div>
+                                    <h3 id="sms-title" class="text-base font-medium text-neutral-800">SMS engagement</h3>
+                                    <p id="sms-subtitle" class="text-xs text-neutral-500 mt-0.5">in the last 30 days</p>
+                                </div>
+                                <!-- Filter Button -->
+                                <div class="relative flex-shrink-0">
+                                    <button onclick="toggleCardFilter('sms')" class="p-2 rounded-lg hover:bg-neutral-100 transition-colors text-neutral-500 hover:text-neutral-700" title="Filter options">
+                                        <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18"/><path d="M7 12h10"/><path d="M10 18h4"/></svg>
+                                    </button>
+                                    <div id="sms-filter-menu" class="hidden absolute right-0 top-full mt-1 w-44 bg-white rounded-xl shadow-xl border border-neutral-200 py-2 z-[80]">
+                                        <p class="text-[10px] font-semibold text-neutral-400 uppercase tracking-wider px-3 py-1.5">Time period</p>
+                                        <button onclick="setCardFilter('sms', 'today')" class="card-filter-btn w-full text-left px-3 py-1.5 text-sm hover:bg-neutral-50 flex items-center gap-2" data-range="today">
+                                            <svg class="card-filter-check w-4 h-4 text-transparent" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>
+                                            <span>Today</span>
+                                        </button>
+                                        <button onclick="setCardFilter('sms', 'yesterday')" class="card-filter-btn w-full text-left px-3 py-1.5 text-sm hover:bg-neutral-50 flex items-center gap-2" data-range="yesterday">
+                                            <svg class="card-filter-check w-4 h-4 text-transparent" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>
+                                            <span>Yesterday</span>
+                                        </button>
+                                        <button onclick="setCardFilter('sms', '7d')" class="card-filter-btn w-full text-left px-3 py-1.5 text-sm hover:bg-neutral-50 flex items-center gap-2" data-range="7d">
+                                            <svg class="card-filter-check w-4 h-4 text-transparent" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>
+                                            <span>Last 7 days</span>
+                                        </button>
+                                        <button onclick="setCardFilter('sms', '30d')" class="card-filter-btn w-full text-left px-3 py-1.5 text-sm hover:bg-neutral-50 flex items-center gap-2" data-range="30d">
+                                            <svg class="card-filter-check w-4 h-4 text-main-600" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>
+                                            <span>Last 30 days</span>
+                                        </button>
+                                        <button onclick="setCardFilter('sms', '90d')" class="card-filter-btn w-full text-left px-3 py-1.5 text-sm hover:bg-neutral-50 flex items-center gap-2" data-range="90d">
+                                            <svg class="card-filter-check w-4 h-4 text-transparent" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>
+                                            <span>Last 90 days</span>
+                                        </button>
+                                        <button onclick="setCardFilter('sms', 'ytd')" class="card-filter-btn w-full text-left px-3 py-1.5 text-sm hover:bg-neutral-50 flex items-center gap-2" data-range="ytd">
+                                            <svg class="card-filter-check w-4 h-4 text-transparent" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>
+                                            <span>Year to date</span>
+                                        </button>
+                                        <button onclick="setCardFilter('sms', '12m')" class="card-filter-btn w-full text-left px-3 py-1.5 text-sm hover:bg-neutral-50 flex items-center gap-2" data-range="12m">
+                                            <svg class="card-filter-check w-4 h-4 text-transparent" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>
+                                            <span>Last 12 months</span>
+                                        </button>
+                                        <div class="border-t border-neutral-100 my-1"></div>
+                                        <button onclick="openCustomDatePicker('sms')" class="card-filter-btn w-full text-left px-3 py-1.5 text-sm hover:bg-neutral-50 flex items-center gap-2">
+                                            <svg class="w-4 h-4 text-neutral-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
+                                            <span>Custom range...</span>
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="grid grid-cols-2 gap-x-4 gap-y-3">
+                                <div>
+                                    <div class="flex items-center justify-between">
+                                        <div class="flex items-baseline gap-2">
+                                            <p id="sms-delivery-rate" class="text-xl font-bold text-neutral-900">96.0%</p>
+                                            <span class="change-indicator positive"><span id="sms-delivered-count">856</span></span>
+                                        </div>
+                                        <svg class="w-12 h-6" viewBox="0 0 48 24" fill="none"><path d="M2 20 L8 18 L14 15 L20 13 L26 10 L32 7 L38 5 L46 3" stroke="#17b26a" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                                    </div>
+                                    <p class="text-xs text-neutral-500 mt-0.5 uppercase tracking-wide">Delivery rate</p>
+                                </div>
+                                <div>
+                                    <div class="flex items-center justify-between">
+                                        <div class="flex items-baseline gap-2">
+                                            <p id="sms-click-rate" class="text-xl font-bold text-neutral-900">14.5%</p>
+                                            <span class="change-indicator positive"><span id="sms-clicks-count">124</span></span>
+                                        </div>
+                                        <svg class="w-12 h-6" viewBox="0 0 48 24" fill="none"><path d="M2 18 L8 16 L14 14 L20 11 L26 9 L32 7 L38 5 L46 3" stroke="#17b26a" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                                    </div>
+                                    <p class="text-xs text-neutral-500 mt-0.5 uppercase tracking-wide">Click rate</p>
+                                </div>
+                                <div>
+                                    <div class="flex items-center justify-between">
+                                        <div class="flex items-baseline gap-2">
+                                            <p id="sms-optout-rate" class="text-xl font-bold text-neutral-900">0.9%</p>
+                                            <span class="change-indicator negative"><span id="sms-optouts-count">8</span></span>
+                                        </div>
+                                        <svg class="w-12 h-6" viewBox="0 0 48 24" fill="none"><path d="M2 12 L8 11 L14 12 L20 10 L26 11 L32 9 L38 10 L46 8" stroke="#f04438" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                                    </div>
+                                    <p class="text-xs text-neutral-500 mt-0.5 uppercase tracking-wide">Opt-out rate</p>
+                                </div>
+                                <div>
+                                    <div class="flex items-center justify-between">
+                                        <div class="flex items-baseline gap-2">
+                                            <p id="sms-sends" class="text-xl font-bold text-neutral-900">892</p>
+                                            <span class="change-indicator positive"><span id="sms-sends-trend">+15%</span></span>
+                                        </div>
+                                        <svg class="w-12 h-6" viewBox="0 0 48 24" fill="none"><path d="M2 20 L8 17 L14 15 L20 12 L26 9 L32 6 L38 4 L46 2" stroke="#17b26a" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                                    </div>
+                                    <p class="text-xs text-neutral-500 mt-0.5 uppercase tracking-wide">Total sends</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                            <!-- Right Column -->
+                            <div class="flex flex-col gap-5 w-full min-w-0">
+                                <!-- AI Insights -->
+                        <div class="bg-white rounded-2xl border border-neutral-100 p-5 shadow-sm flex flex-col" style="height: 380px;">
+                            <!-- Header -->
+                            <div class="flex items-center justify-between mb-4 flex-shrink-0 relative">
+                                <div class="flex items-center gap-2">
+                                <svg width="0" height="0" aria-hidden="true"><defs><linearGradient id="ai-gradient-card" x1="0" y1="0" x2="24" y2="24" gradientUnits="userSpaceOnUse"><stop stop-color="#186ded"></stop><stop stop-color="#875bf7" offset="85%"></stop></linearGradient></defs></svg>
+                                <svg class="w-4 h-4" fill="none" stroke="url(#ai-gradient-card)" stroke-width="1.5" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><path d="M9.937 15.5A2 2 0 0 0 8.5 14.063l-6.135-1.582a.5.5 0 0 1 0-.962L8.5 9.936A2 2 0 0 0 9.937 8.5l1.582-6.135a.5.5 0 0 1 .963 0L14.063 8.5A2 2 0 0 0 15.5 9.937l6.135 1.581a.5.5 0 0 1 0 .964L15.5 14.063a2 2 0 0 0-1.437 1.437l-1.582 6.135a.5.5 0 0 1-.963 0z"></path><path d="M20 3v4"></path><path d="M22 5h-4"></path><path d="M4 17v2"></path><path d="M5 18H3"></path></svg>
+                                    <h3 id="ai-insights-title" class="text-base font-medium text-neutral-800">Here are today's insights</h3>
+                                </div>
+                                <button onclick="toggleRefreshSettings()" class="text-xs text-neutral-500 hover:text-neutral-700 flex items-center gap-1 transition-colors">
+                                    <svg class="w-3 h-3" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                                    <span id="refresh-time-label">Refreshes at 6:00 AM</span>
+                                    <svg class="w-3 h-3" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="m6 9 6 6 6-6"/></svg>
+                                </button>
+                                <!-- Refresh Time Dropdown -->
+                                <div id="refresh-settings-menu" class="hidden absolute right-0 top-full mt-1 w-40 bg-white rounded-lg shadow-lg border border-neutral-200 py-1 z-20">
+                                    <p class="px-3 py-1.5 text-xs font-medium text-neutral-500 uppercase tracking-wide">Refresh time</p>
+                                    <button onclick="setRefreshTime('6:00 AM')" class="w-full text-left px-3 py-2 text-sm hover:bg-neutral-50">6:00 AM</button>
+                                    <button onclick="setRefreshTime('8:00 AM')" class="w-full text-left px-3 py-2 text-sm hover:bg-neutral-50">8:00 AM</button>
+                                    <button onclick="setRefreshTime('12:00 PM')" class="w-full text-left px-3 py-2 text-sm hover:bg-neutral-50">12:00 PM</button>
+                                    <button onclick="setRefreshTime('6:00 PM')" class="w-full text-left px-3 py-2 text-sm hover:bg-neutral-50">6:00 PM</button>
+                                </div>
+                            </div>
+                            
+                            <!-- Scrollable Insights List -->
+                            <div id="ai-insights-list" class="space-y-2 flex-1">
+                                <!-- Insight 1 -->
+                                <div class="bg-neutral-50 rounded-lg p-3 hover:bg-neutral-100 transition-colors group">
+                                    <p class="text-sm text-neutral-700 mb-2"><a href="#" class="font-medium hover:underline hover:text-main-600 transition-colors">Greenway Market MA</a> is performing <span class="font-medium text-success-600">+20%</span> above its 30‑day average.</p>
+                                    <div class="flex items-center justify-end">
+                                        <div class="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                                            <button onclick="rateInsight(this, 'up')" class="p-1.5 rounded text-neutral-400 hover:text-success-600 hover:bg-success-50 transition-colors"><svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M14 10h4.764a2 2 0 011.789 2.894l-3.5 7A2 2 0 0115.263 21h-4.017c-.163 0-.326-.02-.485-.06L7 20m7-10V5a2 2 0 00-2-2h-.095c-.5 0-.905.405-.905.905 0 .714-.211 1.412-.608 2.006L7 11v9m7-10h-2M7 20H5a2 2 0 01-2-2v-6a2 2 0 012-2h2.5"/></svg></button>
+                                            <button onclick="rateInsight(this, 'down')" class="p-1.5 rounded text-neutral-400 hover:text-danger-600 hover:bg-danger-50 transition-colors"><svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M10 14H5.236a2 2 0 01-1.789-2.894l3.5-7A2 2 0 018.736 3h4.018a2 2 0 01.485.06l3.76.94m-7 10v5a2 2 0 002 2h.096c.5 0 .905-.405.905-.904 0-.715.211-1.413.608-2.008L17 13V4m-7 10h2m5-10h2a2 2 0 012 2v6a2 2 0 01-2 2h-2.5"/></svg></button>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <!-- Insight 2 -->
+                                <div class="bg-neutral-50 rounded-lg p-3 hover:bg-neutral-100 transition-colors group">
+                                    <p class="text-sm text-neutral-700 mb-2">Engagement increased after the <span class="font-medium">Jan 12 Holiday Campaign</span> in <a href="#" class="font-medium hover:underline hover:text-main-600 transition-colors">Living Root Kitchen NY</a>.</p>
+                                    <div class="flex items-center justify-end">
+                                        <div class="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                                            <button onclick="rateInsight(this, 'up')" class="p-1.5 rounded text-neutral-400 hover:text-success-600 hover:bg-success-50 transition-colors"><svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M14 10h4.764a2 2 0 011.789 2.894l-3.5 7A2 2 0 0115.263 21h-4.017c-.163 0-.326-.02-.485-.06L7 20m7-10V5a2 2 0 00-2-2h-.095c-.5 0-.905.405-.905.905 0 .714-.211 1.412-.608 2.006L7 11v9m7-10h-2M7 20H5a2 2 0 01-2-2v-6a2 2 0 012-2h2.5"/></svg></button>
+                                            <button onclick="rateInsight(this, 'down')" class="p-1.5 rounded text-neutral-400 hover:text-danger-600 hover:bg-danger-50 transition-colors"><svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M10 14H5.236a2 2 0 01-1.789-2.894l3.5-7A2 2 0 018.736 3h4.018a2 2 0 01.485.06l3.76.94m-7 10v5a2 2 0 002 2h.096c.5 0 .905-.405.905-.904 0-.715.211-1.413.608-2.008L17 13V4m-7 10h2m5-10h2a2 2 0 012 2v6a2 2 0 01-2 2h-2.5"/></svg></button>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <!-- Insight 3 -->
+                                <div class="bg-neutral-50 rounded-lg p-3 hover:bg-neutral-100 transition-colors group">
+                                    <p class="text-sm text-neutral-700 mb-2"><span class="font-medium text-warning-600">2 teams</span> haven't sent a campaign in 10 days: <a href="#" class="font-medium hover:underline hover:text-main-600 transition-colors">Greenway Market RI</a> and <a href="#" class="font-medium hover:underline hover:text-main-600 transition-colors">PureField Produce VT</a>.</p>
+                                    <div class="flex items-center justify-end">
+                                        <div class="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                                            <button onclick="rateInsight(this, 'up')" class="p-1.5 rounded text-neutral-400 hover:text-success-600 hover:bg-success-50 transition-colors"><svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M14 10h4.764a2 2 0 011.789 2.894l-3.5 7A2 2 0 0115.263 21h-4.017c-.163 0-.326-.02-.485-.06L7 20m7-10V5a2 2 0 00-2-2h-.095c-.5 0-.905.405-.905.905 0 .714-.211 1.412-.608 2.006L7 11v9m7-10h-2M7 20H5a2 2 0 01-2-2v-6a2 2 0 012-2h2.5"/></svg></button>
+                                            <button onclick="rateInsight(this, 'down')" class="p-1.5 rounded text-neutral-400 hover:text-danger-600 hover:bg-danger-50 transition-colors"><svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M10 14H5.236a2 2 0 01-1.789-2.894l3.5-7A2 2 0 018.736 3h4.018a2 2 0 01.485.06l3.76.94m-7 10v5a2 2 0 002 2h.096c.5 0 .905-.405.905-.904 0-.715.211-1.413.608-2.008L17 13V4m-7 10h2m5-10h2a2 2 0 012 2v6a2 2 0 01-2 2h-2.5"/></svg></button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Recent Activity -->
+                        <div class="bg-white rounded-2xl border border-neutral-100 p-5 shadow-sm flex flex-col" style="height: 670px;">
+                        <div class="flex items-center justify-between mb-4 flex-shrink-0">
+                            <h3 class="text-base font-medium text-neutral-800">Recent campaign activity</h3>
+                            <div class="relative">
+                                <button onclick="toggleActivityFilter()" class="flex items-center gap-1.5 px-2.5 py-1.5 text-xs font-medium text-neutral-600 hover:text-neutral-900 bg-neutral-50 hover:bg-neutral-100 border border-neutral-200 rounded-lg transition-colors">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18"/><path d="M7 12h10"/><path d="M10 18h4"/></svg>
+                                    <span id="activity-filter-label">All activity</span>
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="w-3 h-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg>
+                                </button>
+                                <div id="activity-filter-dropdown" class="hidden absolute right-0 top-full mt-1 w-40 bg-white border border-neutral-200 rounded-lg shadow-lg z-50 py-1">
+                                    <button onclick="setActivityFilter('all', 'All activity')" class="w-full px-3 py-2 text-left text-sm text-neutral-700 hover:bg-neutral-50">All activity</button>
+                                    <button onclick="setActivityFilter('email', 'Email')" class="w-full px-3 py-2 text-left text-sm text-neutral-700 hover:bg-neutral-50">Email</button>
+                                    <button onclick="setActivityFilter('sms', 'SMS')" class="w-full px-3 py-2 text-left text-sm text-neutral-700 hover:bg-neutral-50">SMS</button>
+                                    <button onclick="setActivityFilter('social', 'Social')" class="w-full px-3 py-2 text-left text-sm text-neutral-700 hover:bg-neutral-50">Social</button>
+                                    <div class="border-t border-neutral-100 my-1"></div>
+                                    <button onclick="setActivityFilter('pending', 'Pending approval')" class="w-full px-3 py-2 text-left text-sm text-neutral-700 hover:bg-neutral-50">Pending approval</button>
+                                </div>
+                            </div>
+                        </div>
+                        <div id="activity-list" class="space-y-3 overflow-y-auto flex-1 pr-1" style="-webkit-mask-image: linear-gradient(to bottom, black 90%, transparent 100%); mask-image: linear-gradient(to bottom, black 90%, transparent 100%);">
+                            <!-- Campaign Approval Request -->
+                            <div class="activity-item bg-white rounded-xl p-4 shadow-sm border border-neutral-100 hover:shadow-md transition-shadow relative" data-type="pending">
+                                <div class="absolute top-3 right-3 w-2.5 h-2.5 bg-warning-400 rounded-full"></div>
+                                <div class="flex gap-4">
+                                    <img src="assets/email1.png" alt="Email preview" class="w-20 h-24 rounded-lg object-cover flex-shrink-0 shadow-sm">
+                                    <div class="flex-1 min-w-0 flex flex-col">
+                                        <p class="text-sm font-medium text-neutral-700 mb-2">Campaign approval request</p>
+                                        <div class="flex items-center gap-1.5 mb-3">
+                                            <div class="w-5 h-5 bg-accent-500 rounded-full flex items-center justify-center text-white text-[10px] font-bold flex-shrink-0">GR</div>
+                                            <span class="text-xs text-neutral-500">Greenway Market CT</span>
+                                        </div>
+                                        <div class="flex items-center justify-between mt-auto">
+                                            <button class="text-xs font-medium text-main-600 hover:text-main-700">Review campaign</button>
+                                            <span class="text-xs text-neutral-400">5 m ago</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <!-- Email Campaign Scheduled -->
+                            <div class="activity-item bg-white rounded-xl p-4 shadow-sm border border-neutral-100 hover:shadow-md transition-shadow" data-type="email">
+                                <div class="flex gap-4">
+                                    <img src="assets/email3.png" alt="Email preview" class="w-20 h-24 rounded-lg object-cover flex-shrink-0 shadow-sm">
+                                    <div class="flex-1 min-w-0 flex flex-col">
+                                        <p class="text-sm font-medium text-neutral-700 mb-2">Email campaign scheduled</p>
+                                        <div class="flex items-center gap-1.5 mb-2">
+                                            <div class="w-5 h-5 bg-main-500 rounded-full flex items-center justify-center text-white text-[10px] font-bold flex-shrink-0">NE</div>
+                                            <span class="text-xs text-neutral-500">Greenway Market MA</span>
+                                        </div>
+                                        <div class="flex items-center gap-3 mb-3 text-xs text-neutral-500">
+                                            <span class="flex items-center gap-1">
+                                                <svg class="w-3 h-3" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
+                                                Feb 5, 9:00 AM
+                                            </span>
+                                            <span class="flex items-center gap-1">
+                                                <svg class="w-3 h-3" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
+                                                Newsletter Subscribers
+                                            </span>
+                                        </div>
+                                        <div class="flex items-center justify-between mt-auto">
+                                            <button class="text-xs font-medium text-main-600 hover:text-main-700">View campaign</button>
+                                            <span class="text-xs text-neutral-400">1 day ago</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <!-- Email Campaign Sent -->
+                            <div class="activity-item bg-white rounded-xl p-4 shadow-sm border border-neutral-100 hover:shadow-md transition-shadow" data-type="email">
+                                <div class="flex gap-4">
+                                    <img src="assets/email2.png" alt="Email preview" class="w-20 h-24 rounded-lg object-cover flex-shrink-0 shadow-sm">
+                                    <div class="flex-1 min-w-0 flex flex-col">
+                                        <p class="text-sm font-medium text-neutral-700 mb-2">Email campaign sent</p>
+                                        <div class="flex items-center gap-1.5 mb-2">
+                                            <div class="w-5 h-5 bg-success-600 rounded-full flex items-center justify-center text-white text-[10px] font-bold flex-shrink-0">GL</div>
+                                            <span class="text-xs text-neutral-500">Evergreen Harvest Co.</span>
+                                        </div>
+                                        <div class="flex items-center gap-3 mb-3 text-xs text-neutral-500">
+                                            <span class="activity-stat-opens"><span class="font-medium text-neutral-700">2,847</span> opens</span>
+                                            <span class="activity-stat-clicks"><span class="font-medium text-neutral-700">412</span> clicks</span>
+                                            <span class="activity-stat-rate"><span class="font-medium text-success-600">14.5%</span> CTR</span>
+                                        </div>
+                                        <div class="flex items-center justify-between mt-auto">
+                                            <button class="text-xs font-medium text-main-600 hover:text-main-700">View report</button>
+                                            <span class="text-xs text-neutral-400">2 days ago</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <!-- SMS Campaign Sent -->
+                            <div class="activity-item bg-white rounded-xl p-4 shadow-sm border border-neutral-100 hover:shadow-md transition-shadow" data-type="sms">
+                                <div class="flex gap-4">
+                                    <img src="assets/sms1.png" alt="SMS preview" class="w-20 h-24 rounded-lg object-cover flex-shrink-0 shadow-sm">
+                                    <div class="flex-1 min-w-0 flex flex-col">
+                                        <p class="text-sm font-medium text-neutral-700 mb-2">SMS campaign sent</p>
+                                        <div class="flex items-center gap-1.5 mb-2">
+                                            <div class="w-5 h-5 bg-emerald-500 rounded-full flex items-center justify-center text-white text-[10px] font-bold flex-shrink-0">SW</div>
+                                            <span class="text-xs text-neutral-500">Living Root Kitchen NJ</span>
+                                        </div>
+                                        <div class="flex items-center gap-3 mb-3 text-xs text-neutral-500">
+                                            <span><span class="font-medium text-neutral-700">1,245</span> delivered</span>
+                                            <span><span class="font-medium text-neutral-700">189</span> clicks</span>
+                                            <span><span class="font-medium text-success-600">15.2%</span> CTR</span>
+                                        </div>
+                                        <div class="flex items-center justify-between mt-auto">
+                                            <button class="text-xs font-medium text-main-600 hover:text-main-700">View report</button>
+                                            <span class="text-xs text-neutral-400">3 days ago</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+ 
+                            <!-- Social Campaign Published -->
+                            <div class="activity-item bg-white rounded-xl p-4 shadow-sm border border-neutral-100 hover:shadow-md transition-shadow" data-type="social">
+                                <div class="flex gap-4">
+                                    <img src="assets/social1.png" alt="Social preview" class="w-20 h-24 rounded-lg object-cover flex-shrink-0 shadow-sm">
+                                    <div class="flex-1 min-w-0 flex flex-col">
+                                        <p class="text-sm font-medium text-neutral-700 mb-2">Social campaign published</p>
+                                        <div class="flex items-center gap-1.5 mb-2">
+                                            <div class="w-5 h-5 bg-violet-500 rounded-full flex items-center justify-center text-white text-[10px] font-bold flex-shrink-0">NE</div>
+                                            <span class="text-xs text-neutral-500">Greenway Market MA</span>
+                                        </div>
+                                        <div class="flex items-center gap-3 mb-3 text-xs text-neutral-500">
+                                            <span><span class="font-medium text-neutral-700">847</span> reach</span>
+                                            <span><span class="font-medium text-neutral-700">126</span> engagements</span>
+                                            <span><span class="font-medium text-success-600">14.9%</span> rate</span>
+                                        </div>
+                                        <div class="flex items-center justify-between mt-auto">
+                                            <button class="text-xs font-medium text-main-600 hover:text-main-700">View post</button>
+                                            <span class="text-xs text-neutral-400">4 days ago</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Email Campaign Sent 2 -->
+                            <div class="activity-item bg-white rounded-xl p-4 shadow-sm border border-neutral-100 hover:shadow-md transition-shadow" data-type="email">
+                                <div class="flex gap-4">
+                                    <img src="assets/email4.png" alt="Email preview" class="w-20 h-24 rounded-lg object-cover flex-shrink-0 shadow-sm">
+                                    <div class="flex-1 min-w-0 flex flex-col">
+                                        <p class="text-sm font-medium text-neutral-700 mb-2">Email campaign sent</p>
+                                        <div class="flex items-center gap-1.5 mb-2">
+                                            <div class="w-5 h-5 bg-main-500 rounded-full flex items-center justify-center text-white text-[10px] font-bold flex-shrink-0">CT</div>
+                                            <span class="text-xs text-neutral-500">Greenway Market CT</span>
+                                        </div>
+                                        <div class="flex items-center gap-3 mb-3 text-xs text-neutral-500">
+                                            <span><span class="font-medium text-neutral-700">1,523</span> opens</span>
+                                            <span><span class="font-medium text-neutral-700">198</span> clicks</span>
+                                            <span><span class="font-medium text-success-600">13.0%</span> CTR</span>
+                                        </div>
+                                        <div class="flex items-center justify-between mt-auto">
+                                            <button class="text-xs font-medium text-main-600 hover:text-main-700">View report</button>
+                                            <span class="text-xs text-neutral-400">5 days ago</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script>
+        // Partner Personas Dropdown
+        let partnerDropdownOpen = false;
+        let currentPersona = 'evergreen';
+        
+        // Persona content configurations
+        const personaConfigs = {
+            evergreen: {
+                label: '🌿 Evergreen Harvest',
+                orgName: 'Evergreen Harvest Co.',
+                initials: 'EH',
+                welcomeName: 'Gail',
+                accounts: {
+                    high: [
+                        { name: 'Living Root Kitchen NJ', value: '8.2%', width: '85%' },
+                        { name: 'Living Root Kitchen NY', value: '7.1%', width: '75%' },
+                        { name: 'Greenway Market CT', value: '5.8%', width: '65%' },
+                        { name: 'Greenway Market MA', value: '5.2%', width: '58%' },
+                        { name: 'PureField Produce VT', value: '4.8%', width: '52%' }
+                    ],
+                    low: [
+                        { name: 'PureField Produce ME', value: '1.8%', width: '18%' },
+                        { name: 'Greenway Market RI', value: '2.2%', width: '22%' },
+                        { name: 'PureField Produce NH', value: '2.8%', width: '28%' }
+                    ]
+                }
+            },
+            ups: {
+                label: '📦 UPS Global',
+                orgName: 'UPS Global',
+                initials: 'UG',
+                welcomeName: 'Gary',
+                accounts: {
+                    high: [
+                        { name: 'UPS New Jersey', value: '8.2%', width: '85%' },
+                        { name: 'UPS New York', value: '7.1%', width: '75%' },
+                        { name: 'UPS Connecticut', value: '5.8%', width: '65%' },
+                        { name: 'UPS California', value: '5.2%', width: '58%' },
+                        { name: 'UPS Texas', value: '4.8%', width: '52%' }
+                    ],
+                    low: [
+                        { name: 'UPS Vermont', value: '1.8%', width: '18%' },
+                        { name: 'UPS Rhode Island', value: '2.2%', width: '22%' },
+                        { name: 'UPS Maine', value: '2.8%', width: '28%' }
+                    ]
+                }
+            }
+        };
+        
+        // Campaign data for leaderboard (used when campaign types are selected)
+        const campaignData = {
+            email: {
+                high: [
+                    { name: 'Spring Sale Announcement', value: '42.5%', width: '85%' },
+                    { name: 'Weekly Newsletter Feb 10', value: '38.2%', width: '76%' },
+                    { name: 'Valentine\'s Day Special', value: '35.8%', width: '72%' },
+                    { name: 'New Product Launch', value: '33.1%', width: '66%' },
+                    { name: 'Customer Appreciation', value: '31.4%', width: '63%' }
+                ],
+                low: [
+                    { name: 'Monthly Digest Jan', value: '12.3%', width: '25%' },
+                    { name: 'Holiday Recap 2025', value: '14.8%', width: '30%' },
+                    { name: 'Year End Summary', value: '16.2%', width: '32%' }
+                ]
+            },
+            sms: {
+                high: [
+                    { name: 'Flash Sale Alert', value: '18.5%', width: '85%' },
+                    { name: 'Order Confirmation', value: '16.2%', width: '74%' },
+                    { name: 'Delivery Update', value: '14.8%', width: '68%' },
+                    { name: 'Exclusive Offer', value: '12.3%', width: '56%' },
+                    { name: 'Appointment Reminder', value: '11.1%', width: '51%' }
+                ],
+                low: [
+                    { name: 'Feedback Request', value: '3.2%', width: '15%' },
+                    { name: 'Survey Invitation', value: '4.1%', width: '19%' },
+                    { name: 'Account Update', value: '5.8%', width: '27%' }
+                ]
+            },
+            social: {
+                high: [
+                    { name: 'Behind the Scenes Video', value: '4.8K', width: '85%' },
+                    { name: 'Product Spotlight', value: '3.9K', width: '69%' },
+                    { name: 'Customer Testimonial', value: '3.2K', width: '57%' },
+                    { name: 'Team Highlight', value: '2.8K', width: '50%' },
+                    { name: 'How-To Tutorial', value: '2.5K', width: '44%' }
+                ],
+                low: [
+                    { name: 'Company Update', value: '850', width: '15%' },
+                    { name: 'Industry News Share', value: '920', width: '16%' },
+                    { name: 'Job Posting', value: '1.1K', width: '19%' }
+                ]
+            },
+            automation: {
+                high: [
+                    { name: 'Welcome Series', value: '52.3%', width: '85%' },
+                    { name: 'Abandoned Cart', value: '45.8%', width: '74%' },
+                    { name: 'Birthday Rewards', value: '41.2%', width: '67%' },
+                    { name: 'Re-engagement Flow', value: '38.5%', width: '62%' },
+                    { name: 'Post-Purchase Follow-up', value: '35.1%', width: '57%' }
+                ],
+                low: [
+                    { name: 'Annual Review', value: '18.2%', width: '29%' },
+                    { name: 'Loyalty Tier Update', value: '21.5%', width: '35%' },
+                    { name: 'Subscription Renewal', value: '24.8%', width: '40%' }
+                ]
+            }
+        };
+        
+        function togglePartnerDropdown() {
+            const dropdown = document.getElementById('partner-dropdown');
+            partnerDropdownOpen = !partnerDropdownOpen;
+            dropdown.classList.toggle('hidden', !partnerDropdownOpen);
+        }
+        
+        function setPartnerPersona(persona) {
+            currentPersona = persona;
+            const config = personaConfigs[persona];
+            
+            // Update dropdown label
+            const labelEl = document.getElementById('partner-persona-label-bar');
+            if (labelEl) labelEl.textContent = config.label;
+            
+            // Update org name in header
+            document.querySelectorAll('.org-name-display').forEach(el => {
+                el.textContent = config.orgName;
+            });
+            
+            // Update welcome message
+            const welcomeEl = document.querySelector('.welcome-name');
+            if (welcomeEl) welcomeEl.textContent = config.welcomeName;
+            
+            // Update user initials
+            document.querySelectorAll('.user-initials').forEach(el => {
+                el.textContent = config.initials;
+            });
+            
+            // Update leaderboard accounts
+            updateLeaderboardWithPersona(config.accounts);
+            
+            // Update checkmarks
+            document.querySelectorAll('.partner-persona-btn').forEach(btn => {
+                const check = btn.querySelector('.partner-check');
+                if (btn.dataset.persona === persona) {
+                    check.classList.remove('text-transparent');
+                    check.classList.add('text-success-500');
+                } else {
+                    check.classList.remove('text-success-500');
+                    check.classList.add('text-transparent');
+                }
+            });
+            
+            // Close dropdown
+            document.getElementById('partner-dropdown').classList.add('hidden');
+            partnerDropdownOpen = false;
+            
+            // Show toast
+            showToast(`Switched to ${config.orgName}`);
+        }
+        
+        function updateLeaderboardWithPersona(accounts) {
+            // Update high performers
+            accounts.high.forEach((acc, i) => {
+                const nameEl = document.getElementById(`high-${i+1}-name`);
+                const valueEl = document.getElementById(`high-${i+1}-value`);
+                const barEl = document.getElementById(`high-${i+1}-bar`);
+                if (nameEl) nameEl.textContent = acc.name;
+                if (valueEl) valueEl.textContent = acc.value;
+                if (barEl) barEl.style.width = acc.width;
+            });
+            
+            // Update low performers
+            accounts.low.forEach((acc, i) => {
+                const nameEl = document.getElementById(`low-${i+1}-name`);
+                const valueEl = document.getElementById(`low-${i+1}-value`);
+                const barEl = document.getElementById(`low-${i+1}-bar`);
+                if (nameEl) nameEl.textContent = acc.name;
+                if (valueEl) valueEl.textContent = acc.value;
+                if (barEl) barEl.style.width = acc.width;
+            });
+        }
+        
+        // Close partner dropdown on outside click
+        document.addEventListener('click', (e) => {
+            const dropdown = document.getElementById('partner-dropdown');
+            const btn = e.target.closest('[onclick="togglePartnerDropdown()"]');
+            if (!btn && !e.target.closest('#partner-dropdown') && dropdown) {
+                dropdown.classList.add('hidden');
+                partnerDropdownOpen = false;
+            }
+        });
+        
+        // Toggle sidebar on mobile
+        function toggleSidebar() {
+            const sidebar = document.getElementById('sidebar');
+            const backdrop = document.getElementById('sidebar-backdrop');
+            
+            sidebar.classList.toggle('-translate-x-full');
+            backdrop.classList.toggle('hidden');
+        }
+
+        function toggleAccounts() {
+            const menu = document.getElementById('accounts-menu');
+            const chevron = document.getElementById('accounts-chevron');
+            menu.classList.toggle('hidden');
+            chevron.classList.toggle('rotate-180');
+        }
+
+        function toggleChannels() {
+            const menu = document.getElementById('channels-menu');
+            const chevron = document.getElementById('channels-chevron');
+            menu.classList.toggle('hidden');
+            chevron.classList.toggle('rotate-180');
+        }
+
+        // Developer Mode Toggle
+        let devModeEnabled = false;
+        let spacingEnabled = false;
+        
+        function toggleDevMode() {
+            devModeEnabled = !devModeEnabled;
+            const body = document.body;
+            const toggle = document.getElementById('dev-mode-toggle');
+            const label = document.getElementById('dev-mode-label');
+            
+            if (devModeEnabled) {
+                body.classList.add('dev-mode');
+                toggle.classList.remove('bg-neutral-800', 'text-neutral-500');
+                toggle.classList.add('bg-purple-600', 'text-white');
+                label.textContent = 'Dev Mode ON';
+            } else {
+                body.classList.remove('dev-mode', 'dev-spacing');
+                toggle.classList.remove('bg-purple-600', 'text-white');
+                toggle.classList.add('bg-neutral-800', 'text-neutral-500');
+                label.textContent = 'Dev Mode';
+                // Reset sub-toggles
+                spacingEnabled = false;
+                document.getElementById('spacing-toggle').classList.remove('active');
+            }
+        }
+        
+        function toggleSpacing() {
+            if (!devModeEnabled) return;
+            
+            spacingEnabled = !spacingEnabled;
+            const body = document.body;
+            const toggle = document.getElementById('spacing-toggle');
+            
+            if (spacingEnabled) {
+                body.classList.add('dev-spacing');
+                toggle.classList.add('active');
+            } else {
+                body.classList.remove('dev-spacing');
+                toggle.classList.remove('active');
+            }
+        }
+
+        // Date Range Switcher
+        let currentDateRange = '30d';
+        
+        const dateRangeData = {
+            '7d': {
+                label: '7 days',
+                email: { sends: '312', opens: '124', clicks: '98', bounces: '8', sendsTrend: '+5%', opensTrend: '+8%', clicksTrend: '+3%', bouncesTrend: '-2%' },
+                contacts: { total: '42,180', new: '289', active: '37,840', unsub: '14', totalTrend: '+1%', newTrend: '+4%', activeTrend: '+2%', unsubTrend: '-1%' },
+                sms: { sends: '198', delivered: '192', clicks: '32', optouts: '2', sendsTrend: '+12%', deliveredTrend: '+11%', clicksTrend: '+18%', optoutsTrend: '-1%' },
+                performance: { subtitle: 'Click rate 7-day benchmark: 4.2%' },
+                insights: [
+                    { text: '<span class="font-medium ">Greenway Market MA</span> open rate is up <span class="font-medium ">+12%</span> vs last week.', cta: 'See report' },
+                    { text: '<span class="font-medium ">3 campaigns</span> scheduled to send today across <span class="font-medium ">2 accounts</span>.', cta: 'View schedule' },
+                    { text: 'SMS delivery rate at <span class="font-medium ">97.1%</span> — above benchmark.', cta: 'View SMS stats' }
+                ],
+                activity: [
+                    { type: 'email', title: 'Email campaign sent', account: 'Evergreen Harvest Co.', initials: 'GL', color: 'success-600', time: '2 hours ago', stats: { opens: '847', clicks: '98', ctr: '11.6%' }, img: 'assets/email2.png' },
+                    { type: 'sms', title: 'SMS campaign sent', account: 'Living Root Kitchen NJ', initials: 'SW', color: 'emerald-500', time: '5 hours ago', stats: { delivered: '423', clicks: '52', ctr: '12.3%' }, img: 'assets/sms1.png' },
+                    { type: 'email', title: 'Email campaign sent', account: 'Greenway Market CT', initials: 'CT', color: 'main-500', time: '1 day ago', stats: { opens: '612', clicks: '71', ctr: '11.6%' }, img: 'assets/email4.png' }
+                ]
+            },
+            '30d': {
+                label: '30 days',
+                email: { sends: '1,260', opens: '460', clicks: '432', bounces: '32', sendsTrend: '+8%', opensTrend: '+12%', clicksTrend: '+5%', bouncesTrend: '-1%' },
+                contacts: { total: '42,580', new: '1,321', active: '38,240', unsub: '68', totalTrend: '+3%', newTrend: '+6%', activeTrend: '+4%', unsubTrend: '+2%' },
+                sms: { sends: '892', delivered: '856', clicks: '124', optouts: '8', sendsTrend: '+15%', deliveredTrend: '+14%', clicksTrend: '+22%', optoutsTrend: '-3%' },
+                performance: { subtitle: 'Click rate 30-day benchmark: 4.6%' },
+                insights: [
+                    { text: '<span class="font-medium ">Greenway Market MA</span> is performing <span class="font-medium ">+20%</span> above its 30‑day average.', cta: 'See report' },
+                    { text: 'Engagement increased after the <span class="font-medium ">Jan 12 Holiday Campaign</span> in <span class="font-medium ">Living Root Kitchen NY</span>.', cta: 'Replicate strategy' },
+                    { text: '<span class="font-medium ">2 teams</span> haven\'t sent a campaign in 10 days: <span class="font-medium ">Greenway Market RI</span> and <span class="font-medium ">PureField Produce VT</span>.', cta: 'Nudge teams' }
+                ],
+                activity: [
+                    { type: 'pending', title: 'Campaign approval request', account: 'Greenway Market CT', initials: 'GR', color: 'accent-500', time: '5 m ago', stats: null, img: 'assets/email1.png', pending: true },
+                    { type: 'email', title: 'Email campaign scheduled', account: 'Greenway Market MA', initials: 'NE', color: 'main-500', time: '1 day ago', stats: null, img: 'assets/email3.png', schedule: { date: 'Feb 5, 9:00 AM', list: 'Newsletter Subscribers' } },
+                    { type: 'email', title: 'Email campaign sent', account: 'Evergreen Harvest Co.', initials: 'GL', color: 'success-600', time: '2 days ago', stats: { opens: '2,847', clicks: '412', ctr: '14.5%' }, img: 'assets/email2.png' },
+                    { type: 'sms', title: 'SMS campaign sent', account: 'Living Root Kitchen NJ', initials: 'SW', color: 'emerald-500', time: '3 days ago', stats: { delivered: '1,245', clicks: '189', ctr: '15.2%' }, img: 'assets/sms1.png' },
+                    { type: 'social', title: 'Social campaign published', account: 'Greenway Market MA', initials: 'NE', color: 'violet-500', time: '4 days ago', stats: { reach: '847', engagements: '126', rate: '14.9%' }, img: 'assets/social1.png' },
+                    { type: 'email', title: 'Email campaign sent', account: 'Greenway Market CT', initials: 'CT', color: 'main-500', time: '5 days ago', stats: { opens: '1,523', clicks: '198', ctr: '13.0%' }, img: 'assets/email4.png' }
+                ]
+            },
+            '90d': {
+                label: '90 days',
+                email: { sends: '4,128', opens: '1,584', clicks: '1,248', bounces: '98', sendsTrend: '+12%', opensTrend: '+18%', clicksTrend: '+8%', bouncesTrend: '-4%' },
+                contacts: { total: '44,892', new: '4,512', active: '39,847', unsub: '245', totalTrend: '+8%', newTrend: '+15%', activeTrend: '+9%', unsubTrend: '+5%' },
+                sms: { sends: '2,847', delivered: '2,712', clicks: '412', optouts: '28', sendsTrend: '+24%', deliveredTrend: '+22%', clicksTrend: '+35%', optoutsTrend: '-8%' },
+                performance: { subtitle: 'Click rate 90-day benchmark: 4.8%' },
+                insights: [
+                    { text: 'Overall engagement is up <span class="font-medium ">+18%</span> quarter over quarter.', cta: 'View trends' },
+                    { text: '<span class="font-medium ">Living Root Kitchen NY</span> leads with <span class="font-medium ">22% CTR</span> — highest in organization.', cta: 'See breakdown' },
+                    { text: '<span class="font-medium ">5 accounts</span> exceeded their quarterly goals. <span class="font-medium ">3 accounts</span> need attention.', cta: 'Review goals' }
+                ],
+                activity: [
+                    { type: 'pending', title: 'Campaign approval request', account: 'Greenway Market CT', initials: 'GR', color: 'accent-500', time: '5 m ago', stats: null, img: 'assets/email1.png', pending: true },
+                    { type: 'email', title: 'Email campaign sent', account: 'Evergreen Harvest Co.', initials: 'GL', color: 'success-600', time: '2 days ago', stats: { opens: '8,412', clicks: '1,247', ctr: '14.8%' }, img: 'assets/email2.png' },
+                    { type: 'email', title: 'Email campaign sent', account: 'Living Root Kitchen NY', initials: 'NY', color: 'main-600', time: '1 week ago', stats: { opens: '5,847', clicks: '892', ctr: '15.3%' }, img: 'assets/email3.png' },
+                    { type: 'sms', title: 'SMS campaign sent', account: 'Living Root Kitchen NJ', initials: 'SW', color: 'emerald-500', time: '2 weeks ago', stats: { delivered: '4,128', clicks: '612', ctr: '14.8%' }, img: 'assets/sms1.png' },
+                    { type: 'email', title: 'Email campaign sent', account: 'Living Root Kitchen NY', initials: 'CA', color: 'success-500', time: '3 weeks ago', stats: { opens: '12,847', clicks: '2,847', ctr: '22.1%' }, img: 'assets/email4.png' },
+                    { type: 'social', title: 'Social campaign published', account: 'Greenway Market MA', initials: 'NE', color: 'violet-500', time: '1 month ago', stats: { reach: '3,412', engagements: '487', rate: '14.3%' }, img: 'assets/social1.png' }
+                ]
+            }
+        };
+        
+        function setDateRange(range) {
+            currentDateRange = range;
+            const data = dateRangeData[range];
+            
+            // Update button states
+            document.querySelectorAll('.date-range-btn').forEach(btn => {
+                btn.classList.remove('text-neutral-900', 'bg-white', 'shadow-md');
+                btn.classList.add('text-neutral-500', 'hover:text-neutral-700', 'hover:bg-neutral-50');
+            });
+            const activeBtn = document.getElementById(`range-${range}`);
+            activeBtn.classList.remove('text-neutral-500', 'hover:text-neutral-700', 'hover:bg-neutral-50');
+            activeBtn.classList.add('text-neutral-900', 'bg-white', 'shadow-md');
+            
+            // Update Email Engagement widget
+            updateMetricValue('email-sends', data.email.sends, data.email.sendsTrend);
+            updateMetricValue('email-opens', data.email.opens, data.email.opensTrend);
+            updateMetricValue('email-clicks', data.email.clicks, data.email.clicksTrend);
+            updateMetricValue('email-bounces', data.email.bounces, data.email.bouncesTrend);
+            
+            // Update Contact Growth widget
+            updateMetricValue('contact-total', data.contacts.total, data.contacts.totalTrend);
+            updateMetricValue('contact-new', data.contacts.new, data.contacts.newTrend);
+            updateMetricValue('contact-active', data.contacts.active, data.contacts.activeTrend);
+            updateMetricValue('contact-unsub', data.contacts.unsub, data.contacts.unsubTrend);
+            
+            // Update SMS Engagement widget
+            updateMetricValue('sms-sends', data.sms.sends, data.sms.sendsTrend);
+            updateMetricValue('sms-delivered', data.sms.delivered, data.sms.deliveredTrend);
+            updateMetricValue('sms-clicks', data.sms.clicks, data.sms.clicksTrend);
+            updateMetricValue('sms-optouts', data.sms.optouts, data.sms.optoutsTrend);
+            
+            // Update Account Performance benchmark footer
+            const perfBenchmark = document.getElementById('performance-benchmark');
+            if (perfBenchmark) {
+                const benchmarkValue = range === '7d' ? '4.2%' : range === '30d' ? '4.6%' : '4.8%';
+                perfBenchmark.textContent = `Based on benchmark of ${benchmarkValue}`;
+            }
+            
+            // AI Insights title stays static as "today's insights"
+            
+            // Update AI Insights
+            updateAIInsights(data.insights);
+            
+            // Update Activity Log
+            updateActivityLog(data.activity);
+        }
+        
+        // Card-specific date range data
+        const cardDateRangeData = {
+            performance: {
+                '1w': { benchmark: '4.2%' },
+                '1m': { benchmark: '4.6%' },
+                '3m': { benchmark: '4.8%' }
+            },
+            email: {
+                '1w': { sends: '312', opens: '124', clicks: '98', bounces: '8', sendsTrend: '+5%', opensTrend: '+8%', clicksTrend: '+3%', bouncesTrend: '-2%' },
+                '1m': { sends: '1,260', opens: '460', clicks: '432', bounces: '32', sendsTrend: '+8%', opensTrend: '+12%', clicksTrend: '+5%', bouncesTrend: '-1%' },
+                '3m': { sends: '4,128', opens: '1,584', clicks: '1,248', bounces: '98', sendsTrend: '+12%', opensTrend: '+18%', clicksTrend: '+8%', bouncesTrend: '-4%' }
+            },
+            contacts: {
+                '1w': { total: '42,180', new: '289', active: '37,840', unsub: '14', totalTrend: '+1%', newTrend: '+4%', activeTrend: '+2%', unsubTrend: '-1%' },
+                '1m': { total: '42,580', new: '1,321', active: '38,240', unsub: '68', totalTrend: '+3%', newTrend: '+6%', activeTrend: '+4%', unsubTrend: '+2%' },
+                '3m': { total: '44,892', new: '4,512', active: '39,847', unsub: '245', totalTrend: '+8%', newTrend: '+15%', activeTrend: '+9%', unsubTrend: '+5%' }
+            },
+            sms: {
+                '1w': { sends: '285', delivered: '278', clicks: '42', optouts: '3', sendsTrend: '+4%', deliveredTrend: '+5%', clicksTrend: '+6%', optoutsTrend: '-1%' },
+                '1m': { sends: '892', delivered: '876', clicks: '145', optouts: '12', sendsTrend: '+6%', deliveredTrend: '+7%', clicksTrend: '+9%', optoutsTrend: '+1%' },
+                '3m': { sends: '2,845', delivered: '2,798', clicks: '486', optouts: '38', sendsTrend: '+10%', deliveredTrend: '+11%', clicksTrend: '+14%', optoutsTrend: '+2%' }
+            },
+            leaderboard: {
+                '1w': {
+                    highest: [
+                        { name: 'Living Root Kitchen NY', value: '6.1%', width: '78%' },
+                        { name: 'Living Root Kitchen PA', value: '5.4%', width: '68%' },
+                        { name: 'Greenway Market RI', value: '4.9%', width: '62%' }
+                    ],
+                    lowest: [
+                        { name: 'PureField Produce VT', value: '1.2%', width: '15%' },
+                        { name: 'PureField Produce NH', value: '1.6%', width: '20%' },
+                        { name: 'PureField Produce ME', value: '1.9%', width: '24%' }
+                    ]
+                },
+                '1m': {
+                    highest: [
+                        { name: 'Living Root Kitchen NJ', value: '8.2%', width: '85%' },
+                        { name: 'Living Root Kitchen NY', value: '7.1%', width: '72%' },
+                        { name: 'Greenway Market CT', value: '5.8%', width: '58%' }
+                    ],
+                    lowest: [
+                        { name: 'PureField Produce VT', value: '1.8%', width: '18%' },
+                        { name: 'Greenway Market RI', value: '2.2%', width: '22%' },
+                        { name: 'PureField Produce ME', value: '2.8%', width: '28%' }
+                    ]
+                },
+                '3m': {
+                    highest: [
+                        { name: 'Greenway Market MA', value: '9.4%', width: '92%' },
+                        { name: 'Living Root Kitchen NJ', value: '8.8%', width: '86%' },
+                        { name: 'Living Root Kitchen NY', value: '7.6%', width: '74%' }
+                    ],
+                    lowest: [
+                        { name: 'Living Root Kitchen NY', value: '2.1%', width: '21%' },
+                        { name: 'Living Root Kitchen PA', value: '2.4%', width: '24%' },
+                        { name: 'Greenway Market MA', value: '2.9%', width: '29%' }
+                    ]
+                }
+            }
+        };
+        
+        function setCardDateRange(card, range) {
+            // Update button states for this card
+            const cardButtons = document.querySelectorAll(`[id^="${card}-range-"]`);
+            cardButtons.forEach(btn => {
+                btn.classList.remove('text-neutral-900', 'bg-white', 'shadow-sm');
+                btn.classList.add('text-neutral-500', 'hover:text-neutral-700');
+            });
+            const activeBtn = document.getElementById(`${card}-range-${range}`);
+            if (activeBtn) {
+                activeBtn.classList.remove('text-neutral-500', 'hover:text-neutral-700');
+                activeBtn.classList.add('text-neutral-900', 'bg-white', 'shadow-sm');
+            }
+            
+            const data = cardDateRangeData[card]?.[range];
+            if (!data) return;
+            
+            // Update card-specific metrics
+            if (card === 'email') {
+                updateMetricValue('email-sends', data.sends, data.sendsTrend);
+                updateMetricValue('email-opens', data.opens, data.opensTrend);
+                updateMetricValue('email-clicks', data.clicks, data.clicksTrend);
+                updateMetricValue('email-bounces', data.bounces, data.bouncesTrend);
+            } else if (card === 'contacts') {
+                updateMetricValue('contact-total', data.total, data.totalTrend);
+                updateMetricValue('contact-new', data.new, data.newTrend);
+                updateMetricValue('contact-active', data.active, data.activeTrend);
+                updateMetricValue('contact-unsub', data.unsub, data.unsubTrend);
+            } else if (card === 'sms') {
+                updateMetricValue('sms-sends', data.sends, data.sendsTrend);
+                updateMetricValue('sms-delivered', data.delivered, data.deliveredTrend);
+                updateMetricValue('sms-clicks', data.clicks, data.clicksTrend);
+                updateMetricValue('sms-optouts', data.optouts, data.optoutsTrend);
+            } else if (card === 'performance') {
+                const perfBenchmark = document.getElementById('performance-benchmark');
+                if (perfBenchmark) {
+                    perfBenchmark.textContent = `Based on benchmark of ${data.benchmark}`;
+                }
+            }
+        }
+        
+        // Unified column date range function
+        function setColumnDateRange(range) {
+            // Update button states
+            document.querySelectorAll('.column-range-btn').forEach(btn => {
+                btn.classList.remove('text-neutral-900', 'bg-neutral-100', 'shadow-sm');
+                btn.classList.add('text-neutral-500', 'hover:text-neutral-700');
+            });
+            const activeBtn = document.getElementById(`column-range-${range}`);
+            if (activeBtn) {
+                activeBtn.classList.remove('text-neutral-500', 'hover:text-neutral-700');
+                activeBtn.classList.add('text-neutral-900', 'bg-neutral-100', 'shadow-sm');
+            }
+            
+            // Map to existing data format
+            const dataRange = range === '1w' ? '1w' : range === '1m' ? '1m' : '3m';
+            const data = cardDateRangeData;
+            
+            // Update all cards in the left column
+            if (data.email?.[dataRange]) {
+                const emailData = data.email[dataRange];
+                updateMetricValue('email-sends', emailData.sends, emailData.sendsTrend);
+                updateMetricValue('email-opens', emailData.opens, emailData.opensTrend);
+                updateMetricValue('email-clicks', emailData.clicks, emailData.clicksTrend);
+                updateMetricValue('email-bounces', emailData.bounces, emailData.bouncesTrend);
+            }
+            if (data.contacts?.[dataRange]) {
+                const contactData = data.contacts[dataRange];
+                updateMetricValue('contact-total', contactData.total, contactData.totalTrend);
+                updateMetricValue('contact-new', contactData.new, contactData.newTrend);
+                updateMetricValue('contact-active', contactData.active, contactData.activeTrend);
+                updateMetricValue('contact-unsub', contactData.unsub, contactData.unsubTrend);
+            }
+            if (data.sms?.[dataRange]) {
+                const smsData = data.sms[dataRange];
+                updateMetricValue('sms-sends', smsData.sends, smsData.sendsTrend);
+                updateMetricValue('sms-delivered', smsData.delivered, smsData.deliveredTrend);
+                updateMetricValue('sms-clicks', smsData.clicks, smsData.clicksTrend);
+                updateMetricValue('sms-optouts', smsData.optouts, smsData.optoutsTrend);
+            }
+            if (data.performance?.[dataRange]) {
+                const perfBenchmark = document.getElementById('performance-benchmark');
+                if (perfBenchmark) {
+                    perfBenchmark.textContent = `Based on benchmark of ${data.performance[dataRange].benchmark}`;
+                }
+            }
+            
+            // Update leaderboard
+            if (data.leaderboard?.[dataRange]) {
+                updateLeaderboard(data.leaderboard[dataRange]);
+            }
+        }
+        
+        // Refresh settings toggle
+        function toggleRefreshSettings() {
+            const menu = document.getElementById('refresh-settings-menu');
+            if (menu) {
+                menu.classList.toggle('hidden');
+            }
+        }
+        
+        function setRefreshTime(time) {
+            const label = document.getElementById('refresh-time-label');
+            if (label) {
+                label.textContent = `Refreshes at ${time}`;
+            }
+            toggleRefreshSettings();
+            showToast(`Insights will refresh daily at ${time}`);
+        }
+        
+        // Close dropdowns when clicking outside
+        document.addEventListener('click', function(e) {
+            const refreshMenu = document.getElementById('refresh-settings-menu');
+            if (refreshMenu && !e.target.closest('[onclick*="toggleRefreshSettings"]') && !e.target.closest('#refresh-settings-menu')) {
+                refreshMenu.classList.add('hidden');
+            }
+        });
+        
+        function updateAIInsights(insights) {
+            const container = document.getElementById('ai-insights-list');
+            if (!container || !insights) return;
+            
+            container.innerHTML = insights.map(insight => `
+                <div class="bg-neutral-50 rounded-lg p-3 hover:bg-neutral-100 transition-colors group">
+                    <p class="text-sm text-neutral-700 mb-2">${insight.text}</p>
+                    <div class="flex items-center justify-end">
+                        <div class="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                            <button onclick="rateInsight(this, 'up')" class="p-1.5 rounded text-neutral-400 hover:text-success-600 hover:bg-success-50 transition-colors"><svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M14 10h4.764a2 2 0 011.789 2.894l-3.5 7A2 2 0 0115.263 21h-4.017c-.163 0-.326-.02-.485-.06L7 20m7-10V5a2 2 0 00-2-2h-.095c-.5 0-.905.405-.905.905 0 .714-.211 1.412-.608 2.006L7 11v9m7-10h-2M7 20H5a2 2 0 01-2-2v-6a2 2 0 012-2h2.5"/></svg></button>
+                            <button onclick="rateInsight(this, 'down')" class="p-1.5 rounded text-neutral-400 hover:text-danger-600 hover:bg-danger-50 transition-colors"><svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M10 14H5.236a2 2 0 01-1.789-2.894l3.5-7A2 2 0 018.736 3h4.018a2 2 0 01.485.06l3.76.94m-7 10v5a2 2 0 002 2h.096c.5 0 .905-.405.905-.904 0-.715.211-1.413.608-2.008L17 13V4m-7 10h2m5-10h2a2 2 0 012 2v6a2 2 0 01-2 2h-2.5"/></svg></button>
+                        </div>
+                    </div>
+                </div>
+            `).join('');
+        }
+        
+        function updateActivityLog(activities) {
+            const container = document.getElementById('activity-list');
+            if (!container || !activities) return;
+            
+            container.innerHTML = activities.map(item => {
+                const statsHtml = item.stats ? `
+                    <div class="flex items-center gap-3 mb-3 text-xs text-neutral-500">
+                        ${item.stats.opens ? `<span><span class="font-medium text-neutral-700">${item.stats.opens}</span> opens</span>` : ''}
+                        ${item.stats.delivered ? `<span><span class="font-medium text-neutral-700">${item.stats.delivered}</span> delivered</span>` : ''}
+                        ${item.stats.reach ? `<span><span class="font-medium text-neutral-700">${item.stats.reach}</span> reach</span>` : ''}
+                        ${item.stats.clicks ? `<span><span class="font-medium text-neutral-700">${item.stats.clicks}</span> clicks</span>` : ''}
+                        ${item.stats.engagements ? `<span><span class="font-medium text-neutral-700">${item.stats.engagements}</span> engagements</span>` : ''}
+                        ${item.stats.ctr ? `<span><span class="font-medium text-success-600">${item.stats.ctr}</span> CTR</span>` : ''}
+                        ${item.stats.rate ? `<span><span class="font-medium text-success-600">${item.stats.rate}</span> rate</span>` : ''}
+                    </div>
+                ` : '';
+                
+                const scheduleHtml = item.schedule ? `
+                    <div class="flex items-center gap-3 mb-3 text-xs text-neutral-500">
+                        <span class="flex items-center gap-1">
+                            <svg class="w-3 h-3" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
+                            ${item.schedule.date}
+                        </span>
+                        <span class="flex items-center gap-1">
+                            <svg class="w-3 h-3" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
+                            ${item.schedule.list}
+                        </span>
+                    </div>
+                ` : '';
+                
+                const pendingDot = item.pending ? '<div class="absolute top-3 right-3 w-2.5 h-2.5 bg-warning-400 rounded-full"></div>' : '';
+                const actionText = item.pending ? 'Review campaign' : (item.type === 'social' ? 'View post' : (item.title.includes('scheduled') ? 'View campaign' : 'View report'));
+                const hasDetails = item.stats || item.schedule;
+                
+                return `
+                    <div class="activity-item bg-white rounded-xl p-4 shadow-sm border border-neutral-100 hover:shadow-md transition-shadow relative" data-type="${item.type}">
+                        ${pendingDot}
+                        <div class="flex gap-4">
+                            <img src="${item.img}" alt="Preview" class="w-20 h-24 rounded-lg object-cover flex-shrink-0 shadow-sm">
+                            <div class="flex-1 min-w-0 flex flex-col">
+                                <p class="text-sm font-medium text-neutral-700 mb-2">${item.title}</p>
+                                <div class="flex items-center gap-1.5 mb-${hasDetails ? '2' : '3'}">
+                                    <div class="w-5 h-5 bg-${item.color} rounded-full flex items-center justify-center text-white text-[10px] font-bold flex-shrink-0">${item.initials}</div>
+                                    <span class="text-xs text-neutral-500">${item.account}</span>
+                                </div>
+                                ${statsHtml}
+                                ${scheduleHtml}
+                                <div class="flex items-center justify-between mt-auto">
+                                    <button class="text-xs font-medium text-main-600 hover:text-main-700">${actionText}</button>
+                                    <span class="text-xs text-neutral-400">${item.time}</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+        
+        function updateMetricValue(id, value, trend) {
+            const el = document.getElementById(id);
+            if (el) {
+                el.textContent = value;
+            }
+            const trendEl = document.getElementById(`${id}-trend`);
+            if (trendEl) {
+                trendEl.textContent = trend;
+            }
+        }
+
+        // Activity Filter Dropdown
+        function toggleActivityFilter() {
+            const dropdown = document.getElementById('activity-filter-dropdown');
+            dropdown.classList.toggle('hidden');
+        }
+
+        function setActivityFilter(filter, label) {
+            document.getElementById('activity-filter-label').textContent = label;
+            document.getElementById('activity-filter-dropdown').classList.add('hidden');
+            
+            // Filter the activity items
+            const items = document.querySelectorAll('.activity-item');
+            items.forEach(item => {
+                const itemType = item.dataset.type;
+                if (filter === 'all') {
+                    item.style.display = '';
+                } else if (filter === itemType) {
+                    item.style.display = '';
+                } else {
+                    item.style.display = 'none';
+                }
+            });
+        }
+
+        // Close activity filter dropdown when clicking outside
+        document.addEventListener('click', function(e) {
+            const dropdown = document.getElementById('activity-filter-dropdown');
+            const button = e.target.closest('button[onclick="toggleActivityFilter()"]');
+            if (!button && dropdown && !dropdown.contains(e.target)) {
+                dropdown.classList.add('hidden');
+            }
+        });
+
+        // AI Insights Rating
+        function rateInsight(button, rating) {
+            const thumbsContainer = button.parentElement;
+            const insightCard = button.closest('.bg-neutral-50');
+            
+            // Visual feedback on button
+            if (rating === 'up') {
+                button.classList.add('bg-success-200', 'ring-2', 'ring-success-300');
+                // Hide thumbs after click
+                setTimeout(() => {
+                    thumbsContainer.style.opacity = '0';
+                }, 300);
+                showToast('Thank you for your feedback!');
+            } else {
+                // Thumbs down - remove the insight card
+                if (insightCard) {
+                    insightCard.style.transition = 'opacity 0.3s, transform 0.3s';
+                    insightCard.style.opacity = '0';
+                    insightCard.style.transform = 'translateX(20px)';
+                    setTimeout(() => {
+                        insightCard.remove();
+                    }, 300);
+                }
+                showToast('Insight removed');
+            }
+        }
+        
+        // Toast notification - Rise UI style
+        function showToast(message) {
+            const container = document.getElementById('toast-container');
+            const toast = document.createElement('div');
+            toast.className = 'bg-white border border-neutral-200 text-neutral-800 px-4 py-3 rounded-xl shadow-lg flex items-center gap-3 animate-fade-in min-w-[280px]';
+            toast.innerHTML = `
+                <div class="w-8 h-8 bg-success-100 rounded-full flex items-center justify-center flex-shrink-0">
+                    <svg class="w-4 h-4 text-success-600" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg>
+                </div>
+                <span class="text-sm font-medium">${message}</span>
+                <button onclick="this.parentElement.remove()" class="ml-auto p-1 text-neutral-400 hover:text-neutral-600 transition-colors">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/></svg>
+                </button>
+            `;
+            container.appendChild(toast);
+            
+            // Remove toast after 3 seconds
+            setTimeout(() => {
+                toast.style.opacity = '0';
+                toast.style.transform = 'translateX(100%)';
+                toast.style.transition = 'all 0.3s ease';
+                setTimeout(() => toast.remove(), 300);
+            }, 3000);
+        }
+
+        // Time Range Toggle
+        let currentTimeRange = '1M';
+        
+        const timeRangeData = {
+            '1M': {
+                contacts: { total: '42,580', new: '1,321', active: '38,240', unsub: '68' },
+                trends: { total: '3%', new: '6%', active: '4%', unsub: '2%' }
+            },
+            '6M': {
+                contacts: { total: '38,420', new: '8,240', active: '35,180', unsub: '412' },
+                trends: { total: '12%', new: '24%', active: '15%', unsub: '8%' }
+            },
+            '1Y': {
+                contacts: { total: '32,100', new: '15,680', active: '28,450', unsub: '892' },
+                trends: { total: '28%', new: '48%', active: '32%', unsub: '15%' }
+            }
+        };
+
+        function setTimeRange(range) {
+            currentTimeRange = range;
+            
+            // Update button states
+            document.querySelectorAll('.time-range-btn').forEach(btn => {
+                btn.classList.remove('text-white', 'bg-neutral-800');
+                btn.classList.add('text-neutral-500', 'bg-white');
+            });
+            
+            const activeBtn = document.getElementById('time-' + range.toLowerCase());
+            if (activeBtn) {
+                activeBtn.classList.remove('text-neutral-500', 'bg-white');
+                activeBtn.classList.add('text-white', 'bg-neutral-800');
+            }
+            
+            // Update widget data
+            updateContactGrowthWidget(range);
+        }
+
+        function updateContactGrowthWidget(range) {
+            const data = timeRangeData[range];
+            if (!data) return;
+            
+            // Update the contact numbers (these IDs would need to be added to the HTML)
+            const elements = {
+                'contact-total': data.contacts.total,
+                'contact-new': data.contacts.new,
+                'contact-active': data.contacts.active,
+                'contact-unsub': data.contacts.unsub
+            };
+            
+            Object.keys(elements).forEach(id => {
+                const el = document.getElementById(id);
+                if (el) el.textContent = elements[id];
+            });
+            
+            // Update trends
+            const trendElements = {
+                'trend-total': data.trends.total,
+                'trend-new': data.trends.new,
+                'trend-active': data.trends.active,
+                'trend-unsub': data.trends.unsub
+            };
+            
+            Object.keys(trendElements).forEach(id => {
+                const el = document.getElementById(id);
+                if (el) el.textContent = trendElements[id] + ' vs last ' + (range === '1Y' ? 'year' : range === '6M' ? '6 months' : '30d');
+            });
+        }
+
+        // Performance Filter Dropdown
+        let performanceFilterOpen = false;
+        let currentFilter = 'email_click';
+        
+        const filterData = {
+            // Email metrics
+            email_click: { 
+                label: 'Email click rate', 
+                benchmark: '4.6%',
+                highest: [
+                    { name: 'Living Root Kitchen NJ', value: '8.2%', width: '85%' },
+                    { name: 'Living Root Kitchen NY', value: '7.1%', width: '72%' },
+                    { name: 'Greenway Market CT', value: '5.8%', width: '58%' }
+                ],
+                lowest: [
+                    { name: 'PureField Produce VT', value: '1.8%', width: '18%' },
+                    { name: 'Greenway Market RI', value: '2.2%', width: '22%' },
+                    { name: 'PureField Produce ME', value: '2.8%', width: '28%' }
+                ]
+            },
+            email_open: { 
+                label: 'Email open rate', 
+                benchmark: '21.3%',
+                highest: [
+                    { name: 'Greenway Market MA', value: '34.2%', width: '92%' },
+                    { name: 'Living Root Kitchen NY', value: '28.7%', width: '78%' },
+                    { name: 'Living Root Kitchen NY', value: '26.1%', width: '70%' }
+                ],
+                lowest: [
+                    { name: 'Living Root Kitchen PA', value: '12.4%', width: '15%' },
+                    { name: 'Greenway Market RI', value: '14.8%', width: '22%' },
+                    { name: 'Living Root Kitchen NJ', value: '15.2%', width: '25%' }
+                ]
+            },
+            email_bounce: { 
+                label: 'Email bounce rate', 
+                benchmark: '2.1%',
+                highest: [
+                    { name: 'Living Root Kitchen NY', value: '4.8%', width: '88%' },
+                    { name: 'Living Root Kitchen PA', value: '3.9%', width: '72%' },
+                    { name: 'Living Root Kitchen NJ', value: '3.2%', width: '58%' }
+                ],
+                lowest: [
+                    { name: 'Living Root Kitchen NJ', value: '0.8%', width: '12%' },
+                    { name: 'Living Root Kitchen NY', value: '1.1%', width: '18%' },
+                    { name: 'Greenway Market CT', value: '1.4%', width: '24%' }
+                ]
+            },
+            // Contact metrics
+            contact_growth: { 
+                label: 'Contact growth', 
+                benchmark: '+2.1%',
+                highest: [
+                    { name: 'Living Root Kitchen NY', value: '+5.4%', width: '90%' },
+                    { name: 'Living Root Kitchen PA', value: '+4.1%', width: '72%' },
+                    { name: 'Greenway Market RI', value: '+3.8%', width: '65%' }
+                ],
+                lowest: [
+                    { name: 'PureField Produce VT', value: '-0.2%', width: '8%' },
+                    { name: 'PureField Produce ME', value: '+0.4%', width: '15%' },
+                    { name: 'Greenway Market RI', value: '+0.7%', width: '22%' }
+                ]
+            },
+            contact_unsub: { 
+                label: 'Unsubscribe rate', 
+                benchmark: '0.4%',
+                highest: [
+                    { name: 'PureField Produce VT', value: '1.2%', width: '85%' },
+                    { name: 'PureField Produce NH', value: '0.9%', width: '65%' },
+                    { name: 'PureField Produce ME', value: '0.7%', width: '50%' }
+                ],
+                lowest: [
+                    { name: 'Living Root Kitchen NJ', value: '0.1%', width: '10%' },
+                    { name: 'Greenway Market MA', value: '0.2%', width: '18%' },
+                    { name: 'Greenway Market CT', value: '0.2%', width: '18%' }
+                ]
+            },
+            // SMS metrics
+            sms_click: { 
+                label: 'SMS click rate', 
+                benchmark: '8.2%',
+                highest: [
+                    { name: 'Living Root Kitchen NY', value: '14.6%', width: '92%' },
+                    { name: 'Greenway Market CT', value: '12.3%', width: '78%' },
+                    { name: 'Living Root Kitchen PA', value: '10.8%', width: '68%' }
+                ],
+                lowest: [
+                    { name: 'Greenway Market MA', value: '3.2%', width: '12%' },
+                    { name: 'Greenway Market RI', value: '4.1%', width: '20%' },
+                    { name: 'Greenway Market MA', value: '4.7%', width: '26%' }
+                ]
+            },
+            sms_delivered: { 
+                label: 'SMS delivery rate', 
+                benchmark: '97.4%',
+                highest: [
+                    { name: 'Greenway Market CT', value: '99.2%', width: '95%' },
+                    { name: 'Living Root Kitchen NJ', value: '98.8%', width: '88%' },
+                    { name: 'Greenway Market MA', value: '98.4%', width: '82%' }
+                ],
+                lowest: [
+                    { name: 'PureField Produce NH', value: '94.1%', width: '18%' },
+                    { name: 'PureField Produce ME', value: '94.8%', width: '25%' },
+                    { name: 'PureField Produce VT', value: '95.2%', width: '30%' }
+                ]
+            },
+            sms_optout: { 
+                label: 'SMS opt-out rate', 
+                benchmark: '0.3%',
+                highest: [
+                    { name: 'PureField Produce VT', value: '0.9%', width: '88%' },
+                    { name: 'PureField Produce NH', value: '0.7%', width: '70%' },
+                    { name: 'Living Root Kitchen NJ', value: '0.5%', width: '50%' }
+                ],
+                lowest: [
+                    { name: 'Living Root Kitchen NY', value: '0.1%', width: '10%' },
+                    { name: 'Living Root Kitchen NY', value: '0.1%', width: '10%' },
+                    { name: 'Living Root Kitchen PA', value: '0.2%', width: '18%' }
+                ]
+            }
+        };
+        
+        // Performance type configuration
+        let currentPerformanceType = 'account';
+        let currentMetric = 'click_rate';
+        let performanceTypeOpen = false;
+        
+        // Metrics aligned with Constant Contact reporting terminology
+        // Reference: https://knowledgebase.constantcontact.com
+        const performanceTypeConfig = {
+            account: {
+                label: 'Account performance',
+                metrics: [
+                    { id: 'open_rate', label: 'Open rate', benchmark: '17.6%' },
+                    { id: 'click_rate', label: 'Click rate', benchmark: '1.3%' },
+                    { id: 'bounce_rate', label: 'Bounce rate', benchmark: '8.9%' },
+                    { id: 'unsubscribe_rate', label: 'Unsubscribe rate', benchmark: '0.1%' }
+                ]
+            },
+            email: {
+                label: 'Email campaigns',
+                metrics: [
+                    { id: 'open_rate', label: 'Open rate', benchmark: '17.6%' },
+                    { id: 'click_rate', label: 'Click rate', benchmark: '1.3%' },
+                    { id: 'bounce_rate', label: 'Bounce rate', benchmark: '8.9%' },
+                    { id: 'unsubscribe_rate', label: 'Unsubscribe rate', benchmark: '0.1%' },
+                    { id: 'spam_rate', label: 'Spam reports', benchmark: '0.02%' },
+                    { id: 'did_not_open', label: 'Did not open', benchmark: '82.4%' }
+                ]
+            },
+            sms: {
+                label: 'SMS campaigns',
+                metrics: [
+                    { id: 'delivery_rate', label: 'Delivered', benchmark: '97.4%' },
+                    { id: 'click_rate', label: 'Click rate', benchmark: '8.2%' },
+                    { id: 'optout_rate', label: 'Opt-outs', benchmark: '1.2%' }
+                ]
+            },
+            social: {
+                label: 'Social posts',
+                metrics: [
+                    { id: 'impressions', label: 'Impressions', benchmark: '2.4K' },
+                    { id: 'reach', label: 'Reach', benchmark: '1.8K' },
+                    { id: 'engagement', label: 'Engagement', benchmark: '156' },
+                    { id: 'clicks', label: 'Clicks', benchmark: '89' }
+                ]
+            },
+            automation: {
+                label: 'Automations',
+                metrics: [
+                    { id: 'open_rate', label: 'Open rate', benchmark: '32.1%' },
+                    { id: 'click_rate', label: 'Click rate', benchmark: '6.8%' },
+                    { id: 'sends', label: 'Emails sent', benchmark: '1.2K' },
+                    { id: 'active_contacts', label: 'Active contacts', benchmark: '856' }
+                ]
+            }
+        };
+        
+        function togglePerformanceType() {
+            performanceTypeOpen = !performanceTypeOpen;
+            const menu = document.getElementById('performance-type-menu');
+            menu.classList.toggle('hidden', !performanceTypeOpen);
+        }
+        
+        function selectPerformanceType(type) {
+            currentPerformanceType = type;
+            const config = performanceTypeConfig[type];
+            
+            // Update title label
+            const label = document.getElementById('performance-type-label');
+            if (label) label.textContent = config.label;
+            
+            // Update checkmarks
+            Object.keys(performanceTypeConfig).forEach(key => {
+                const check = document.getElementById('type-check-' + key);
+                if (check) {
+                    check.classList.toggle('text-main-600', key === type);
+                    check.classList.toggle('text-transparent', key !== type);
+                }
+            });
+            
+            // Update metric options
+            updateMetricOptions(config.metrics);
+            
+            // Select first metric by default
+            if (config.metrics.length > 0) {
+                selectPerformanceMetric(config.metrics[0].id);
+            }
+            
+            // Update leaderboard with campaigns or accounts based on type
+            if (type === 'account') {
+                // Use account names from current persona
+                const personaConfig = personaConfigs[currentPersona];
+                updateLeaderboardWithPersona(personaConfig.accounts);
+            } else if (campaignData[type]) {
+                // Use campaign names for campaign-based types
+                updateLeaderboardWithPersona(campaignData[type]);
+            }
+            
+            // Close menu
+            togglePerformanceType();
+        }
+        
+        function updateMetricOptions(metrics) {
+            const container = document.getElementById('metric-options');
+            if (!container) return;
+            
+            container.innerHTML = metrics.map((metric, index) => `
+                <button onclick="selectPerformanceMetric('${metric.id}')" class="w-full text-left px-3 py-2 text-sm hover:bg-neutral-50 flex items-center gap-2">
+                    <svg id="metric-check-${metric.id}" class="w-4 h-4 ${index === 0 ? 'text-main-600' : 'text-transparent'}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>
+                    <span>${metric.label}</span>
+                </button>
+            `).join('');
+        }
+        
+        function selectPerformanceMetric(metricId) {
+            currentMetric = metricId;
+            const config = performanceTypeConfig[currentPerformanceType];
+            const metric = config.metrics.find(m => m.id === metricId);
+            
+            if (!metric) return;
+            
+            // Update checkmarks
+            config.metrics.forEach(m => {
+                const check = document.getElementById('metric-check-' + m.id);
+                if (check) {
+                    check.classList.toggle('text-main-600', m.id === metricId);
+                    check.classList.toggle('text-transparent', m.id !== metricId);
+                }
+            });
+            
+            // Update filter label
+            const label = document.getElementById('performance-filter-label');
+            if (label) label.textContent = metric.label;
+            
+            // Update benchmark
+            const benchmark = document.getElementById('performance-benchmark');
+            if (benchmark) benchmark.textContent = 'Based on benchmark of ' + metric.benchmark;
+            
+            // Update leaderboard with appropriate data
+            const filterKey = `${currentPerformanceType}_${metricId}`;
+            if (filterData[filterKey]) {
+                updateLeaderboard(filterData[filterKey]);
+            } else {
+                // Fallback to email click data
+                updateLeaderboard(filterData.email_click || filterData[Object.keys(filterData)[0]]);
+            }
+            
+            // Close menu
+            togglePerformanceFilter();
+        }
+
+        function togglePerformanceFilter() {
+            performanceFilterOpen = !performanceFilterOpen;
+            const menu = document.getElementById('performance-filter-menu');
+            menu.classList.toggle('hidden', !performanceFilterOpen);
+        }
+
+        function selectPerformanceFilter(filter) {
+            currentFilter = filter;
+            
+            // Update checkmarks
+            Object.keys(filterData).forEach(key => {
+                const check = document.getElementById('filter-check-' + key);
+                if (check) {
+                    check.classList.toggle('text-neutral-800', key === filter);
+                    check.classList.toggle('text-transparent', key !== filter);
+                }
+            });
+            
+            // Update label in button and benchmark in footer
+            const data = filterData[filter];
+            const label = document.getElementById('performance-filter-label');
+            const benchmark = document.getElementById('performance-benchmark');
+            if (label) label.textContent = data.label;
+            if (benchmark) benchmark.textContent = 'Based on benchmark of ' + data.benchmark;
+            
+            // Update leaderboard
+            updateLeaderboard(data);
+            
+            // Close menu
+            togglePerformanceFilter();
+        }
+        
+        function updateLeaderboard(data) {
+            // Update highest performers
+            data.highest.forEach((item, i) => {
+                const name = document.getElementById(`high-${i+1}-name`);
+                const bar = document.getElementById(`high-${i+1}-bar`);
+                const value = document.getElementById(`high-${i+1}-value`);
+                if (name) name.textContent = item.name;
+                if (bar) bar.style.width = item.width;
+                if (value) value.textContent = item.value;
+            });
+            
+            // Update lowest performers
+            data.lowest.forEach((item, i) => {
+                const name = document.getElementById(`low-${i+1}-name`);
+                const bar = document.getElementById(`low-${i+1}-bar`);
+                const value = document.getElementById(`low-${i+1}-value`);
+                if (name) name.textContent = item.name;
+                if (bar) bar.style.width = item.width;
+                if (value) value.textContent = item.value;
+            });
+        }
+
+        // Close dropdowns when clicking outside
+        document.addEventListener('click', function(e) {
+            // Performance type dropdown
+            const typeMenu = document.getElementById('performance-type-menu');
+            const typeBtn = e.target.closest('[onclick="togglePerformanceType()"]');
+            if (!typeBtn && !e.target.closest('#performance-type-menu')) {
+                typeMenu?.classList.add('hidden');
+                performanceTypeOpen = false;
+            }
+            
+            // Metric filter dropdown
+            const filterMenu = document.getElementById('performance-filter-menu');
+            const filterBtn = e.target.closest('[onclick="togglePerformanceFilter()"]');
+            if (!filterBtn && !e.target.closest('#performance-filter-menu')) {
+                filterMenu?.classList.add('hidden');
+                performanceFilterOpen = false;
+            }
+        });
+
+        // AI Assistant Modal
+        function openAIAssistant(context) {
+            const modal = document.getElementById('ai-assistant-modal');
+            const promptArea = document.getElementById('ai-prompt-input');
+            const suggestionsContainer = document.getElementById('ai-suggestions');
+            
+            if (context === 'insights') {
+                // Show performance-specific suggestions in chat body
+                suggestionsContainer.innerHTML = `
+                    <p class="text-sm text-neutral-600 mb-3">What would you like to know?</p>
+                    <div class="flex flex-wrap gap-2">
+                        <button onclick="setPrompt('Show me performance insights across all accounts')" class="text-sm px-3 py-1.5 bg-main-50  border border-main-200 rounded-md hover:bg-main-100 transition-colors">Performance across accounts</button>
+                        <button onclick="setPrompt('Compare email vs SMS engagement')" class="text-sm px-3 py-1.5 bg-main-50  border border-main-200 rounded-md hover:bg-main-100 transition-colors">Compare email vs SMS</button>
+                        <button onclick="setPrompt('Which accounts are underperforming?')" class="text-sm px-3 py-1.5 bg-main-50  border border-main-200 rounded-md hover:bg-main-100 transition-colors">Underperforming accounts</button>
+                        <button onclick="setPrompt('Compare campaigns between locations')" class="text-sm px-3 py-1.5 bg-main-50  border border-main-200 rounded-md hover:bg-main-100 transition-colors">Compare campaigns</button>
+                    </div>
+                `;
+            } else {
+                // General assistant - empty suggestions (uses the static tags)
+                suggestionsContainer.innerHTML = '';
+            }
+            
+            modal.classList.remove('hidden');
+            setTimeout(() => promptArea.focus(), 100);
+        }
+        
+        function closeAIAssistant() {
+            const modal = document.getElementById('ai-assistant-modal');
+            modal.classList.add('hidden');
+            document.getElementById('ai-prompt-input').value = '';
+            document.getElementById('ai-suggestions').innerHTML = '';
+        }
+        
+        function setPrompt(text) {
+            const input = document.getElementById('ai-prompt-input');
+            input.value = text;
+            input.focus();
+        }
+        
+        function handleAISuggestion(type) {
+            if (type === 'brainstorm') {
+                setPrompt('Help me brainstorm campaign ideas for my audience');
+            }
+        }
+        
+        function submitAIPrompt() {
+            const input = document.getElementById('ai-prompt-input');
+            const suggestionsContainer = document.getElementById('ai-suggestions');
+            if (input.value.trim()) {
+                // Show the message in the chat
+                suggestionsContainer.innerHTML = `
+                    <div class="flex justify-end mb-3">
+                        <div class="bg-main-600 text-white px-4 py-2 rounded-2xl rounded-br-sm max-w-[85%]">
+                            <p class="text-sm">${input.value}</p>
+                        </div>
+                    </div>
+                    <div class="flex justify-start">
+                        <div class="bg-neutral-100 text-neutral-800 px-4 py-2 rounded-2xl rounded-bl-sm max-w-[85%]">
+                            <p class="text-sm">I'm analyzing your request... This feature is coming soon!</p>
+                        </div>
+                    </div>
+                `;
+                input.value = '';
+            }
+        }
+    </script>
+
+    <!-- AI Assistant Modal -->
+    <div id="ai-assistant-modal" class="hidden fixed inset-0 z-50 flex items-start justify-end pt-16 pr-4">
+        <!-- Backdrop -->
+        <div class="absolute inset-0" onclick="closeAIAssistant()"></div>
+        
+        <!-- Modal Content -->
+        <div class="relative w-full max-w-sm bg-white rounded-3xl shadow-xl flex flex-col" style="height: 480px; box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.15);">
+            <!-- Header -->
+            <div class="flex items-center justify-between px-5 py-3 border-b border-neutral-200 bg-white rounded-t-3xl">
+                <div class="flex items-center gap-2">
+                    <svg width="0" height="0" aria-hidden="true"><defs><linearGradient id="ai-gradient-modal" x1="0" y1="0" x2="24" y2="24" gradientUnits="userSpaceOnUse"><stop stop-color="#186ded"></stop><stop stop-color="#875bf7" offset="85%"></stop></linearGradient></defs></svg>
+                    <svg class="w-5 h-5" fill="none" stroke="url(#ai-gradient-modal)" stroke-width="1.5" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><path d="M9.937 15.5A2 2 0 0 0 8.5 14.063l-6.135-1.582a.5.5 0 0 1 0-.962L8.5 9.936A2 2 0 0 0 9.937 8.5l1.582-6.135a.5.5 0 0 1 .963 0L14.063 8.5A2 2 0 0 0 15.5 9.937l6.135 1.581a.5.5 0 0 1 0 .964L15.5 14.063a2 2 0 0 0-1.437 1.437l-1.582 6.135a.5.5 0 0 1-.963 0z"></path><path d="M20 3v4"></path><path d="M22 5h-4"></path><path d="M4 17v2"></path><path d="M5 18H3"></path></svg>
+                    <p class="text-base font-semibold text-neutral-950">AI assistant</p>
+                    <span class="px-1.5 py-0.5 text-xs font-medium  bg-main-100 border border-main-200 rounded-full leading-none">Beta</span>
+                </div>
+                <button onclick="closeAIAssistant()" class="p-1  hover:bg-main-50 rounded-md transition-colors">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6l-12 12"></path><path d="M6 6l12 12"></path></svg>
+                </button>
+            </div>
+            
+            <!-- Chat Body -->
+            <div class="flex-1 overflow-y-auto px-5 py-3">
+                <div class="mb-3">
+                    <p class="text-base text-neutral-950 mb-2">Welcome back, Gail! 👋 How can I help you with your marketing today?</p>
+                </div>
+                <!-- Suggestions will be injected here -->
+                <div id="ai-suggestions"></div>
+            </div>
+            
+            <!-- Input Area -->
+            <div class="flex flex-col px-3 pb-4">
+                <!-- Quick Tags -->
+                <div class="flex flex-wrap gap-2 mb-4">
+                    <button onclick="handleAISuggestion('brainstorm')" class="flex items-center gap-2 px-2.5 py-1 text-sm  bg-main-50 border border-main-200 rounded-md hover:bg-main-100 transition-colors">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><path d="M15 14c.2-1 .7-1.7 1.5-2.5 1-.9 1.5-2.2 1.5-3.5A6 6 0 0 0 6 8c0 1 .2 2.2 1.5 3.5.7.7 1.3 1.5 1.5 2.5"></path><path d="M9 18h6"></path><path d="M10 22h4"></path></svg>
+                        Brainstorm ideas with me
+                    </button>
+                </div>
+                
+                <!-- Textarea Input -->
+                <div class="relative">
+                    <textarea 
+                        id="ai-prompt-input" 
+                        rows="3"
+                        placeholder="Search or ask anything" 
+                        class="w-full px-3 py-2 pr-10 text-base text-neutral-950 placeholder-neutral-400 bg-white border border-main-300 rounded-lg resize-none focus:outline-none focus:ring-2 focus:ring-main-500 focus:border-main-500"
+                        onkeydown="if(event.key === 'Enter' && !event.shiftKey) { event.preventDefault(); submitAIPrompt(); }"
+                    ></textarea>
+                    <span class="absolute bottom-2 right-2">
+                        <button onclick="submitAIPrompt()" class="p-2 text-neutral-600 hover:bg-neutral-100 rounded-md transition-colors">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><path d="m5 12 7-7 7 7"></path><path d="M12 19V5"></path></svg>
+                        </button>
+                    </span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast Container -->
+    <div id="toast-container" class="fixed top-20 right-6 z-[9999] flex flex-col gap-2"></div>
+
+    <!-- Toggle Dot (shows when bar is hidden) -->
+    <button onclick="toggleAuthorBar()" class="fixed bottom-2 left-2 w-3 h-3 rounded-full z-50 transition-opacity" style="background-color: #5b21b6; opacity: 0.3;" onmouseover="this.style.opacity='0.6'" onmouseout="this.style.opacity='0.3'"></button>
+
+    <!-- Version Toggle Bar -->
+    <div id="author-bar" class="fixed bottom-0 left-0 right-0 bg-zinc-900 border-t border-zinc-700 px-6 py-3 z-[9999]">
+        <div class="max-w-7xl mx-auto flex items-center justify-between">
+            <a href="research-hub.html" class="flex items-center gap-2 text-zinc-400 hover:text-white transition-colors text-sm">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M10 19l-7-7m0 0l7-7m-7 7h18"/></svg>
+                Back to Research Hub
+            </a>
+            <div class="flex items-center gap-4">
+                <!-- Partner Personas Dropdown -->
+                <div class="relative flex items-center gap-2 border-r border-zinc-700 pr-4">
+                    <span class="text-zinc-500 text-xs">Persona:</span>
+                    <button onclick="togglePartnerDropdown()" class="flex items-center gap-2 px-2 py-1 text-xs font-medium rounded bg-zinc-800 text-zinc-300 hover:bg-zinc-700 transition-all">
+                        <span id="partner-persona-label-bar">🌿 Evergreen Harvest</span>
+                        <svg class="w-3 h-3 text-zinc-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m19 9-7 7-7-7"/></svg>
+                    </button>
+                    <div id="partner-dropdown" class="hidden absolute left-0 bottom-full mb-2 w-64 bg-zinc-800 border border-zinc-600 rounded-lg shadow-xl z-50 py-1">
+                        <p class="px-3 py-1.5 text-[10px] font-semibold text-zinc-500 uppercase tracking-wider">Partner Personas</p>
+                        <button onclick="setPartnerPersona('evergreen')" class="partner-persona-btn w-full px-3 py-2 text-left text-sm text-zinc-300 hover:bg-zinc-700 flex items-center gap-2" data-persona="evergreen">
+                            <span class="text-lg">🌿</span>
+                            <div class="flex-1">
+                                <p class="font-medium text-white">Evergreen Harvest Co.</p>
+                                <p class="text-xs text-zinc-500">Organic food collective · 3 franchises</p>
+                            </div>
+                            <svg class="partner-check w-4 h-4 text-success-500" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>
+                        </button>
+                        <button onclick="setPartnerPersona('ups')" class="partner-persona-btn w-full px-3 py-2 text-left text-sm text-zinc-300 hover:bg-zinc-700 flex items-center gap-2" data-persona="ups">
+                            <span class="text-lg">📦</span>
+                            <div class="flex-1">
+                                <p class="font-medium text-white">UPS Global</p>
+                                <p class="text-xs text-zinc-500">Shipping & logistics · Regional stores</p>
+                            </div>
+                            <svg class="partner-check w-4 h-4 text-transparent" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>
+                        </button>
+                    </div>
+                </div>
+                <!-- A/B Test: Date Filter Mode -->
+                <div class="flex items-center gap-2 border-r border-zinc-700 pr-4">
+                    <span class="text-zinc-500 text-xs">Date Filter:</span>
+                    <button onclick="setFilterMode('page')" id="filter-mode-page" class="filter-mode-btn px-2 py-1 text-xs font-medium rounded bg-accent-600 text-white">Page</button>
+                    <button onclick="setFilterMode('card')" id="filter-mode-card" class="filter-mode-btn px-2 py-1 text-xs font-medium rounded bg-zinc-800 text-zinc-400 hover:bg-zinc-700">Card</button>
+                </div>
+                
+                <div class="flex items-center gap-2">
+                    <span class="text-zinc-500 text-sm mr-2">Version:</span>
+                    <a href="org-dashboard-m1.html" class="px-3 py-1.5 text-sm font-medium rounded-md bg-zinc-800 text-zinc-400 hover:bg-zinc-700 hover:text-white transition-colors">V1.0</a>
+                    <a href="org-dashboard-m2.html" class="px-3 py-1.5 text-sm font-medium rounded-md bg-zinc-800 text-zinc-400 hover:bg-zinc-700 hover:text-white transition-colors">V1.1</a>
+                    <span class="px-3 py-1.5 text-sm font-medium rounded-md bg-success-600 text-white">V1.2</span>
+                    <button onclick="toggleAuthorBar()" class="text-zinc-500 hover:text-white ml-2">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/></svg>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+    function toggleAuthorBar() {
+        const bar = document.getElementById('author-bar');
+        bar.style.display = bar.style.display === 'none' ? 'block' : 'none';
+    }
+    
+    // A/B Test: Filter Mode (page vs card)
+    function setFilterMode(mode) {
+        // Update URL
+        const url = new URL(window.location.href);
+        url.searchParams.set('filterMode', mode);
+        window.history.replaceState({}, '', url);
+        
+        // Update toggle buttons
+        document.querySelectorAll('.filter-mode-btn').forEach(btn => {
+            btn.classList.remove('bg-accent-600', 'text-white');
+            btn.classList.add('bg-zinc-800', 'text-zinc-400', 'hover:bg-zinc-700');
+        });
+        const activeBtn = document.getElementById(`filter-mode-${mode}`);
+        if (activeBtn) {
+            activeBtn.classList.remove('bg-zinc-800', 'text-zinc-400', 'hover:bg-zinc-700');
+            activeBtn.classList.add('bg-accent-600', 'text-white');
+        }
+        
+        // Toggle UI visibility
+        const pageFilter = document.getElementById('page-date-filter');
+        const cardFilters = document.querySelectorAll('.card-date-filter');
+        
+        if (mode === 'page') {
+            if (pageFilter) pageFilter.style.display = 'flex';
+            cardFilters.forEach(el => el.style.display = 'none');
+        } else {
+            if (pageFilter) pageFilter.style.display = 'none';
+            cardFilters.forEach(el => el.style.display = 'flex');
+        }
+    }
+    
+    // Initialize filter mode from URL on page load
+    document.addEventListener('DOMContentLoaded', function() {
+        const params = new URLSearchParams(window.location.search);
+        const mode = params.get('filterMode') || 'page';
+        setFilterMode(mode);
+    });
+    
+    // Card-level filter functions
+    function toggleCardFilter(cardType) {
+        const menu = document.getElementById(`${cardType}-filter-menu`);
+        // Close all other menus first
+        document.querySelectorAll('[id$="-filter-menu"]').forEach(m => {
+            if (m.id !== `${cardType}-filter-menu`) {
+                m.classList.add('hidden');
+            }
+        });
+        menu.classList.toggle('hidden');
+    }
+    
+    // Date range labels for subtitle
+    const dateRangeLabels = {
+        'today': 'today',
+        'yesterday': 'yesterday',
+        '7d': 'in the last 7 days',
+        '30d': 'in the last 30 days',
+        '90d': 'in the last 90 days',
+        'ytd': 'year to date',
+        '12m': 'in the last 12 months'
+    };
+    
+    // Sample data for metric cards - percentages as big numbers, counts in chips
+    const cardData = {
+        email: {
+            'today':     { openRate: '38.2%', opensCount: '48',    clickRate: '32.5%', clicksCount: '39',    bounceRate: '2.1%', bouncesCount: '3',    sendsTotal: '126',   sendsTrend: '+5%' },
+            'yesterday': { openRate: '35.8%', opensCount: '43',    clickRate: '31.0%', clicksCount: '37',    bounceRate: '2.4%', bouncesCount: '3',    sendsTotal: '120',   sendsTrend: '+3%' },
+            '7d':        { openRate: '37.1%', opensCount: '298',   clickRate: '33.8%', clicksCount: '271',   bounceRate: '2.3%', bouncesCount: '18',   sendsTotal: '803',   sendsTrend: '+10%' },
+            '30d':       { openRate: '36.5%', opensCount: '460',   clickRate: '34.3%', clicksCount: '432',   bounceRate: '2.5%', bouncesCount: '32',   sendsTotal: '1,260', sendsTrend: '+8%' },
+            '90d':       { openRate: '35.2%', opensCount: '1,320', clickRate: '33.5%', clicksCount: '1,255', bounceRate: '2.8%', bouncesCount: '105',  sendsTotal: '3,750', sendsTrend: '+6%' },
+            'ytd':       { openRate: '34.8%', opensCount: '2,450', clickRate: '32.1%', clicksCount: '2,260', bounceRate: '2.6%', bouncesCount: '183',  sendsTotal: '7,040', sendsTrend: '+12%' },
+            '12m':       { openRate: '34.5%', opensCount: '3,280', clickRate: '31.8%', clicksCount: '3,025', bounceRate: '2.7%', bouncesCount: '257',  sendsTotal: '9,520', sendsTrend: '+9%' }
+        },
+        contacts: {
+            'today':     { growthRate: '+0.1%', newCount: '45',    activeRate: '89.9%', activeCount: '38,290', churnRate: '0.01%', unsubCount: '5',   totalContacts: '42,600', totalTrend: '+0.1%' },
+            'yesterday': { growthRate: '+0.08%', newCount: '35',   activeRate: '89.8%', activeCount: '38,250', churnRate: '0.02%', unsubCount: '8',   totalContacts: '42,555', totalTrend: '+0.08%' },
+            '7d':        { growthRate: '+0.8%', newCount: '340',   activeRate: '89.8%', activeCount: '38,245', churnRate: '0.05%', unsubCount: '22',  totalContacts: '42,590', totalTrend: '+0.8%' },
+            '30d':       { growthRate: '+3.1%', newCount: '1,321', activeRate: '89.8%', activeCount: '38,240', churnRate: '0.16%', unsubCount: '68',  totalContacts: '42,580', totalTrend: '+3%' },
+            '90d':       { growthRate: '+8.5%', newCount: '3,520', activeRate: '89.5%', activeCount: '37,980', churnRate: '0.42%', unsubCount: '178', totalContacts: '42,400', totalTrend: '+8%' },
+            'ytd':       { growthRate: '+15.2%', newCount: '5,820', activeRate: '89.2%', activeCount: '37,650', churnRate: '0.71%', unsubCount: '300', totalContacts: '42,200', totalTrend: '+15%' },
+            '12m':       { growthRate: '+18.4%', newCount: '7,100', activeRate: '88.8%', activeCount: '37,280', churnRate: '0.88%', unsubCount: '370', totalContacts: '42,000', totalTrend: '+18%' }
+        },
+        sms: {
+            'today':     { deliveryRate: '97.5%', deliveredCount: '78',  clickRate: '16.2%', clicksCount: '13',  optoutRate: '0.0%', optoutsCount: '0',  sendsTotal: '80',  sendsTrend: '+12%' },
+            'yesterday': { deliveryRate: '96.8%', deliveredCount: '61',  clickRate: '15.1%', clicksCount: '9',   optoutRate: '1.6%', optoutsCount: '1',  sendsTotal: '63',  sendsTrend: '+8%' },
+            '7d':        { deliveryRate: '96.5%', deliveredCount: '415', clickRate: '15.4%', clicksCount: '64',  optoutRate: '0.7%', optoutsCount: '3',  sendsTotal: '430', sendsTrend: '+18%' },
+            '30d':       { deliveryRate: '96.0%', deliveredCount: '856', clickRate: '14.5%', clicksCount: '124', optoutRate: '0.9%', optoutsCount: '8',  sendsTotal: '892', sendsTrend: '+15%' },
+            '90d':       { deliveryRate: '95.8%', deliveredCount: '2,490', clickRate: '14.2%', clicksCount: '354', optoutRate: '0.8%', optoutsCount: '21', sendsTotal: '2,600', sendsTrend: '+12%' },
+            'ytd':       { deliveryRate: '95.5%', deliveredCount: '4,680', clickRate: '13.8%', clicksCount: '646', optoutRate: '0.7%', optoutsCount: '34', sendsTotal: '4,900', sendsTrend: '+22%' },
+            '12m':       { deliveryRate: '95.2%', deliveredCount: '5,850', clickRate: '13.5%', clicksCount: '790', optoutRate: '0.6%', optoutsCount: '37', sendsTotal: '6,150', sendsTrend: '+20%' }
+        }
+    };
+    
+    function setCardFilter(cardType, range) {
+        // Update subtitle
+        const subtitle = document.getElementById(`${cardType}-subtitle`);
+        if (subtitle && dateRangeLabels[range]) {
+            subtitle.textContent = dateRangeLabels[range];
+        }
+        
+        // Update checkmarks
+        const menu = document.getElementById(`${cardType}-filter-menu`);
+        if (menu) {
+            menu.querySelectorAll('.card-filter-btn').forEach(btn => {
+                const check = btn.querySelector('.card-filter-check');
+                if (check) {
+                    if (btn.dataset.range === range) {
+                        check.classList.remove('text-transparent');
+                        check.classList.add('text-main-600');
+                    } else {
+                        check.classList.add('text-transparent');
+                        check.classList.remove('text-main-600');
+                    }
+                }
+            });
+        }
+        
+        // Update metric values based on card type
+        const data = cardData[cardType] && cardData[cardType][range];
+        if (data) {
+            if (cardType === 'email') {
+                updateElement('email-open-rate', data.openRate);
+                updateElement('email-opens-count', data.opensCount);
+                updateElement('email-click-rate', data.clickRate);
+                updateElement('email-clicks-count', data.clicksCount);
+                updateElement('email-bounce-rate', data.bounceRate);
+                updateElement('email-bounces-count', data.bouncesCount);
+                updateElement('email-sends-total', data.sendsTotal);
+                updateElement('email-sends-trend', data.sendsTrend);
+            } else if (cardType === 'contacts') {
+                updateElement('contact-growth-rate', data.growthRate);
+                updateElement('contact-new-count', data.newCount);
+                updateElement('contact-active-rate', data.activeRate);
+                updateElement('contact-active-count', data.activeCount);
+                updateElement('contact-churn-rate', data.churnRate);
+                updateElement('contact-unsub-count', data.unsubCount);
+                updateElement('contact-total', data.totalContacts);
+                updateElement('contact-total-trend', data.totalTrend);
+            } else if (cardType === 'sms') {
+                updateElement('sms-delivery-rate', data.deliveryRate);
+                updateElement('sms-delivered-count', data.deliveredCount);
+                updateElement('sms-click-rate', data.clickRate);
+                updateElement('sms-clicks-count', data.clicksCount);
+                updateElement('sms-optout-rate', data.optoutRate);
+                updateElement('sms-optouts-count', data.optoutsCount);
+                updateElement('sms-sends', data.sendsTotal);
+                updateElement('sms-sends-trend', data.sendsTrend);
+            }
+        }
+        
+        // Close menu
+        menu.classList.add('hidden');
+    }
+    
+    function updateElement(id, value) {
+        const el = document.getElementById(id);
+        if (el) el.textContent = value;
+    }
+    
+    let activeCustomDateCard = null;
+    
+    function openCustomDatePicker(cardType) {
+        // Close the current menu
+        document.getElementById(`${cardType}-filter-menu`).classList.add('hidden');
+        
+        // Store which card we're editing
+        activeCustomDateCard = cardType;
+        
+        // Set default dates (last 30 days)
+        const endDate = new Date();
+        const startDate = new Date();
+        startDate.setDate(startDate.getDate() - 30);
+        
+        document.getElementById('date-start').value = formatDateForInput(startDate);
+        document.getElementById('date-end').value = formatDateForInput(endDate);
+        
+        // Update calendar display
+        renderCalendar('start', startDate.getMonth(), startDate.getFullYear());
+        renderCalendar('end', endDate.getMonth(), endDate.getFullYear());
+        
+        // Show modal
+        document.getElementById('date-picker-modal').classList.remove('hidden');
+    }
+    
+    function formatDateForInput(date) {
+        return date.toISOString().split('T')[0];
+    }
+    
+    function formatDateDisplay(dateStr) {
+        const date = new Date(dateStr + 'T00:00:00');
+        return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+    }
+    
+    function closeDatePicker() {
+        document.getElementById('date-picker-modal').classList.add('hidden');
+        activeCustomDateCard = null;
+    }
+    
+    function applyCustomDateRange() {
+        const startDate = document.getElementById('date-start').value;
+        const endDate = document.getElementById('date-end').value;
+        
+        if (!startDate || !endDate) {
+            alert('Please select both start and end dates');
+            return;
+        }
+        
+        if (new Date(startDate) > new Date(endDate)) {
+            alert('Start date must be before end date');
+            return;
+        }
+        
+        // Update the card subtitle
+        const subtitle = document.getElementById(`${activeCustomDateCard}-subtitle`);
+        if (subtitle) {
+            subtitle.textContent = `${formatDateDisplay(startDate)} - ${formatDateDisplay(endDate)}`;
+        }
+        
+        // Clear checkmarks and set custom as active
+        const card = document.querySelector(`[id="${activeCustomDateCard}-filter-menu"]`);
+        if (card) {
+            card.querySelectorAll('.card-filter-check').forEach(check => {
+                check.classList.remove('text-main-600');
+                check.classList.add('text-transparent');
+            });
+        }
+        
+        closeDatePicker();
+    }
+    
+    // Calendar rendering
+    const calendarState = {
+        start: { month: new Date().getMonth(), year: new Date().getFullYear() },
+        end: { month: new Date().getMonth(), year: new Date().getFullYear() }
+    };
+    
+    function renderCalendar(type, month, year) {
+        calendarState[type] = { month, year };
+        const container = document.getElementById(`calendar-${type}`);
+        const monthLabel = document.getElementById(`month-label-${type}`);
+        
+        const months = ['January', 'February', 'March', 'April', 'May', 'June', 
+                       'July', 'August', 'September', 'October', 'November', 'December'];
+        monthLabel.textContent = `${months[month]} ${year}`;
+        
+        const firstDay = new Date(year, month, 1).getDay();
+        const daysInMonth = new Date(year, month + 1, 0).getDate();
+        const today = new Date();
+        const selectedDate = new Date(document.getElementById(`date-${type}`).value + 'T00:00:00');
+        
+        let html = '<div class="grid grid-cols-7 gap-1 text-center">';
+        // Day headers
+        ['S', 'M', 'T', 'W', 'T', 'F', 'S'].forEach(d => {
+            html += `<div class="text-xs text-neutral-400 py-1">${d}</div>`;
+        });
+        
+        // Empty cells before first day
+        for (let i = 0; i < firstDay; i++) {
+            html += '<div></div>';
+        }
+        
+        // Days
+        for (let day = 1; day <= daysInMonth; day++) {
+            const dateStr = `${year}-${String(month + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
+            const isToday = today.getDate() === day && today.getMonth() === month && today.getFullYear() === year;
+            const isSelected = selectedDate.getDate() === day && selectedDate.getMonth() === month && selectedDate.getFullYear() === year;
+            const isFuture = new Date(dateStr) > today;
+            
+            let classes = 'w-8 h-8 text-sm rounded-full flex items-center justify-center cursor-pointer transition-colors ';
+            if (isSelected) {
+                classes += 'bg-main-600 text-white';
+            } else if (isToday) {
+                classes += 'bg-main-100 text-main-700 font-medium';
+            } else if (isFuture) {
+                classes += 'text-neutral-300 cursor-not-allowed';
+            } else {
+                classes += 'hover:bg-neutral-100 text-neutral-700';
+            }
+            
+            html += `<div class="${classes}" ${!isFuture ? `onclick="selectDate('${type}', '${dateStr}')"` : ''}>${day}</div>`;
+        }
+        
+        html += '</div>';
+        container.innerHTML = html;
+    }
+    
+    function selectDate(type, dateStr) {
+        document.getElementById(`date-${type}`).value = dateStr;
+        const date = new Date(dateStr + 'T00:00:00');
+        renderCalendar(type, date.getMonth(), date.getFullYear());
+    }
+    
+    function changeMonth(type, delta) {
+        let { month, year } = calendarState[type];
+        month += delta;
+        if (month < 0) { month = 11; year--; }
+        if (month > 11) { month = 0; year++; }
+        renderCalendar(type, month, year);
+    }
+    
+    // Close filter menus when clicking outside
+    document.addEventListener('click', function(e) {
+        if (!e.target.closest('[onclick^="toggleCardFilter"]') && !e.target.closest('[id$="-filter-menu"]')) {
+            document.querySelectorAll('[id$="-filter-menu"]').forEach(menu => {
+                menu.classList.add('hidden');
+            });
+        }
+    });
+    
+    </script>
+    
+    <!-- Custom Date Range Picker Modal -->
+    <div id="date-picker-modal" class="hidden fixed inset-0 z-[9999] flex items-center justify-center">
+        <!-- Backdrop -->
+        <div class="absolute inset-0 bg-black/40 backdrop-blur-sm" onclick="closeDatePicker()"></div>
+        
+        <!-- Modal Content -->
+        <div class="relative bg-white rounded-xl shadow-2xl p-6 max-w-2xl w-full mx-4 animate-in fade-in zoom-in-95 duration-200">
+            <!-- Header -->
+            <div class="flex items-center justify-between mb-6">
+                <h3 class="text-lg font-semibold text-neutral-900">Select date range</h3>
+                <button onclick="closeDatePicker()" class="p-1 hover:bg-neutral-100 rounded-lg transition-colors">
+                    <svg class="w-5 h-5 text-neutral-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+                </button>
+            </div>
+            
+            <!-- Date Inputs -->
+            <div class="flex gap-4 mb-6">
+                <div class="flex-1">
+                    <label class="block text-xs font-medium text-neutral-500 uppercase tracking-wide mb-1.5">Start date</label>
+                    <input type="date" id="date-start" class="w-full px-3 py-2 border border-neutral-300 rounded-lg text-sm focus:ring-2 focus:ring-main-500 focus:border-main-500 outline-none" onchange="renderCalendar('start', new Date(this.value + 'T00:00:00').getMonth(), new Date(this.value + 'T00:00:00').getFullYear())">
+                </div>
+                <div class="flex items-end pb-2">
+                    <svg class="w-5 h-5 text-neutral-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3"/></svg>
+                </div>
+                <div class="flex-1">
+                    <label class="block text-xs font-medium text-neutral-500 uppercase tracking-wide mb-1.5">End date</label>
+                    <input type="date" id="date-end" class="w-full px-3 py-2 border border-neutral-300 rounded-lg text-sm focus:ring-2 focus:ring-main-500 focus:border-main-500 outline-none" onchange="renderCalendar('end', new Date(this.value + 'T00:00:00').getMonth(), new Date(this.value + 'T00:00:00').getFullYear())">
+                </div>
+            </div>
+            
+            <!-- Calendars -->
+            <div class="grid grid-cols-2 gap-6 mb-6">
+                <!-- Start Calendar -->
+                <div class="border border-neutral-200 rounded-lg p-4">
+                    <div class="flex items-center justify-between mb-3">
+                        <button onclick="changeMonth('start', -1)" class="p-1 hover:bg-neutral-100 rounded transition-colors">
+                            <svg class="w-5 h-5 text-neutral-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/></svg>
+                        </button>
+                        <span id="month-label-start" class="text-sm font-medium text-neutral-900">January 2026</span>
+                        <button onclick="changeMonth('start', 1)" class="p-1 hover:bg-neutral-100 rounded transition-colors">
+                            <svg class="w-5 h-5 text-neutral-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
+                        </button>
+                    </div>
+                    <div id="calendar-start"></div>
+                </div>
+                
+                <!-- End Calendar -->
+                <div class="border border-neutral-200 rounded-lg p-4">
+                    <div class="flex items-center justify-between mb-3">
+                        <button onclick="changeMonth('end', -1)" class="p-1 hover:bg-neutral-100 rounded transition-colors">
+                            <svg class="w-5 h-5 text-neutral-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/></svg>
+                        </button>
+                        <span id="month-label-end" class="text-sm font-medium text-neutral-900">February 2026</span>
+                        <button onclick="changeMonth('end', 1)" class="p-1 hover:bg-neutral-100 rounded transition-colors">
+                            <svg class="w-5 h-5 text-neutral-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
+                        </button>
+                    </div>
+                    <div id="calendar-end"></div>
+                </div>
+            </div>
+            
+            <!-- Quick Presets -->
+            <div class="flex flex-wrap gap-2 mb-6 pb-6 border-b border-neutral-200">
+                <span class="text-xs text-neutral-500 mr-2 py-1">Quick select:</span>
+                <button onclick="setQuickRange(7)" class="px-3 py-1 text-xs bg-neutral-100 hover:bg-neutral-200 rounded-full text-neutral-700 transition-colors">Last 7 days</button>
+                <button onclick="setQuickRange(14)" class="px-3 py-1 text-xs bg-neutral-100 hover:bg-neutral-200 rounded-full text-neutral-700 transition-colors">Last 14 days</button>
+                <button onclick="setQuickRange(30)" class="px-3 py-1 text-xs bg-neutral-100 hover:bg-neutral-200 rounded-full text-neutral-700 transition-colors">Last 30 days</button>
+                <button onclick="setQuickRange(60)" class="px-3 py-1 text-xs bg-neutral-100 hover:bg-neutral-200 rounded-full text-neutral-700 transition-colors">Last 60 days</button>
+                <button onclick="setQuickRange(90)" class="px-3 py-1 text-xs bg-neutral-100 hover:bg-neutral-200 rounded-full text-neutral-700 transition-colors">Last 90 days</button>
+            </div>
+            
+            <!-- Actions -->
+            <div class="flex justify-end gap-3">
+                <button onclick="closeDatePicker()" class="px-4 py-2 text-sm font-medium text-neutral-700 hover:bg-neutral-100 rounded-lg transition-colors">
+                    Cancel
+                </button>
+                <button onclick="applyCustomDateRange()" class="px-4 py-2 text-sm font-medium bg-main-600 text-white hover:bg-main-700 rounded-lg transition-colors">
+                    Apply range
+                </button>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+    function setQuickRange(days) {
+        const endDate = new Date();
+        const startDate = new Date();
+        startDate.setDate(startDate.getDate() - days);
+        
+        document.getElementById('date-start').value = formatDateForInput(startDate);
+        document.getElementById('date-end').value = formatDateForInput(endDate);
+        
+        renderCalendar('start', startDate.getMonth(), startDate.getFullYear());
+        renderCalendar('end', endDate.getMonth(), endDate.getFullYear());
+    }
+    </script>
+</body>
+</html>
+

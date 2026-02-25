@@ -1,0 +1,439 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Responsive Top Bar - Design System Demo</title>
+  <link rel="stylesheet" href="mobile-responsive.css">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            'ctct-blue': '#4F46E5',
+          }
+        }
+      }
+    }
+  </script>
+</head>
+<body class="bg-gray-50 p-8">
+  
+  <div class="max-w-7xl mx-auto">
+    <h1 class="text-4xl font-bold text-gray-900 mb-4">🎯 Responsive Top Bar</h1>
+    <p class="text-lg text-gray-600 mb-8">Based on Material 3, Tailwind, Carbon, and Polaris design systems</p>
+    
+    <!-- Breakpoint Indicator -->
+    <div class="mb-8 p-6 bg-white rounded-2xl border-2 border-blue-200">
+      <div class="flex items-center gap-3 mb-4">
+        <div class="w-3 h-3 bg-green-500 rounded-full animate-pulse"></div>
+        <h2 class="text-xl font-semibold">Current Breakpoint</h2>
+      </div>
+      <div id="current-breakpoint" class="text-3xl font-bold text-blue-600"></div>
+      <div id="viewport-width" class="text-lg text-gray-500 mt-2"></div>
+    </div>
+    
+    <!-- Mobile View (< 640px) -->
+    <section class="mb-12">
+      <h2 class="text-2xl font-bold text-gray-900 mb-4">📱 Mobile (&lt; 640px)</h2>
+      <div class="bg-white rounded-2xl border-2 border-gray-200 overflow-hidden shadow-lg">
+        <div class="relative" style="width: 375px; max-width: 100%;">
+          <!-- Mobile Header -->
+          <header class="flex items-center justify-between h-14 bg-white border-b border-gray-100 px-3">
+            <div class="flex items-center gap-2">
+              <button class="p-2 text-gray-600 hover:bg-gray-100 rounded-lg">
+                <svg class="w-6 h-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <line x1="3" y1="12" x2="21" y2="12"></line>
+                  <line x1="3" y1="6" x2="21" y2="6"></line>
+                  <line x1="3" y1="18" x2="21" y2="18"></line>
+                </svg>
+              </button>
+              <img src="assets/ctctLogo.png" alt="Logo" class="w-7 h-7 object-contain">
+            </div>
+            <div class="flex items-center gap-1">
+              <button class="p-2 text-gray-600 hover:bg-gray-100 rounded-lg">
+                <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <circle cx="11" cy="11" r="8"></circle>
+                  <path d="m21 21-4.3-4.3"></path>
+                </svg>
+              </button>
+              <button class="p-2 text-white bg-ctct-blue rounded-lg">
+                <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M5 12h14"></path>
+                  <path d="M12 5v14"></path>
+                </svg>
+              </button>
+              <button class="w-8 h-8 rounded-full bg-gradient-to-br from-purple-500 to-pink-500 flex items-center justify-center text-white font-bold text-sm">
+                JD
+              </button>
+            </div>
+          </header>
+          <div class="p-4 text-center text-gray-500">
+            <p class="text-sm">✅ Hamburger menu</p>
+            <p class="text-sm">✅ Icon-only actions</p>
+            <p class="text-sm">✅ 48px touch targets</p>
+            <p class="text-sm">❌ Search bar hidden</p>
+            <p class="text-sm">❌ Create text hidden</p>
+          </div>
+        </div>
+      </div>
+    </section>
+    
+    <!-- Tablet View (640px - 1023px) -->
+    <section class="mb-12">
+      <h2 class="text-2xl font-bold text-gray-900 mb-4">💻 Tablet (640px - 1023px)</h2>
+      <div class="bg-white rounded-2xl border-2 border-gray-200 overflow-hidden shadow-lg">
+        <div class="relative" style="width: 768px; max-width: 100%;">
+          <!-- Tablet Header -->
+          <header class="flex items-center justify-between h-16 bg-white border-b border-gray-100 px-4">
+            <div class="flex items-center gap-3">
+              <button class="p-2 text-gray-600 hover:bg-gray-100 rounded-lg">
+                <svg class="w-6 h-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <line x1="3" y1="12" x2="21" y2="12"></line>
+                  <line x1="3" y1="6" x2="21" y2="6"></line>
+                  <line x1="3" y1="18" x2="21" y2="18"></line>
+                </svg>
+              </button>
+              <img src="assets/ctctLogo.png" alt="Logo" class="w-8 h-8 object-contain">
+            </div>
+            <div class="flex items-center gap-3">
+              <div class="relative">
+                <input type="text" placeholder="Search" class="w-48 pl-3 pr-9 py-2 border border-gray-200 rounded-lg text-sm">
+                <svg class="w-4 h-4 text-gray-400 absolute right-2.5 top-1/2 -translate-y-1/2" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <circle cx="11" cy="11" r="8"></circle>
+                  <path d="m21 21-4.3-4.3"></path>
+                </svg>
+              </div>
+              <button class="flex items-center gap-2 px-6 py-2 bg-ctct-blue text-white rounded-lg font-medium text-sm">
+                <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M5 12h14"></path>
+                  <path d="M12 5v14"></path>
+                </svg>
+                <span>Create</span>
+              </button>
+            </div>
+            <div class="flex items-center gap-2">
+              <button class="p-2 text-gray-600 hover:bg-gray-100 rounded-lg relative">
+                <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path>
+                  <path d="M13.73 21a2 2 0 0 1-3.46 0"></path>
+                </svg>
+                <span class="absolute top-1.5 right-1.5 w-2 h-2 bg-red-500 rounded-full"></span>
+              </button>
+              <div class="w-px h-6 bg-gray-200"></div>
+              <button class="flex items-center gap-2 px-3 py-1.5 hover:bg-gray-50 rounded-lg">
+                <img src="assets/upsLogo.png" alt="UPS" class="w-6 h-6 object-contain">
+                <svg class="w-4 h-4 text-gray-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="m6 9 6 6 6-6"></path>
+                </svg>
+              </button>
+              <button class="w-9 h-9 rounded-full bg-gradient-to-br from-purple-500 to-pink-500 flex items-center justify-center text-white font-bold text-sm">
+                JD
+              </button>
+            </div>
+          </header>
+          <div class="p-4 text-center text-gray-500">
+            <p class="text-sm">✅ Search bar visible</p>
+            <p class="text-sm">✅ Create button with text</p>
+            <p class="text-sm">✅ Notifications visible</p>
+            <p class="text-sm">✅ Org switcher (compact)</p>
+            <p class="text-sm">❌ Org name still hidden</p>
+          </div>
+        </div>
+      </div>
+    </section>
+    
+    <!-- Desktop View (1024px+) -->
+    <section class="mb-12">
+      <h2 class="text-2xl font-bold text-gray-900 mb-4">🖥️ Desktop (1024px+)</h2>
+      <div class="bg-white rounded-2xl border-2 border-gray-200 overflow-hidden shadow-lg">
+        <div class="relative overflow-x-auto">
+          <!-- Desktop Header -->
+          <header class="flex items-center justify-between h-16 bg-white border-b border-gray-100 px-6" style="min-width: 1024px;">
+            <div class="flex items-center gap-3">
+              <img src="assets/ctctLogo.png" alt="Logo" class="w-8 h-8 object-contain">
+            </div>
+            <div class="flex items-center gap-3">
+              <div class="relative">
+                <input type="text" placeholder="Search" class="w-64 pl-3 pr-9 py-2 border border-gray-200 rounded-lg text-sm">
+                <svg class="w-4 h-4 text-gray-400 absolute right-2.5 top-1/2 -translate-y-1/2" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <circle cx="11" cy="11" r="8"></circle>
+                  <path d="m21 21-4.3-4.3"></path>
+                </svg>
+              </div>
+              <button class="flex items-center gap-2 px-6 py-2 bg-ctct-blue hover:bg-blue-600 text-white rounded-lg font-medium text-sm">
+                <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M5 12h14"></path>
+                  <path d="M12 5v14"></path>
+                </svg>
+                <span>Create</span>
+              </button>
+            </div>
+            <div class="flex items-center gap-2">
+              <button class="p-2 text-gray-600 hover:bg-gray-100 rounded-lg relative">
+                <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path>
+                  <path d="M13.73 21a2 2 0 0 1-3.46 0"></path>
+                </svg>
+                <span class="absolute top-1.5 right-1.5 w-2 h-2 bg-red-500 rounded-full"></span>
+              </button>
+              <button class="p-2 text-gray-600 hover:bg-gray-100 rounded-lg">
+                <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <circle cx="12" cy="12" r="10"></circle>
+                  <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"></path>
+                  <path d="M12 17h.01"></path>
+                </svg>
+              </button>
+              <div class="w-px h-6 bg-gray-200 mx-1"></div>
+              <button class="flex items-center gap-2 px-3 py-1.5 hover:bg-gray-50 rounded-lg">
+                <img src="assets/upsLogo.png" alt="UPS" class="w-6 h-6 object-contain">
+                <span class="text-gray-700 font-medium">UPS Global</span>
+                <svg class="w-4 h-4 text-gray-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="m6 9 6 6 6-6"></path>
+                </svg>
+              </button>
+              <button class="w-9 h-9 rounded-full bg-gradient-to-br from-purple-500 to-pink-500 flex items-center justify-center text-white font-bold text-sm border-2 border-transparent hover:border-blue-200">
+                JD
+              </button>
+            </div>
+          </header>
+          <div class="p-4 text-center text-gray-500">
+            <p class="text-sm">✅ No hamburger menu</p>
+            <p class="text-sm">✅ Wide search bar (256px)</p>
+            <p class="text-sm">✅ Help button visible</p>
+            <p class="text-sm">✅ Full org name visible</p>
+            <p class="text-sm">✅ All features accessible</p>
+          </div>
+        </div>
+      </div>
+    </section>
+    
+    <!-- Feature Comparison Table -->
+    <section class="mb-12">
+      <h2 class="text-2xl font-bold text-gray-900 mb-4">📊 Feature Matrix</h2>
+      <div class="bg-white rounded-2xl border-2 border-gray-200 overflow-hidden shadow-lg">
+        <table class="w-full">
+          <thead class="bg-gray-50">
+            <tr>
+              <th class="px-6 py-4 text-left text-sm font-semibold text-gray-900">Feature</th>
+              <th class="px-6 py-4 text-center text-sm font-semibold text-gray-900">Mobile<br>&lt; 640px</th>
+              <th class="px-6 py-4 text-center text-sm font-semibold text-gray-900">Tablet<br>640-1023px</th>
+              <th class="px-6 py-4 text-center text-sm font-semibold text-gray-900">Desktop<br>1024px+</th>
+            </tr>
+          </thead>
+          <tbody class="divide-y divide-gray-100">
+            <tr>
+              <td class="px-6 py-4 text-sm text-gray-700">Hamburger Menu</td>
+              <td class="px-6 py-4 text-center text-green-600 font-bold">✓</td>
+              <td class="px-6 py-4 text-center text-green-600 font-bold">✓</td>
+              <td class="px-6 py-4 text-center text-red-600 font-bold">✗</td>
+            </tr>
+            <tr class="bg-gray-50">
+              <td class="px-6 py-4 text-sm text-gray-700">Logo</td>
+              <td class="px-6 py-4 text-center text-green-600 font-bold">✓</td>
+              <td class="px-6 py-4 text-center text-green-600 font-bold">✓</td>
+              <td class="px-6 py-4 text-center text-green-600 font-bold">✓</td>
+            </tr>
+            <tr>
+              <td class="px-6 py-4 text-sm text-gray-700">Search Bar</td>
+              <td class="px-6 py-4 text-center text-gray-400">Icon only</td>
+              <td class="px-6 py-4 text-center text-blue-600">192px</td>
+              <td class="px-6 py-4 text-center text-green-600">256px</td>
+            </tr>
+            <tr class="bg-gray-50">
+              <td class="px-6 py-4 text-sm text-gray-700">Create Button</td>
+              <td class="px-6 py-4 text-center text-gray-400">Icon only</td>
+              <td class="px-6 py-4 text-center text-green-600 font-bold">✓ Text</td>
+              <td class="px-6 py-4 text-center text-green-600 font-bold">✓ Text + Icon</td>
+            </tr>
+            <tr>
+              <td class="px-6 py-4 text-sm text-gray-700">Notifications</td>
+              <td class="px-6 py-4 text-center text-red-600 font-bold">✗</td>
+              <td class="px-6 py-4 text-center text-green-600 font-bold">✓</td>
+              <td class="px-6 py-4 text-center text-green-600 font-bold">✓</td>
+            </tr>
+            <tr class="bg-gray-50">
+              <td class="px-6 py-4 text-sm text-gray-700">Help Button</td>
+              <td class="px-6 py-4 text-center text-red-600 font-bold">✗</td>
+              <td class="px-6 py-4 text-center text-red-600 font-bold">✗</td>
+              <td class="px-6 py-4 text-center text-green-600 font-bold">✓</td>
+            </tr>
+            <tr>
+              <td class="px-6 py-4 text-sm text-gray-700">Org Switcher</td>
+              <td class="px-6 py-4 text-center text-red-600 font-bold">✗</td>
+              <td class="px-6 py-4 text-center text-gray-400">Icon only</td>
+              <td class="px-6 py-4 text-center text-green-600">Full name</td>
+            </tr>
+            <tr class="bg-gray-50">
+              <td class="px-6 py-4 text-sm text-gray-700">User Avatar</td>
+              <td class="px-6 py-4 text-center text-green-600 font-bold">✓</td>
+              <td class="px-6 py-4 text-center text-green-600 font-bold">✓</td>
+              <td class="px-6 py-4 text-center text-green-600 font-bold">✓</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+    
+    <!-- Design System Patterns -->
+    <section class="mb-12">
+      <h2 class="text-2xl font-bold text-gray-900 mb-4">🎨 Design System Patterns Used</h2>
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+        
+        <!-- Material Design 3 -->
+        <div class="bg-gradient-to-br from-blue-50 to-indigo-50 rounded-2xl p-6 border-2 border-blue-200">
+          <div class="flex items-center gap-3 mb-4">
+            <div class="w-12 h-12 bg-blue-600 rounded-xl flex items-center justify-center text-white font-bold text-xl">M3</div>
+            <div>
+              <h3 class="text-lg font-bold text-gray-900">Material Design 3</h3>
+              <p class="text-sm text-gray-600">Google</p>
+            </div>
+          </div>
+          <ul class="space-y-2 text-sm text-gray-700">
+            <li>✓ Navigation Drawer (mobile sidebar)</li>
+            <li>✓ Scrim Overlay (backdrop)</li>
+            <li>✓ 48dp touch targets</li>
+            <li>✓ Filled buttons (primary actions)</li>
+            <li>✓ Icon buttons (secondary)</li>
+          </ul>
+        </div>
+        
+        <!-- Tailwind CSS -->
+        <div class="bg-gradient-to-br from-cyan-50 to-teal-50 rounded-2xl p-6 border-2 border-cyan-200">
+          <div class="flex items-center gap-3 mb-4">
+            <div class="w-12 h-12 bg-cyan-500 rounded-xl flex items-center justify-center text-white font-bold text-xl">TW</div>
+            <div>
+              <h3 class="text-lg font-bold text-gray-900">Tailwind CSS</h3>
+              <p class="text-sm text-gray-600">Tailwind Labs</p>
+            </div>
+          </div>
+          <ul class="space-y-2 text-sm text-gray-700">
+            <li>✓ Mobile-first approach</li>
+            <li>✓ Responsive utilities (sm:, md:, lg:)</li>
+            <li>✓ Consistent spacing scale</li>
+            <li>✓ Hover/focus states</li>
+            <li>✓ Utility-first patterns</li>
+          </ul>
+        </div>
+        
+        <!-- Carbon Design System -->
+        <div class="bg-gradient-to-br from-gray-50 to-slate-50 rounded-2xl p-6 border-2 border-gray-300">
+          <div class="flex items-center gap-3 mb-4">
+            <div class="w-12 h-12 bg-gray-800 rounded-xl flex items-center justify-center text-white font-bold text-xl">C</div>
+            <div>
+              <h3 class="text-lg font-bold text-gray-900">Carbon Design System</h3>
+              <p class="text-sm text-gray-600">IBM</p>
+            </div>
+          </div>
+          <ul class="space-y-2 text-sm text-gray-700">
+            <li>✓ Breakpoint system (672px, 1056px)</li>
+            <li>✓ Click-outside behavior</li>
+            <li>✓ Notification badges</li>
+            <li>✓ Progressive disclosure</li>
+            <li>✓ Structured spacing</li>
+          </ul>
+        </div>
+        
+        <!-- Shopify Polaris -->
+        <div class="bg-gradient-to-br from-green-50 to-emerald-50 rounded-2xl p-6 border-2 border-green-200">
+          <div class="flex items-center gap-3 mb-4">
+            <div class="w-12 h-12 bg-green-600 rounded-xl flex items-center justify-center text-white font-bold text-xl">P</div>
+            <div>
+              <h3 class="text-lg font-bold text-gray-900">Shopify Polaris</h3>
+              <p class="text-sm text-gray-600">Shopify</p>
+            </div>
+          </div>
+          <ul class="space-y-2 text-sm text-gray-700">
+            <li>✓ Touch-friendly interactions</li>
+            <li>✓ Organization switcher</li>
+            <li>✓ Search patterns</li>
+            <li>✓ Clear visual hierarchy</li>
+            <li>✓ Accessible forms</li>
+          </ul>
+        </div>
+        
+      </div>
+    </section>
+    
+    <!-- Implementation Files -->
+    <section class="mb-12">
+      <h2 class="text-2xl font-bold text-gray-900 mb-4">📦 Implementation Files</h2>
+      <div class="space-y-4">
+        <div class="bg-white rounded-xl p-6 border-2 border-gray-200">
+          <div class="flex items-start justify-between">
+            <div>
+              <h3 class="text-lg font-semibold text-gray-900 mb-2">RESPONSIVE_TOPBAR_COMPONENT.html</h3>
+              <p class="text-gray-600 mb-4">Complete HTML/CSS/JS implementation ready to use</p>
+              <div class="flex flex-wrap gap-2">
+                <span class="px-3 py-1 bg-blue-100 text-blue-700 rounded-lg text-xs font-medium">HTML5</span>
+                <span class="px-3 py-1 bg-purple-100 text-purple-700 rounded-lg text-xs font-medium">CSS3</span>
+                <span class="px-3 py-1 bg-yellow-100 text-yellow-700 rounded-lg text-xs font-medium">JavaScript</span>
+                <span class="px-3 py-1 bg-green-100 text-green-700 rounded-lg text-xs font-medium">Accessible</span>
+              </div>
+            </div>
+            <a href="RESPONSIVE_TOPBAR_COMPONENT.html" class="px-4 py-2 bg-ctct-blue text-white rounded-lg text-sm font-medium hover:bg-blue-600">View Code</a>
+          </div>
+        </div>
+        
+        <div class="bg-white rounded-xl p-6 border-2 border-gray-200">
+          <div class="flex items-start justify-between">
+            <div>
+              <h3 class="text-lg font-semibold text-gray-900 mb-2">RESPONSIVE_TOPBAR_DOCS.md</h3>
+              <p class="text-gray-600 mb-4">Complete documentation with patterns, decisions, and examples</p>
+              <div class="flex flex-wrap gap-2">
+                <span class="px-3 py-1 bg-indigo-100 text-indigo-700 rounded-lg text-xs font-medium">Documentation</span>
+                <span class="px-3 py-1 bg-pink-100 text-pink-700 rounded-lg text-xs font-medium">Patterns</span>
+                <span class="px-3 py-1 bg-orange-100 text-orange-700 rounded-lg text-xs font-medium">Guidelines</span>
+              </div>
+            </div>
+            <a href="RESPONSIVE_TOPBAR_DOCS.md" class="px-4 py-2 bg-gray-800 text-white rounded-lg text-sm font-medium hover:bg-gray-700">Read Docs</a>
+          </div>
+        </div>
+      </div>
+    </section>
+    
+  </div>
+  
+  <script>
+    // Update viewport width display
+    function updateViewportInfo() {
+      const width = window.innerWidth;
+      const widthDisplay = document.getElementById('viewport-width');
+      const breakpointDisplay = document.getElementById('current-breakpoint');
+      
+      if (widthDisplay) {
+        widthDisplay.textContent = `Viewport: ${width}px`;
+      }
+      
+      if (breakpointDisplay) {
+        let breakpoint = '';
+        let color = '';
+        
+        if (width < 640) {
+          breakpoint = '📱 Mobile';
+          color = 'text-green-600';
+        } else if (width < 1024) {
+          breakpoint = '💻 Tablet';
+          color = 'text-blue-600';
+        } else {
+          breakpoint = '🖥️ Desktop';
+          color = 'text-purple-600';
+        }
+        
+        breakpointDisplay.textContent = breakpoint;
+        breakpointDisplay.className = `text-3xl font-bold ${color}`;
+      }
+    }
+    
+    // Update on load and resize
+    window.addEventListener('load', updateViewportInfo);
+    window.addEventListener('resize', updateViewportInfo);
+    
+    // Update every 100ms for smooth updates
+    setInterval(updateViewportInfo, 100);
+  </script>
+  
+</body>
+</html>
+

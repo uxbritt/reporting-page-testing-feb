@@ -1,0 +1,1286 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>CTCT for Teams — Workspace</title>
+  <link rel="stylesheet" href="mobile-responsive.css">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://unpkg.com/lucide@0.263.1/dist/umd/lucide.js"></script>
+  <script>
+    // Safe lucide helper
+    function safeCreateIcons() {
+      if (typeof lucide !== 'undefined' && lucide.createIcons) {
+        lucide.createIcons();
+      }
+    }
+
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            ctct: {
+              blue: '#4B7BF5',
+              'blue-light': '#EEF4FF',
+              orange: '#F5A623'
+            }
+          },
+          fontFamily: {
+            sans: ['CTSans', 'system-ui', 'sans-serif']
+          }
+        }
+      }
+    }
+  </script>
+  <style>
+    @font-face {
+      font-family: 'CTSans';
+      src: url('fonts/CTSans-Regular.woff2') format('woff2');
+      font-weight: 400;
+      font-style: normal;
+      font-display: swap;
+    }
+    @font-face {
+      font-family: 'CTSans';
+      src: url('fonts/CTSans-Semibold.woff2') format('woff2');
+      font-weight: 600;
+      font-style: normal;
+      font-display: swap;
+    }
+    @font-face {
+      font-family: 'CTSans';
+      src: url('fonts/CTSans-Bold.woff2') format('woff2');
+      font-weight: 700;
+      font-style: normal;
+      font-display: swap;
+    }
+    body { 
+      line-height: 1.5; 
+      background: #F8F9FB; 
+    }
+    /* Modern chart styles - thin bars with blue/teal gradients */
+    .chart-bar {
+      background: linear-gradient(180deg, #14B8A6 0%, #6EE7B7 100%);
+      border-radius: 3px 3px 0 0;
+      width: 6px;
+      opacity: 0.4;
+      transition: opacity 0.2s, transform 0.2s;
+      cursor: pointer;
+      position: relative;
+    }
+    .chart-bar:hover {
+      opacity: 1;
+      transform: scaleY(1.05);
+    }
+    .chart-bar.active {
+      opacity: 1;
+    }
+    .chart-bar-teal {
+      background: linear-gradient(180deg, #14B8A6 0%, #6EE7B7 100%);
+      border-radius: 3px 3px 0 0;
+      width: 6px;
+      opacity: 0.4;
+      transition: opacity 0.2s, transform 0.2s;
+      cursor: pointer;
+    }
+    .chart-bar-teal:hover, .chart-bar-teal.active {
+      opacity: 1;
+    }
+    .chart-tooltip {
+      position: absolute;
+      bottom: 100%;
+      left: 50%;
+      transform: translateX(-50%);
+      background: #1f2937;
+      color: white;
+      padding: 4px 8px;
+      border-radius: 4px;
+      font-size: 11px;
+      white-space: nowrap;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.2s;
+      z-index: 10;
+    }
+    .chart-bar:hover .chart-tooltip,
+    .chart-bar-teal:hover .chart-tooltip {
+      opacity: 1;
+    }
+    /* Donut chart - thin stroke */
+    .donut-ring {
+      stroke-width: 3;
+      fill: none;
+    }
+    .donut-segment {
+      transition: stroke-dashoffset 0.3s;
+    }
+    .mini-donut {
+      transform: rotate(-90deg);
+    }
+    .mini-donut-segment {
+      fill: none;
+      stroke-linecap: round;
+    }
+  </style>
+</head>
+<body class="font-sans">
+  <!-- Bottom Footer Bar -->
+  <div class="fixed bottom-0 left-0 right-0 h-12 bg-gray-800 flex items-center justify-between px-6 z-40">
+    <a href="index.html" class="flex items-center gap-2 text-gray-400 hover:text-white text-sm">
+      <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m12 19-7-7 7-7"/><path d="M19 12H5"/></svg> All Prototypes
+    </a>
+    <p class="text-sm text-gray-400">Workspace Detail — Individual Workspace View</p>
+    <div class="flex items-center gap-4">
+      <div class="flex items-center gap-2 bg-gray-700 rounded-lg px-3 py-1.5">
+        <span class="text-xs text-gray-400">data=</span>
+        <button id="toggle-empty" onclick="setDataMode('empty')" class="px-2.5 py-1 text-xs rounded text-gray-400 hover:text-white">empty</button>
+        <button id="toggle-filled" onclick="setDataMode('filled')" class="px-2.5 py-1 text-xs rounded bg-gray-600 text-white">filled</button>
+      </div>
+      <a href="teams-signup-flow.html" onclick="sessionStorage.clear()" class="flex items-center gap-2 text-gray-400 hover:text-white text-sm">
+        <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/></svg> Reset
+      </a>
+    </div>
+  </div>
+
+  <div class="flex h-screen pb-10">
+    <!-- Left Sidebar (Workspace Nav) -->
+    <aside class="w-56 bg-white border-r border-gray-100 flex flex-col pt-4">
+      <!-- Location Manager View: CTCT Logo (no back to org) -->
+      <div id="sidebar-header-location" class="hidden px-4 mb-4">
+        <div class="flex items-center gap-2">
+          <img src="assets/ctctLogo.png" alt="Constant Contact" class="w-8 h-8 object-contain">
+          <span class="text-sm font-semibold text-gray-800">CTCT for Teams</span>
+        </div>
+      </div>
+      
+      <!-- Global/Regional View: Back to Org link -->
+      <div id="sidebar-header-org" class="px-4 mb-4">
+        <a href="option-b-northstar-empty.html" class="flex items-center gap-2 text-gray-500 hover:text-gray-700 text-sm">
+          <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m12 19-7-7 7-7"/><path d="M19 12H5"/></svg>
+          <span>Back to Org</span>
+        </a>
+      </div>
+      
+      <!-- Navigation -->
+      <div class="flex-1 overflow-y-auto px-3">
+        <nav>
+          <!-- Campaigns -->
+          <a id="campaigns-link" href="campaigns-list.html" class="block py-3 px-4 text-sm text-slate-600 hover:bg-sky-50 rounded-xl mb-1 transition-colors">
+            Campaigns
+          </a>
+          
+          <!-- Channels (expandable) -->
+          <button onclick="toggleSection('channels')" class="w-full flex items-center justify-between py-3 px-4 text-sm text-slate-600 hover:bg-sky-50 rounded-xl mb-1 transition-colors focus:outline-none">
+            <span>Channels</span>
+            <svg id="channels-chevron" class="w-4 h-4 text-gray-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m6 9 6 6 6-6"/></svg>
+          </button>
+          <div id="channels-items" class="ml-4 hidden">
+            <a href="#" class="block py-2 px-4 text-sm text-slate-500 hover:bg-sky-50 rounded-xl">Email</a>
+            <a href="#" class="block py-2 px-4 text-sm text-slate-500 hover:bg-sky-50 rounded-xl">SMS</a>
+            <a href="#" class="block py-2 px-4 text-sm text-slate-500 hover:bg-sky-50 rounded-xl">Social</a>
+          </div>
+          
+          <!-- Audience (expandable) -->
+          <button onclick="toggleSection('audience')" class="w-full flex items-center justify-between py-3 px-4 text-sm text-slate-600 hover:bg-sky-50 rounded-xl mb-1 transition-colors focus:outline-none">
+            <span>Audience</span>
+            <svg id="audience-chevron" class="w-4 h-4 text-gray-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m6 9 6 6 6-6"/></svg>
+          </button>
+          <div id="audience-items" class="ml-4 hidden">
+            <a href="#" class="block py-2 px-4 text-sm text-slate-500 hover:bg-sky-50 rounded-xl">Contacts</a>
+            <a href="#" class="block py-2 px-4 text-sm text-slate-500 hover:bg-sky-50 rounded-xl">Lists</a>
+            <a href="#" class="block py-2 px-4 text-sm text-slate-500 hover:bg-sky-50 rounded-xl">Segments</a>
+          </div>
+          
+          <!-- Assets (expandable) -->
+          <button onclick="toggleSection('assets')" class="w-full flex items-center justify-between py-3 px-4 text-sm text-slate-600 hover:bg-sky-50 rounded-xl mb-1 transition-colors focus:outline-none">
+            <span>Assets</span>
+            <svg id="assets-chevron" class="w-4 h-4 text-gray-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m6 9 6 6 6-6"/></svg>
+          </button>
+          <div id="assets-items" class="ml-4 hidden">
+            <a href="#" class="block py-2 px-4 text-sm text-slate-500 hover:bg-sky-50 rounded-xl">Templates</a>
+            <a href="#" class="block py-2 px-4 text-sm text-slate-500 hover:bg-sky-50 rounded-xl">Images</a>
+            <a href="#" class="block py-2 px-4 text-sm text-slate-500 hover:bg-sky-50 rounded-xl">Brand kit</a>
+          </div>
+          
+          <!-- Reporting -->
+          <a href="#" class="block py-3 px-4 text-sm text-slate-600 hover:bg-sky-50 rounded-xl mb-1 transition-colors">
+            Reporting
+          </a>
+          
+          <!-- Automations -->
+          <a href="#" class="block py-3 px-4 text-sm text-slate-600 hover:bg-sky-50 rounded-xl mb-1 transition-colors">
+            Automations
+          </a>
+          
+          <!-- Integrations -->
+          <a href="#" class="block py-3 px-4 text-sm text-slate-600 hover:bg-sky-50 rounded-xl mb-1 transition-colors">
+            Integrations
+          </a>
+        </nav>
+      </div>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="flex-1 overflow-y-auto pt-16">
+      
+      <!-- TOP BAR - Fixed, matches org dashboard exactly -->
+      <header class="fixed top-0 left-56 right-0 h-16 bg-white border-b border-gray-100 flex items-center px-6 z-50">
+        <!-- Logo (shown for location managers only) -->
+        <div id="topbar-logo" class="hidden items-center">
+          <img src="assets/ctctLogo.png" alt="Constant Contact" class="w-8 h-8 object-contain">
+        </div>
+        
+        <!-- Center - Search and Create -->
+        <div class="flex items-center gap-3 mx-auto">
+          <div class="relative">
+            <input type="text" id="workspace-search-input" placeholder="Search" class="w-48 pl-4 pr-10 py-2 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-ctct-blue focus:border-transparent">
+            <svg class="w-4 h-4 text-gray-400 absolute right-3 top-1/2 -translate-y-1/2" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
+          </div>
+          <div class="relative">
+            <button onclick="toggleWorkspaceCreateMenu()" class="px-6 py-2 bg-ctct-blue hover:opacity-90 text-white rounded-lg font-medium text-sm">
+              Create
+            </button>
+            <!-- Create Dropdown -->
+            <div id="workspace-create-menu" class="hidden absolute left-1/2 -translate-x-1/2 top-full mt-2 w-56 bg-white rounded-2xl shadow-xl border border-gray-100 py-3 z-[60]">
+              <a href="#" class="flex items-center gap-3 px-4 py-2.5 text-sm text-gray-700 hover:bg-gray-50 rounded-xl mx-1">
+                <svg class="w-4 h-4 text-gray-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/></svg>
+                Email Campaign
+              </a>
+              <a href="#" class="flex items-center gap-3 px-4 py-2.5 text-sm text-gray-700 hover:bg-gray-50 rounded-xl mx-1">
+                <svg class="w-4 h-4 text-gray-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+                SMS Campaign
+              </a>
+              <a href="#" class="flex items-center gap-3 px-4 py-2.5 text-sm text-gray-700 hover:bg-gray-50 rounded-xl mx-1">
+                <svg class="w-4 h-4 text-gray-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"/></svg>
+                Social Post
+              </a>
+              <div class="border-t border-gray-100 my-2 mx-3"></div>
+              <a href="#" class="flex items-center gap-3 px-4 py-2.5 text-sm text-gray-700 hover:bg-gray-50 rounded-xl mx-1">
+                <svg class="w-4 h-4 text-gray-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><line x1="19" y1="8" x2="19" y2="14"/><line x1="22" y1="11" x2="16" y2="11"/></svg>
+                Add Contact
+              </a>
+            </div>
+          </div>
+        </div>
+        
+        <!-- Right side -->
+        <div class="flex items-center gap-3">
+          <!-- User Avatar Dropdown -->
+          <div class="relative">
+            <button onclick="toggleUserDropdown()" id="user-avatar-btn" class="w-9 h-9 rounded-full overflow-hidden border-2 border-transparent hover:border-blue-200 transition-colors">
+            </button>
+            <!-- User Dropdown Menu -->
+            <div id="user-dropdown" class="hidden absolute right-0 top-full mt-2 w-64 bg-white rounded-2xl shadow-xl border border-gray-100 py-4 z-[60]">
+              <div class="flex items-center gap-3 px-5 pb-4 border-b border-gray-100">
+                <div id="user-avatar-large" class="w-14 h-14 rounded-full overflow-hidden ring-2">
+                </div>
+                <div>
+                  <p id="user-name-display" class="text-base font-semibold text-gray-800"></p>
+                  <p id="user-role-display" class="text-sm text-gray-500"></p>
+                </div>
+              </div>
+              <div class="pt-3 px-2">
+                <a href="#" class="block px-4 py-3 text-base text-gray-600 hover:bg-gray-50 rounded-xl transition-colors">Profile</a>
+                <a href="settings.html?tab=general" class="block px-4 py-3 text-base text-gray-600 hover:bg-gray-50 rounded-xl transition-colors">Settings</a>
+                <a href="persona-select.html" class="block px-4 py-3 text-base text-gray-600 hover:bg-gray-50 rounded-xl transition-colors">Switch user</a>
+                <a href="#" class="block px-4 py-3 text-base text-gray-600 hover:bg-gray-50 rounded-xl transition-colors">Log out</a>
+              </div>
+            </div>
+          </div>
+          
+          <!-- Workspace/Org Dropdown -->
+          <div class="relative">
+            <button onclick="toggleWorkspaceDropdown()" class="flex items-center gap-2 px-3 py-2 hover:bg-gray-50 rounded-lg text-sm transition-colors">
+              <img id="workspace-avatar" src="assets/upsLogo.png" alt="UPS" class="w-6 h-6 object-contain">
+              <span id="workspace-dropdown-name" class="text-gray-700 font-medium">UPS Global</span>
+              <svg class="w-4 h-4 text-gray-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m6 9 6 6 6-6"/></svg>
+            </button>
+            <!-- Workspace Dropdown Menu (for location managers) -->
+            <div id="workspace-dropdown-location" class="hidden absolute right-0 top-full mt-2 w-72 bg-white rounded-2xl shadow-xl border border-gray-100 py-4 z-[60]">
+              <div class="flex items-center gap-3 px-5 pb-4 border-b border-gray-100">
+                <div class="w-14 h-14 rounded-xl bg-gray-100 flex items-center justify-center overflow-hidden">
+                  <img src="assets/upsLogo.png" alt="UPS" class="w-10 h-10 object-contain">
+                </div>
+                <div>
+                  <p class="text-base font-semibold text-gray-800">UPS Global</p>
+                  <p class="text-sm text-gray-500">Enterprise</p>
+                </div>
+              </div>
+              <div class="pt-3 px-2">
+                <a href="settings.html?tab=people" class="block px-4 py-3 text-base text-gray-600 hover:bg-gray-50 rounded-xl transition-colors">Workspace members</a>
+                <a href="#" class="block px-4 py-3 text-base text-gray-600 hover:bg-gray-50 rounded-xl transition-colors">Workspace settings</a>
+                <a href="settings.html?tab=workspaces" class="block px-4 py-3 text-base text-gray-600 hover:bg-gray-50 rounded-xl transition-colors">Request access to other workspaces</a>
+              </div>
+            </div>
+            <!-- Org Dropdown Menu (for global/regional managers) -->
+            <div id="workspace-dropdown-org" class="hidden absolute right-0 top-full mt-2 w-72 bg-white rounded-2xl shadow-xl border border-gray-100 py-4 z-[60]">
+              <div class="flex items-center gap-3 px-5 pb-4 border-b border-gray-100">
+                <div class="w-14 h-14 rounded-xl bg-gray-100 flex items-center justify-center overflow-hidden">
+                  <img src="assets/upsLogo.png" alt="UPS" class="w-10 h-10 object-contain">
+                </div>
+                <div>
+                  <p class="text-base font-semibold text-gray-800">UPS Global</p>
+                  <p class="text-sm text-gray-500">Enterprise</p>
+                </div>
+              </div>
+              <div class="pt-3 px-2">
+                <a href="settings.html?tab=people" class="block px-4 py-3 text-base text-gray-600 hover:bg-gray-50 rounded-xl transition-colors">Members</a>
+                <a href="settings.html?tab=workspaces" class="block px-4 py-3 text-base text-gray-600 hover:bg-gray-50 rounded-xl transition-colors">Workspaces</a>
+                <a href="settings.html?tab=general" class="block px-4 py-3 text-base text-gray-600 hover:bg-gray-50 rounded-xl transition-colors">Settings</a>
+                <a href="settings.html?tab=integrations" class="block px-4 py-3 text-base text-gray-600 hover:bg-gray-50 rounded-xl transition-colors">Integrations</a>
+              </div>
+            </div>
+          </div>
+          
+          <!-- Notifications Dropdown -->
+          <div class="relative">
+            <button onclick="toggleNotificationsDropdown()" class="p-2 text-ctct-blue hover:bg-blue-50 rounded-lg relative transition-colors">
+              <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9"/><path d="M10.3 21a1.94 1.94 0 0 0 3.4 0"/></svg>
+              <span class="absolute top-1.5 right-1.5 w-2.5 h-2.5 bg-orange-400 rounded-full border-2 border-white"></span>
+            </button>
+            <!-- Notifications Dropdown Menu -->
+            <div id="notifications-dropdown" class="hidden absolute right-0 top-full mt-2 w-96 bg-white rounded-2xl shadow-xl border border-gray-100 z-[60]">
+              <div class="flex items-center justify-between px-5 py-4 border-b border-gray-100">
+                <h3 class="text-xs font-semibold text-gray-500 uppercase tracking-wide">Recent Activity</h3>
+              </div>
+              <div class="max-h-96 overflow-y-auto p-3 space-y-2">
+                <div class="flex items-start gap-3 p-3 rounded-xl border border-gray-100 hover:border-gray-200 hover:bg-gray-50 transition-colors">
+                  <div class="w-10 h-10 bg-green-100 rounded-full flex items-center justify-center flex-shrink-0">
+                    <svg class="w-5 h-5 text-green-600" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>
+                  </div>
+                  <div class="flex-1">
+                    <p class="text-sm font-medium text-gray-800">Campaign sent successfully</p>
+                    <p class="text-xs text-gray-500">Holiday Newsletter • 2 hours ago</p>
+                  </div>
+                </div>
+                <div class="flex items-start gap-3 p-3 rounded-xl border border-gray-100 hover:border-gray-200 hover:bg-gray-50 transition-colors">
+                  <div class="w-10 h-10 bg-blue-100 rounded-full flex items-center justify-center flex-shrink-0">
+                    <svg class="w-5 h-5 text-blue-600" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><line x1="19" y1="8" x2="19" y2="14"/><line x1="22" y1="11" x2="16" y2="11"/></svg>
+                  </div>
+                  <div class="flex-1">
+                    <p class="text-sm font-medium text-gray-800">3 new contacts added</p>
+                    <p class="text-xs text-gray-500">Yesterday</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          
+          <!-- Help -->
+          <button class="p-2 text-gray-400 hover:text-gray-600 hover:bg-gray-100 rounded-lg">
+            <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+          </button>
+        </div>
+      </header>
+
+      <!-- Content Grid -->
+      <div class="p-8">
+        <!-- Page Title -->
+        <div class="mb-6">
+          <h1 id="workspace-page-title" class="text-2xl font-bold text-gray-900">Loading...</h1>
+          <p class="text-gray-500 text-sm mt-1">Workspace overview and recent activity</p>
+        </div>
+        
+        <!-- Metrics Row -->
+        <div class="grid grid-cols-3 gap-5 mb-6">
+          <!-- Email Engagement Widget -->
+          <div class="bg-white rounded-2xl border border-gray-100 p-5 shadow-sm">
+            <div class="flex items-center justify-between mb-4">
+              <h3 class="text-sm text-gray-500">Email engagement</h3>
+              <div class="relative">
+                <button onclick="toggleCardMenu('email-menu')" class="p-1 hover:bg-gray-100 rounded-full">
+                  <svg class="w-4 h-4 text-gray-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="1"/><circle cx="12" cy="5" r="1"/><circle cx="12" cy="19" r="1"/></svg>
+                </button>
+                <div id="email-menu" class="hidden absolute right-0 top-full mt-1 w-44 bg-white rounded-xl shadow-lg border border-gray-100 py-1 z-20">
+                  <button onclick="openWidgetCustomize('email')" class="w-full flex items-center gap-2 px-4 py-2 text-sm text-gray-700 hover:bg-gray-50">
+                    <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 7h-9"/><path d="M14 17H5"/><circle cx="17" cy="17" r="3"/><circle cx="7" cy="7" r="3"/></svg>
+                    Customize
+                  </button>
+                  <a id="email-report-link" href="#" class="flex items-center gap-2 px-4 py-2 text-sm text-gray-700 hover:bg-gray-50">
+                    <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 20V10"/><path d="M12 20V4"/><path d="M6 20v-6"/></svg>
+                    View full report
+                  </a>
+                </div>
+              </div>
+            </div>
+            <!-- Mini bar chart -->
+            <div id="ws-email-chart-empty" class="flex items-end gap-1 h-16 mb-4">
+              <div class="flex-1 h-3 bg-gray-100 rounded-t"></div>
+              <div class="flex-1 h-5 bg-gray-100 rounded-t"></div>
+              <div class="flex-1 h-4 bg-gray-100 rounded-t"></div>
+              <div class="flex-1 h-6 bg-gray-100 rounded-t"></div>
+              <div class="flex-1 h-5 bg-gray-100 rounded-t"></div>
+              <div class="flex-1 h-8 bg-gray-100 rounded-t"></div>
+              <div class="flex-1 h-6 bg-gray-100 rounded-t"></div>
+              <div class="flex-1 h-4 bg-gray-100 rounded-t"></div>
+              <div class="flex-1 h-7 bg-gray-100 rounded-t"></div>
+              <div class="flex-1 h-5 bg-gray-100 rounded-t"></div>
+            </div>
+            <div id="ws-email-chart-filled" class="hidden flex items-end justify-around h-16 mb-4 px-1">
+              <div class="chart-bar" style="height: 24px;" title="Jul"><span class="chart-tooltip">Jul: 1.2k sends</span></div>
+              <div class="chart-bar" style="height: 40px;" title="Aug"><span class="chart-tooltip">Aug: 1.8k sends</span></div>
+              <div class="chart-bar" style="height: 32px;" title="Sep"><span class="chart-tooltip">Sep: 1.5k sends</span></div>
+              <div class="chart-bar" style="height: 48px;" title="Oct"><span class="chart-tooltip">Oct: 2.1k sends</span></div>
+              <div class="chart-bar" style="height: 36px;" title="Nov"><span class="chart-tooltip">Nov: 1.6k sends</span></div>
+              <div class="chart-bar active" style="height: 64px;" title="Dec"><span class="chart-tooltip">Dec: 2.4k sends (current)</span></div>
+            </div>
+            <div class="grid grid-cols-4 gap-2">
+              <div>
+                <p id="metric-sends" class="text-lg font-semibold text-gray-300">—</p>
+                <p class="text-xs text-gray-400">Sends</p>
+              </div>
+              <div>
+                <p id="metric-opens" class="text-lg font-semibold text-gray-300">—</p>
+                <p class="text-xs text-gray-400">Opens</p>
+              </div>
+              <div>
+                <p id="metric-clicks" class="text-lg font-semibold text-gray-300">—</p>
+                <p class="text-xs text-gray-400">Clicks</p>
+              </div>
+              <div>
+                <p id="metric-bounces" class="text-lg font-semibold text-gray-300">—</p>
+                <p class="text-xs text-gray-400">Bounces</p>
+              </div>
+            </div>
+          </div>
+
+          <!-- Contacts Widget -->
+          <div class="bg-white rounded-2xl border border-gray-100 p-5 shadow-sm">
+            <div class="flex items-center justify-between mb-4">
+              <h3 class="text-sm text-gray-500">Contacts</h3>
+              <div class="relative">
+                <button onclick="toggleCardMenu('contacts-menu')" class="p-1 hover:bg-gray-100 rounded-full">
+                  <svg class="w-4 h-4 text-gray-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="1"/><circle cx="12" cy="5" r="1"/><circle cx="12" cy="19" r="1"/></svg>
+                </button>
+                <div id="contacts-menu" class="hidden absolute right-0 top-full mt-1 w-44 bg-white rounded-xl shadow-lg border border-gray-100 py-1 z-20">
+                  <button onclick="openWidgetCustomize('contacts')" class="w-full flex items-center gap-2 px-4 py-2 text-sm text-gray-700 hover:bg-gray-50">
+                    <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 7h-9"/><path d="M14 17H5"/><circle cx="17" cy="17" r="3"/><circle cx="7" cy="7" r="3"/></svg>
+                    Customize
+                  </button>
+                  <a id="contacts-report-link" href="#" class="flex items-center gap-2 px-4 py-2 text-sm text-gray-700 hover:bg-gray-50">
+                    <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 20V10"/><path d="M12 20V4"/><path d="M6 20v-6"/></svg>
+                    View full report
+                  </a>
+                </div>
+              </div>
+            </div>
+            <!-- Mini line chart -->
+            <div id="ws-contact-chart-empty" class="h-16 mb-3">
+              <svg class="w-full h-16" viewBox="0 0 200 60" preserveAspectRatio="none">
+                <path d="M0,45 Q50,40 100,42 T200,48" stroke="#E5E7EB" stroke-width="2" fill="none" stroke-linecap="round"/>
+              </svg>
+            </div>
+            <div id="ws-contact-chart-filled" class="hidden h-16 mb-3 relative group">
+              <svg class="w-full h-16" viewBox="0 0 200 60" preserveAspectRatio="none">
+                <defs>
+                  <linearGradient id="ws-line-grad" x1="0%" y1="0%" x2="100%" y2="0%">
+                    <stop offset="0%" style="stop-color:#14B8A6"/>
+                    <stop offset="100%" style="stop-color:#0EA5E9"/>
+                  </linearGradient>
+                  <linearGradient id="ws-area-grad" x1="0%" y1="0%" x2="0%" y2="100%">
+                    <stop offset="0%" style="stop-color:#14B8A6;stop-opacity:0.15"/>
+                    <stop offset="100%" style="stop-color:#14B8A6;stop-opacity:0"/>
+                  </linearGradient>
+                </defs>
+                <path d="M0,45 Q25,40 50,35 T100,25 T150,18 T200,10 L200,60 L0,60 Z" fill="url(#ws-area-grad)"/>
+                <path d="M0,45 Q25,40 50,35 T100,25 T150,18 T200,10" stroke="url(#ws-line-grad)" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+                <!-- Data points with hover -->
+                <circle cx="0" cy="45" r="3" fill="#14B8A6" opacity="0.4" class="cursor-pointer hover:opacity-100"/>
+                <circle cx="40" cy="38" r="3" fill="#14B8A6" opacity="0.4" class="cursor-pointer hover:opacity-100"/>
+                <circle cx="80" cy="30" r="3" fill="#14B8A6" opacity="0.4" class="cursor-pointer hover:opacity-100"/>
+                <circle cx="120" cy="22" r="3" fill="#14B8A6" opacity="0.4" class="cursor-pointer hover:opacity-100"/>
+                <circle cx="160" cy="16" r="3" fill="#14B8A6" opacity="0.4" class="cursor-pointer hover:opacity-100"/>
+                <circle cx="200" cy="10" r="5" fill="#0EA5E9" stroke="white" stroke-width="2"/><!-- Active point -->
+              </svg>
+              <div class="absolute top-0 right-0 bg-gray-800 text-white text-xs px-2 py-1 rounded opacity-0 group-hover:opacity-100 transition-opacity">
+                Dec: 1,247 (+82)
+              </div>
+            </div>
+            <div class="flex items-center justify-between">
+              <div>
+                <p id="metric-contacts" class="text-2xl font-semibold text-gray-300">—</p>
+                <p class="text-xs text-gray-400">Total contacts</p>
+              </div>
+              <div id="ws-contact-growth" class="hidden">
+                <span class="text-xs text-teal-600 bg-teal-50 px-2 py-1 rounded-full flex items-center gap-1">
+                  <svg class="w-3 h-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M7 7h10v10"/><path d="M7 17 17 7"/></svg>
+                  <span id="metric-new-contacts">+0</span> this month
+                </span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Social Engagement Widget -->
+          <div class="bg-white rounded-2xl border border-gray-100 p-5 shadow-sm">
+            <div class="flex items-center justify-between mb-4">
+              <h3 class="text-sm text-gray-500">Social engagement</h3>
+              <div class="relative">
+                <button onclick="toggleCardMenu('social-menu')" class="p-1 hover:bg-gray-100 rounded-full">
+                  <svg class="w-4 h-4 text-gray-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="1"/><circle cx="12" cy="5" r="1"/><circle cx="12" cy="19" r="1"/></svg>
+                </button>
+                <div id="social-menu" class="hidden absolute right-0 top-full mt-1 w-44 bg-white rounded-xl shadow-lg border border-gray-100 py-1 z-20">
+                  <button onclick="openWidgetCustomize('social')" class="w-full flex items-center gap-2 px-4 py-2 text-sm text-gray-700 hover:bg-gray-50">
+                    <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 7h-9"/><path d="M14 17H5"/><circle cx="17" cy="17" r="3"/><circle cx="7" cy="7" r="3"/></svg>
+                    Customize
+                  </button>
+                  <a id="social-report-link" href="#" class="flex items-center gap-2 px-4 py-2 text-sm text-gray-700 hover:bg-gray-50">
+                    <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 20V10"/><path d="M12 20V4"/><path d="M6 20v-6"/></svg>
+                    View full report
+                  </a>
+                </div>
+              </div>
+            </div>
+            <div class="flex items-start gap-4">
+              <!-- Mini donut chart -->
+              <div id="ws-social-chart-empty" class="relative w-20 h-20 flex-shrink-0">
+                <svg class="mini-donut w-20 h-20" viewBox="0 0 80 80">
+                  <circle cx="40" cy="40" r="30" fill="none" stroke="#E5E7EB" stroke-width="10" stroke-linecap="round"/>
+                </svg>
+                <span class="absolute inset-0 flex items-center justify-center text-lg font-bold text-gray-300">—</span>
+              </div>
+              <div id="ws-social-chart-filled" class="hidden relative w-24 h-24 flex-shrink-0 group cursor-pointer">
+                <svg class="mini-donut w-24 h-24" viewBox="0 0 96 96">
+                  <defs>
+                    <linearGradient id="ws-social-grad" x1="0%" y1="0%" x2="100%" y2="0%">
+                      <stop offset="0%" style="stop-color:#F59E0B"/>
+                      <stop offset="100%" style="stop-color:#FBBF24"/>
+                    </linearGradient>
+                  </defs>
+                  <circle cx="48" cy="48" r="38" fill="none" stroke="#E5E7EB" stroke-width="5"/>
+                  <circle class="mini-donut-segment" cx="48" cy="48" r="38" stroke="url(#ws-social-grad)" stroke-width="5" stroke-dasharray="182 57" stroke-linecap="round" transform="rotate(-90 48 48)"/>
+                </svg>
+                <span class="absolute inset-0 flex items-center justify-center text-lg font-semibold text-gray-700">76%</span>
+                <div class="absolute -top-8 left-1/2 -translate-x-1/2 bg-gray-800 text-white text-xs px-2 py-1 rounded opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap">
+                  8.5k views • 324 likes
+                </div>
+              </div>
+              <div class="flex-1 grid grid-cols-2 gap-3">
+                <div>
+                  <p id="metric-views" class="text-lg font-semibold text-gray-300">—</p>
+                  <p class="text-xs text-gray-400">Views</p>
+                </div>
+                <div>
+                  <p id="metric-likes" class="text-lg font-semibold text-gray-300">—</p>
+                  <p class="text-xs text-gray-400">Likes</p>
+                </div>
+                <div>
+                  <p id="metric-shares" class="text-lg font-semibold text-gray-300">—</p>
+                  <p class="text-xs text-gray-400">Shares</p>
+                </div>
+                <div>
+                  <p id="metric-comments" class="text-lg font-semibold text-gray-300">—</p>
+                  <p class="text-xs text-gray-400">Comments</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="grid grid-cols-3 gap-6">
+          <!-- Left Column -->
+          <div class="col-span-2 space-y-6">
+            <!-- Upcoming Campaigns -->
+            <div class="bg-white rounded-2xl border border-gray-100 p-5">
+              <h3 class="text-sm font-medium text-gray-700 mb-4">Upcoming campaigns</h3>
+              
+              <!-- Calendar -->
+              <div class="flex gap-8">
+                <div class="flex-1">
+                  <div class="grid grid-cols-7 gap-1 text-center text-xs text-gray-500 mb-2">
+                    <span>S</span><span>M</span><span>T</span><span>W</span><span>T</span><span>F</span><span>S</span>
+                  </div>
+                  <div class="grid grid-cols-7 gap-1 text-center text-sm">
+                    <span class="py-1.5 text-gray-300"></span>
+                    <span class="py-1.5 text-gray-400">1</span>
+                    <span class="py-1.5 text-gray-400">2</span>
+                    <span class="py-1.5 w-7 h-7 mx-auto rounded-full bg-ctct-blue text-white flex items-center justify-center">3</span>
+                    <span class="py-1.5 text-gray-400">4</span>
+                    <span class="py-1.5 text-gray-400">5</span>
+                    <span class="py-1.5 text-gray-300">6</span>
+                    <span class="py-1.5 text-gray-300">7</span>
+                    <span class="py-1.5 text-gray-400">8</span>
+                    <span class="py-1.5 text-gray-400">9</span>
+                    <span class="py-1.5 text-gray-400">10</span>
+                    <span class="py-1.5 text-gray-400">11</span>
+                    <span class="py-1.5 text-gray-400">12</span>
+                    <span class="py-1.5 text-gray-300">13</span>
+                    <span class="py-1.5 text-gray-300">14</span>
+                    <span class="py-1.5 text-gray-400">15</span>
+                    <span class="py-1.5 w-7 h-7 mx-auto rounded-full bg-green-400 text-white flex items-center justify-center">16</span>
+                    <span class="py-1.5 w-7 h-7 mx-auto rounded-full bg-green-400 text-white flex items-center justify-center">17</span>
+                    <span class="py-1.5 w-7 h-7 mx-auto rounded-full bg-green-400 text-white flex items-center justify-center">18</span>
+                    <span class="py-1.5 w-7 h-7 mx-auto rounded-full bg-ctct-blue text-white flex items-center justify-center">19</span>
+                    <span class="py-1.5 text-gray-300">20</span>
+                    <span class="py-1.5 w-7 h-7 mx-auto rounded-full bg-gray-200 text-gray-600 flex items-center justify-center">21</span>
+                    <span class="py-1.5 w-7 h-7 mx-auto rounded-full bg-gray-200 text-gray-600 flex items-center justify-center">22</span>
+                    <span class="py-1.5 text-gray-400">23</span>
+                    <span class="py-1.5 text-gray-400">24</span>
+                    <span class="py-1.5 text-gray-400">25</span>
+                    <span class="py-1.5 text-gray-400">26</span>
+                    <span class="py-1.5 text-gray-300">27</span>
+                    <span class="py-1.5 text-gray-300">28</span>
+                    <span class="py-1.5 text-gray-400">29</span>
+                    <span class="py-1.5 text-gray-400">30</span>
+                    <span class="py-1.5 text-gray-400">31</span>
+                  </div>
+                </div>
+                <div class="flex flex-col gap-2 text-sm">
+                  <div class="flex items-center gap-2">
+                    <span class="w-2.5 h-2.5 rounded-full bg-green-400"></span>
+                    <span class="text-gray-600">Emails</span>
+                  </div>
+                  <div class="flex items-center gap-2">
+                    <span class="w-2.5 h-2.5 rounded-full bg-purple-300"></span>
+                    <span class="text-gray-600">SMS</span>
+                  </div>
+                  <div class="flex items-center gap-2">
+                    <span class="w-2.5 h-2.5 rounded-full bg-ctct-blue"></span>
+                    <span class="text-gray-600">Social</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Brand Assets -->
+            <div id="brand-widget" class="bg-white rounded-2xl border border-gray-100 p-5">
+              <div class="flex items-center justify-between mb-4">
+                <div class="flex items-center gap-2">
+                  <h3 class="text-sm font-medium text-gray-700">Brand</h3>
+                  <span id="brand-count" class="text-sm text-gray-400">—</span>
+                </div>
+                <a href="#" class="text-xs text-blue-600 hover:text-blue-700 font-medium">Manage</a>
+              </div>
+              
+              <!-- Empty state -->
+              <div id="brand-empty" class="text-center py-8 text-gray-400">
+                <svg class="w-8 h-8 mx-auto mb-2 opacity-50" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="13.5" cy="6.5" r=".5" fill="currentColor"/><circle cx="17.5" cy="10.5" r=".5" fill="currentColor"/><circle cx="8.5" cy="7.5" r=".5" fill="currentColor"/><circle cx="6.5" cy="12.5" r=".5" fill="currentColor"/><path d="M12 2C6.5 2 2 6.5 2 12s4.5 10 10 10c.926 0 1.648-.746 1.648-1.688 0-.437-.18-.835-.437-1.125-.29-.289-.438-.652-.438-1.125a1.64 1.64 0 0 1 1.668-1.668h1.996c3.051 0 5.555-2.503 5.555-5.555C21.965 6.012 17.461 2 12 2z"/></svg>
+                <p class="text-sm">No brand assets yet</p>
+              </div>
+              
+              <!-- Filled state -->
+              <div id="brand-filled" class="hidden space-y-4">
+                <!-- Brand colors -->
+                <div>
+                  <p class="text-xs text-gray-400 mb-2">Colors</p>
+                  <div class="flex items-center gap-2">
+                    <div class="w-8 h-8 rounded-lg shadow-sm border border-gray-200" style="background-color: #351c75;"></div>
+                    <div class="w-8 h-8 rounded-lg shadow-sm border border-gray-200" style="background-color: #4a90d9;"></div>
+                    <div class="w-8 h-8 rounded-lg shadow-sm border border-gray-200" style="background-color: #e67e22;"></div>
+                    <div class="w-8 h-8 rounded-lg shadow-sm border border-gray-200" style="background-color: #f5f5f5;"></div>
+                    <span class="text-xs text-gray-400">+2</span>
+                  </div>
+                </div>
+                
+                <!-- Logo -->
+                <div>
+                  <p class="text-xs text-gray-400 mb-2">Logo</p>
+                  <div class="flex items-center gap-3">
+                    <div class="w-16 h-10 bg-gray-900 rounded-lg flex items-center justify-center p-2">
+                      <img src="assets/upsLogo.png" class="max-w-full max-h-full object-contain filter brightness-0 invert">
+                    </div>
+                    <div class="w-16 h-10 bg-white rounded-lg border border-gray-200 flex items-center justify-center p-2">
+                      <img src="assets/upsLogo.png" class="max-w-full max-h-full object-contain">
+                    </div>
+                  </div>
+                </div>
+                
+                <!-- Templates -->
+                <div>
+                  <p class="text-xs text-gray-400 mb-2">Templates</p>
+                  <div class="flex items-center gap-2">
+                    <div class="w-12 h-16 bg-gradient-to-b from-purple-100 to-purple-50 rounded-lg border border-gray-200 flex items-center justify-center">
+                      <svg class="w-4 h-4 text-purple-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect width="20" height="16" x="2" y="4" rx="2"/><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/></svg>
+                    </div>
+                    <div class="w-12 h-16 bg-gradient-to-b from-blue-100 to-blue-50 rounded-lg border border-gray-200 flex items-center justify-center">
+                      <svg class="w-4 h-4 text-blue-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect width="20" height="16" x="2" y="4" rx="2"/><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/></svg>
+                    </div>
+                    <div class="w-12 h-16 bg-gradient-to-b from-teal-100 to-teal-50 rounded-lg border border-gray-200 flex items-center justify-center">
+                      <svg class="w-4 h-4 text-teal-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect width="20" height="16" x="2" y="4" rx="2"/><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/></svg>
+                    </div>
+                    <span class="text-xs text-gray-400">+4</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Right Column -->
+          <div class="space-y-6">
+            <!-- Recent Campaigns -->
+            <div id="recent-campaigns-widget" class="bg-white rounded-2xl border border-gray-100 p-5">
+              <div class="flex items-center justify-between mb-4">
+                <div class="flex items-center gap-2">
+                  <h3 class="text-sm font-medium text-gray-700">Recent campaigns</h3>
+                  <span id="recent-campaigns-count" class="text-sm text-gray-400">—</span>
+                </div>
+                <div class="flex items-center gap-1 text-xs text-gray-400">
+                  <button class="p-1 hover:bg-gray-100 rounded"><svg class="w-3 h-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m15 18-6-6 6-6"/></svg></button>
+                  <span>—</span>
+                  <button class="p-1 hover:bg-gray-100 rounded"><svg class="w-3 h-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m9 18 6-6-6-6"/></svg></button>
+                </div>
+              </div>
+              
+              <!-- Empty state -->
+              <div id="recent-campaigns-empty" class="text-center py-8 text-gray-400">
+                <svg class="w-8 h-8 mx-auto mb-2 opacity-50" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect width="20" height="16" x="2" y="4" rx="2"/><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/></svg>
+                <p class="text-sm">No campaigns yet</p>
+              </div>
+              <!-- Filled state (hidden by default) -->
+              <div id="recent-campaigns-filled" class="space-y-3 hidden">
+                <div class="flex items-center justify-between p-2 bg-gray-50 rounded-lg">
+                  <div class="flex items-center gap-2">
+                    <span class="w-2 h-2 rounded-full bg-green-400"></span>
+                    <span class="text-sm text-gray-700">Holiday Newsletter</span>
+                  </div>
+                  <span class="text-xs text-gray-400">2 days ago</span>
+                </div>
+                <div class="flex items-center justify-between p-2 bg-gray-50 rounded-lg">
+                  <div class="flex items-center gap-2">
+                    <span class="w-2 h-2 rounded-full bg-blue-400"></span>
+                    <span class="text-sm text-gray-700">New Year Promo</span>
+                  </div>
+                  <span class="text-xs text-gray-400">5 days ago</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- Drafts -->
+            <div id="drafts-widget" class="bg-white rounded-2xl border border-gray-100 p-5">
+              <div class="flex items-center gap-2 mb-4">
+                <h3 class="text-sm font-medium text-gray-700">Drafts</h3>
+                <span id="drafts-count" class="text-sm text-gray-400">—</span>
+              </div>
+              
+              <!-- Empty state -->
+              <div id="drafts-empty" class="text-center py-8 text-gray-400">
+                <svg class="w-8 h-8 mx-auto mb-2 opacity-50" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z"/><path d="M14 2v4a2 2 0 0 0 2 2h4"/><path d="M10 9H8"/><path d="M16 13H8"/><path d="M16 17H8"/></svg>
+                <p class="text-sm">No drafts yet</p>
+              </div>
+              <!-- Filled state (hidden by default) -->
+              <div id="drafts-filled" class="space-y-3 hidden">
+                <div class="flex items-center justify-between p-2 bg-gray-50 rounded-lg">
+                  <span class="text-sm text-gray-700">Welcome Series Email</span>
+                  <span class="text-xs text-gray-400">Draft</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <script>
+    // Safe lucide helper (re-defined in case first script block fails)
+    if (typeof safeCreateIcons === 'undefined') {
+      function safeCreateIcons() {
+        if (typeof lucide !== 'undefined' && lucide.createIcons) {
+          lucide.createIcons();
+        }
+      }
+    }
+    
+    // Get workspace name from URL
+    const urlParams = new URLSearchParams(window.location.search);
+    const workspaceName = urlParams.get('workspace') || 'Workspace';
+    const folderName = urlParams.get('folder');
+    
+    // Role-based access control
+    const userRole = sessionStorage.getItem('accessLevel') || urlParams.get('role') || 'global';
+    const userName = sessionStorage.getItem('userName') || 'Sarah Chen';
+    const userTitle = sessionStorage.getItem('userTitle') || 'Global Marketing Director';
+    const accessWorkspace = sessionStorage.getItem('accessWorkspace') || '';
+    const isLocationManager = userRole === 'location' || userRole === 'workspace';
+
+    // Update user avatar and info based on current persona
+    function updateUserAvatar() {
+      // Map personas to their avatar data with actual photos
+      const personaData = {
+        'Sarah Chen': { 
+          photo: 'https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=200&h=200&fit=crop&crop=face',
+          title: 'Global Marketing Director',
+          ringColor: 'ring-emerald-500'
+        },
+        'Mike Johnson': { 
+          photo: 'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=200&h=200&fit=crop&crop=face',
+          title: 'US Northeast Regional Manager',
+          ringColor: 'ring-blue-500'
+        },
+        'Jessica Martinez': { 
+          photo: 'https://images.unsplash.com/photo-1580489944761-15a19d654956?w=200&h=200&fit=crop&crop=face',
+          title: 'NY Location Manager',
+          ringColor: 'ring-purple-500'
+        }
+      };
+      
+      const persona = personaData[userName] || personaData['Sarah Chen'];
+      
+      // Update small avatar button in topbar
+      const avatarBtn = document.getElementById('user-avatar-btn');
+      if (avatarBtn) {
+        avatarBtn.className = `w-9 h-9 rounded-full overflow-hidden border-2 border-transparent hover:border-blue-200 transition-colors ${persona.ringColor}`;
+        avatarBtn.innerHTML = `<img src="${persona.photo}" alt="${userName}" class="w-full h-full object-cover">`;
+      }
+      
+      // Update large avatar in dropdown
+      const avatarLarge = document.getElementById('user-avatar-large');
+      if (avatarLarge) {
+        avatarLarge.className = `w-14 h-14 rounded-full overflow-hidden ${persona.ringColor} ring-2`;
+        avatarLarge.innerHTML = `<img src="${persona.photo}" alt="${userName}" class="w-full h-full object-cover">`;
+      }
+      
+      // Update name and title in dropdown
+      const nameDisplay = document.getElementById('user-name-display');
+      if (nameDisplay) {
+        nameDisplay.textContent = userName;
+      }
+      
+      const roleDisplay = document.getElementById('user-role-display');
+      if (roleDisplay) {
+        roleDisplay.textContent = userTitle;
+      }
+    }
+    
+    // Get initials from name
+    function getInitials(name) {
+      return name.split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2);
+    }
+    
+    // Initialize view based on role
+    function initializeForRole() {
+      // Always show "UPS Global" in the top bar dropdown
+      const wsDropdownName = document.getElementById('workspace-dropdown-name');
+      const wsDropdownTitle = document.getElementById('ws-dropdown-title');
+      const wsAvatar = document.getElementById('workspace-avatar');
+      
+      // Top bar always shows UPS Global
+      if (wsDropdownName) wsDropdownName.textContent = 'UPS Global';
+      if (wsAvatar) {
+        wsAvatar.outerHTML = '<img src="assets/upsLogo.png" alt="UPS" class="w-6 h-6 object-contain">';
+      }
+      
+      // Workspace dropdown title shows the actual workspace name
+      if (wsDropdownTitle) wsDropdownTitle.textContent = workspaceName;
+      
+      // Update user avatar
+      updateUserAvatar();
+      
+      // Update user display
+      const userNameDisplay = document.getElementById('user-name-display');
+      const userRoleDisplay = document.getElementById('user-role-display');
+      if (userNameDisplay) userNameDisplay.textContent = userName;
+      
+      if (isLocationManager) {
+        // Show location manager view
+        document.getElementById('sidebar-header-location').classList.remove('hidden');
+        document.getElementById('sidebar-header-org').classList.add('hidden');
+        document.getElementById('topbar-logo')?.classList.add('flex');
+        document.getElementById('topbar-logo')?.classList.remove('hidden');
+        
+        if (userRoleDisplay) userRoleDisplay.textContent = 'Location Manager';
+        
+        // Hide dropdowns by default (will toggle on click)
+        document.getElementById('workspace-dropdown-location')?.classList.add('hidden');
+        document.getElementById('workspace-dropdown-org')?.classList.add('hidden');
+      } else {
+        // Show org view (Back to Org link)
+        document.getElementById('sidebar-header-location').classList.add('hidden');
+        document.getElementById('sidebar-header-org').classList.remove('hidden');
+        
+        if (userRoleDisplay) {
+          userRoleDisplay.textContent = userRole === 'regional' ? 'Regional Manager' : 'Global Admin';
+        }
+      }
+    }
+    
+    // Toggle functions for dropdowns
+    function toggleWorkspaceCreateMenu() {
+      closeAllDropdowns();
+      const menu = document.getElementById('workspace-create-menu');
+      menu.classList.toggle('hidden');
+    }
+    
+    function toggleNotificationsDropdown() {
+      closeAllDropdowns();
+      const dropdown = document.getElementById('notifications-dropdown');
+      dropdown.classList.toggle('hidden');
+    }
+    
+    function toggleUserDropdown() {
+      closeAllDropdowns();
+      const dropdown = document.getElementById('user-dropdown');
+      dropdown.classList.toggle('hidden');
+    }
+    
+    function toggleWorkspaceDropdown() {
+      closeAllDropdowns();
+      if (isLocationManager) {
+        document.getElementById('workspace-dropdown-location')?.classList.toggle('hidden');
+      } else {
+        document.getElementById('workspace-dropdown-org')?.classList.toggle('hidden');
+      }
+    }
+    
+    function closeAllDropdowns() {
+      document.getElementById('workspace-create-menu')?.classList.add('hidden');
+      document.getElementById('notifications-dropdown')?.classList.add('hidden');
+      document.getElementById('user-dropdown')?.classList.add('hidden');
+      document.getElementById('workspace-dropdown-location')?.classList.add('hidden');
+      document.getElementById('workspace-dropdown-org')?.classList.add('hidden');
+    }
+    
+    // Close dropdowns when clicking outside
+    document.addEventListener('click', function(e) {
+      const isDropdownButton = e.target.closest('button[onclick*="toggle"]');
+      const isInsideDropdown = e.target.closest('[id$="-dropdown"], [id$="-menu"]');
+      
+      if (!isDropdownButton && !isInsideDropdown) {
+        closeAllDropdowns();
+      }
+    });
+    
+    // Initialize role-based view on page load
+    initializeForRole();
+    
+    // Update title
+    document.title = `CTCT for Teams — ${workspaceName} Workspace`;
+    
+    // Update page title
+    const pageTitleEl = document.getElementById('workspace-page-title');
+    if (pageTitleEl) {
+      pageTitleEl.textContent = `${workspaceName} Workspace`;
+    }
+    
+    // Render breadcrumbs with truncation (show last 2 items, ... at start for overflow)
+    function renderBreadcrumbs(path) {
+      const container = document.getElementById('breadcrumb-container');
+      const overflowMenu = document.getElementById('breadcrumb-overflow-menu');
+      const overflowItems = document.getElementById('breadcrumb-overflow-items');
+      
+      if (path.length <= 3) {
+        container.innerHTML = path.map((item, i) => {
+          const separator = i > 0 ? '<span class="text-gray-400">/</span>' : '';
+          if (item.isCurrent) {
+            return `${separator}<span class="text-gray-900 font-medium">${item.name}</span>`;
+          }
+          if (item.isFolder) {
+            return `${separator}<a href="${item.href}" class="flex items-center gap-1.5 text-gray-500 hover:text-blue-600"><svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 20a2 2 0 0 0 2-2V8a2 2 0 0 0-2-2h-7.9a2 2 0 0 1-1.69-.9L9.6 3.9A2 2 0 0 0 7.93 3H4a2 2 0 0 0-2 2v13a2 2 0 0 0 2 2Z"/></svg>${item.name}</a>`;
+          }
+          return `${separator}<a href="${item.href}" class="text-gray-500 hover:text-gray-700">${item.name}</a>`;
+        }).join('');
+      } else {
+        const hiddenItems = path.slice(0, -2);
+        const visibleItems = path.slice(-2);
+        
+        overflowItems.innerHTML = hiddenItems.map(item => {
+          const icon = item.isFolder 
+            ? '<svg class="w-4 h-4 text-gray-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 20a2 2 0 0 0 2-2V8a2 2 0 0 0-2-2h-7.9a2 2 0 0 1-1.69-.9L9.6 3.9A2 2 0 0 0 7.93 3H4a2 2 0 0 0-2 2v13a2 2 0 0 0 2 2Z"/></svg>'
+            : '<svg class="w-4 h-4 text-gray-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>';
+          return `<a href="${item.href}" class="flex items-center gap-2.5 px-3 py-2 hover:bg-gray-50 text-sm text-gray-700">${icon}<span>${item.name}</span></a>`;
+        }).join('');
+        
+        let html = `<button onclick="toggleBreadcrumbMenu(event)" class="flex items-center gap-1 text-gray-400 hover:text-gray-600 px-1 py-0.5 rounded hover:bg-gray-100"><svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="1"/><circle cx="19" cy="12" r="1"/><circle cx="5" cy="12" r="1"/></svg></button>`;
+        
+        visibleItems.forEach((item) => {
+          html += '<span class="text-gray-400">/</span>';
+          if (item.isCurrent) {
+            html += `<span class="text-gray-900 font-medium">${item.name}</span>`;
+          } else if (item.isFolder) {
+            html += `<a href="${item.href}" class="flex items-center gap-1.5 text-gray-500 hover:text-blue-600"><svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 20a2 2 0 0 0 2-2V8a2 2 0 0 0-2-2h-7.9a2 2 0 0 1-1.69-.9L9.6 3.9A2 2 0 0 0 7.93 3H4a2 2 0 0 0-2 2v13a2 2 0 0 0 2 2Z"/></svg>${item.name}</a>`;
+          } else {
+            html += `<a href="${item.href}" class="text-gray-500 hover:text-gray-700">${item.name}</a>`;
+          }
+        });
+        
+        container.innerHTML = html;
+      }
+      safeCreateIcons();
+    }
+    
+    function toggleBreadcrumbMenu(e) {
+      e.stopPropagation();
+      document.getElementById('breadcrumb-overflow-menu').classList.toggle('hidden');
+      safeCreateIcons();
+    }
+    
+    document.addEventListener('click', function(e) {
+      const menu = document.getElementById('breadcrumb-overflow-menu');
+      if (menu && !menu.contains(e.target)) {
+        menu.classList.add('hidden');
+      }
+    });
+    
+    // Build breadcrumb path
+    const breadcrumbPath = [
+      { name: 'Org dashboard', href: 'option-b-northstar-empty.html', isFolder: false },
+      { name: 'Workspaces', href: 'workspaces-list.html', isFolder: false }
+    ];
+    
+    // Set up breadcrumbs and navigation links
+    if (folderName) {
+      const folderUrl = `workspaces-list.html?view=grid&folder=${encodeURIComponent(folderName)}`;
+      breadcrumbPath.push({ name: folderName, href: folderUrl, isFolder: true });
+      // Set report link with workspace filter
+      document.getElementById('view-report-link').href = `workspace-reporting.html?workspace=${encodeURIComponent(workspaceName)}&folder=${encodeURIComponent(folderName)}`;
+      // Set campaigns link with workspace context
+      document.getElementById('campaigns-link').href = `campaigns-list.html?workspace=${encodeURIComponent(workspaceName)}&folder=${encodeURIComponent(folderName)}`;
+    } else {
+      // Set campaigns link with workspace context (no folder)
+      document.getElementById('campaigns-link').href = `campaigns-list.html?workspace=${encodeURIComponent(workspaceName)}`;
+      // Set report link with just workspace filter
+      document.getElementById('view-report-link').href = `workspace-reporting.html?workspace=${encodeURIComponent(workspaceName)}`;
+    }
+    
+    // Add current workspace (not a link)
+    breadcrumbPath.push({ name: workspaceName, href: null, isCurrent: true });
+    renderBreadcrumbs(breadcrumbPath);
+    
+    // Toggle expandable sections
+    function toggleSection(section) {
+      const items = document.getElementById(section + '-items');
+      const chevron = document.getElementById(section + '-chevron');
+      
+      if (items.classList.contains('hidden')) {
+        items.classList.remove('hidden');
+        chevron.style.transform = 'rotate(180deg)';
+      } else {
+        items.classList.add('hidden');
+        chevron.style.transform = 'rotate(0deg)';
+      }
+    }
+    
+    // Toggle card overflow menus
+    function toggleCardMenu(menuId) {
+      const menu = document.getElementById(menuId);
+      const allMenus = document.querySelectorAll('[id$="-menu"]');
+      
+      // Close all other menus
+      allMenus.forEach(m => {
+        if (m.id !== menuId) {
+          m.classList.add('hidden');
+        }
+      });
+      
+      // Toggle this menu
+      menu.classList.toggle('hidden');
+    }
+    
+    // Open widget customize dialog (placeholder)
+    function openWidgetCustomize(widgetType) {
+      // Close menu
+      document.querySelectorAll('[id$="-menu"]').forEach(m => m.classList.add('hidden'));
+      alert(`Customize ${widgetType} widget settings coming soon!`);
+    }
+    
+    // Set up report links with workspace context
+    function setupReportLinks() {
+      const urlParams = new URLSearchParams(window.location.search);
+      const workspace = urlParams.get('workspace') || '';
+      const folder = urlParams.get('folder') || '';
+      
+      const baseUrl = 'workspace-reporting.html';
+      const params = new URLSearchParams();
+      if (workspace) params.set('workspace', workspace);
+      if (folder) params.set('folder', folder);
+      
+      // Email report link
+      const emailLink = document.getElementById('email-report-link');
+      if (emailLink) {
+        const emailParams = new URLSearchParams(params);
+        emailParams.set('channel', 'email');
+        emailLink.href = `${baseUrl}?${emailParams.toString()}`;
+      }
+      
+      // Contacts report link
+      const contactsLink = document.getElementById('contacts-report-link');
+      if (contactsLink) {
+        const contactsParams = new URLSearchParams(params);
+        contactsParams.set('channel', 'contacts');
+        contactsLink.href = `${baseUrl}?${contactsParams.toString()}`;
+      }
+      
+      // Social report link
+      const socialLink = document.getElementById('social-report-link');
+      if (socialLink) {
+        const socialParams = new URLSearchParams(params);
+        socialParams.set('channel', 'social');
+        socialLink.href = `${baseUrl}?${socialParams.toString()}`;
+      }
+    }
+    
+    // Call on page load
+    setupReportLinks();
+    
+    // Close menus when clicking outside
+    document.addEventListener('click', function(e) {
+      if (!e.target.closest('[id$="-menu"]') && !e.target.closest('button')) {
+        document.querySelectorAll('[id$="-menu"]').forEach(m => m.classList.add('hidden'));
+      }
+    });
+    
+    // Initialize Lucide icons on DOM ready and with retry
+    document.addEventListener('DOMContentLoaded', function() {
+      safeCreateIcons();
+      // Retry after a short delay in case library loads late
+      setTimeout(safeCreateIcons, 100);
+      setTimeout(safeCreateIcons, 500);
+    });
+    
+    // Also try immediately
+    safeCreateIcons();
+
+    // Data mode toggle
+    let currentDataMode = sessionStorage.getItem('dataMode') || 'filled';
+    
+    function setDataMode(mode) {
+      currentDataMode = mode;
+      sessionStorage.setItem('dataMode', mode);
+      
+      const emptyBtn = document.getElementById('toggle-empty');
+      const filledBtn = document.getElementById('toggle-filled');
+      
+      if (mode === 'empty') {
+        emptyBtn.className = 'px-2.5 py-1 text-xs rounded bg-gray-600 text-white';
+        filledBtn.className = 'px-2.5 py-1 text-xs rounded text-gray-400 hover:text-white';
+        renderEmptyState();
+      } else {
+        filledBtn.className = 'px-2.5 py-1 text-xs rounded bg-gray-600 text-white';
+        emptyBtn.className = 'px-2.5 py-1 text-xs rounded text-gray-400 hover:text-white';
+        renderFilledState();
+      }
+      safeCreateIcons();
+    }
+    
+    function updateMetric(id, value, isEmpty) {
+      const el = document.getElementById(id);
+      if (el) {
+        el.textContent = value;
+        if (isEmpty) {
+          el.classList.remove('text-gray-900');
+          el.classList.add('text-gray-300');
+        } else {
+          el.classList.remove('text-gray-300');
+          el.classList.add('text-gray-900');
+        }
+      }
+    }
+    
+    function renderEmptyState() {
+      // Email chart toggle
+      const wsEmailEmpty = document.getElementById('ws-email-chart-empty');
+      const wsEmailFilled = document.getElementById('ws-email-chart-filled');
+      if (wsEmailEmpty) wsEmailEmpty.classList.remove('hidden');
+      if (wsEmailFilled) wsEmailFilled.classList.add('hidden');
+      
+      // Email metrics
+      updateMetric('metric-sends', '—', true);
+      updateMetric('metric-opens', '—', true);
+      updateMetric('metric-clicks', '—', true);
+      updateMetric('metric-bounces', '—', true);
+      
+      // Contact chart toggle
+      const wsContactEmpty = document.getElementById('ws-contact-chart-empty');
+      const wsContactFilled = document.getElementById('ws-contact-chart-filled');
+      const wsContactGrowth = document.getElementById('ws-contact-growth');
+      if (wsContactEmpty) wsContactEmpty.classList.remove('hidden');
+      if (wsContactFilled) wsContactFilled.classList.add('hidden');
+      if (wsContactGrowth) wsContactGrowth.classList.add('hidden');
+      
+      // Contacts metrics
+      updateMetric('metric-contacts', '—', true);
+      updateMetric('metric-new-contacts', '—', true);
+      
+      // Social chart toggle
+      const wsSocialEmpty = document.getElementById('ws-social-chart-empty');
+      const wsSocialFilled = document.getElementById('ws-social-chart-filled');
+      if (wsSocialEmpty) wsSocialEmpty.classList.remove('hidden');
+      if (wsSocialFilled) wsSocialFilled.classList.add('hidden');
+      
+      // Social metrics
+      updateMetric('metric-views', '—', true);
+      updateMetric('metric-likes', '—', true);
+      updateMetric('metric-shares', '—', true);
+      updateMetric('metric-comments', '—', true);
+      
+      // Recent campaigns
+      document.getElementById('recent-campaigns-count').textContent = '—';
+      document.getElementById('recent-campaigns-empty').classList.remove('hidden');
+      document.getElementById('recent-campaigns-filled').classList.add('hidden');
+      
+      // Drafts
+      document.getElementById('drafts-count').textContent = '—';
+      document.getElementById('drafts-empty').classList.remove('hidden');
+      document.getElementById('drafts-filled').classList.add('hidden');
+      
+      // Brand
+      const brandCount = document.getElementById('brand-count');
+      const brandEmpty = document.getElementById('brand-empty');
+      const brandFilled = document.getElementById('brand-filled');
+      if (brandCount) brandCount.textContent = '—';
+      if (brandEmpty) brandEmpty.classList.remove('hidden');
+      if (brandFilled) brandFilled.classList.add('hidden');
+    }
+    
+    function renderFilledState() {
+      // Email chart toggle
+      const wsEmailEmpty = document.getElementById('ws-email-chart-empty');
+      const wsEmailFilled = document.getElementById('ws-email-chart-filled');
+      if (wsEmailEmpty) wsEmailEmpty.classList.add('hidden');
+      if (wsEmailFilled) wsEmailFilled.classList.remove('hidden');
+      
+      // Email metrics
+      updateMetric('metric-sends', '2.4k', false);
+      updateMetric('metric-opens', '74%', false);
+      updateMetric('metric-clicks', '18%', false);
+      updateMetric('metric-bounces', '0.2%', false);
+      
+      // Contact chart toggle
+      const wsContactEmpty = document.getElementById('ws-contact-chart-empty');
+      const wsContactFilled = document.getElementById('ws-contact-chart-filled');
+      const wsContactGrowth = document.getElementById('ws-contact-growth');
+      if (wsContactEmpty) wsContactEmpty.classList.add('hidden');
+      if (wsContactFilled) wsContactFilled.classList.remove('hidden');
+      if (wsContactGrowth) wsContactGrowth.classList.remove('hidden');
+      
+      // Contacts metrics
+      updateMetric('metric-contacts', '1,247', false);
+      updateMetric('metric-new-contacts', '+82', false);
+      
+      // Social chart toggle
+      const wsSocialEmpty = document.getElementById('ws-social-chart-empty');
+      const wsSocialFilled = document.getElementById('ws-social-chart-filled');
+      if (wsSocialEmpty) wsSocialEmpty.classList.add('hidden');
+      if (wsSocialFilled) wsSocialFilled.classList.remove('hidden');
+      
+      // Social metrics
+      updateMetric('metric-views', '8.5k', false);
+      updateMetric('metric-likes', '324', false);
+      updateMetric('metric-shares', '45', false);
+      updateMetric('metric-comments', '67', false);
+      
+      // Recent campaigns
+      document.getElementById('recent-campaigns-count').textContent = '2';
+      document.getElementById('recent-campaigns-empty').classList.add('hidden');
+      document.getElementById('recent-campaigns-filled').classList.remove('hidden');
+      
+      // Drafts
+      document.getElementById('drafts-count').textContent = '1';
+      document.getElementById('drafts-empty').classList.add('hidden');
+      document.getElementById('drafts-filled').classList.remove('hidden');
+      
+      // Brand
+      const brandCount = document.getElementById('brand-count');
+      const brandEmpty = document.getElementById('brand-empty');
+      const brandFilled = document.getElementById('brand-filled');
+      if (brandCount) brandCount.textContent = '6 assets';
+      if (brandEmpty) brandEmpty.classList.add('hidden');
+      if (brandFilled) brandFilled.classList.remove('hidden');
+    }
+    
+    // Apply persisted data mode on page load
+    setDataMode(currentDataMode);
+  </script>
+  <script src="mobile-nav.js"></script>
+</body>
+</html>
+

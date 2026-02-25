@@ -1,0 +1,1074 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Org Dashboard — V1.1 (Milestone 1)</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['CTSans', 'system-ui', 'sans-serif'],
+                    },
+                    colors: {
+                        main: {
+                            50: '#f6fcff',
+                            100: '#e6f8ff',
+                            200: '#d6eafe',
+                            300: '#a6d3fd',
+                            400: '#65abff',
+                            500: '#468af1',
+                            600: '#186ded',
+                            700: '#085fe2',
+                            800: '#1357be',
+                            900: '#0046ae',
+                            950: '#0b3c85',
+                        },
+                        neutral: {
+                            50: '#fcfcfd',
+                            100: '#f7f9fd',
+                            200: '#f0f4fa',
+                            300: '#dce2ec',
+                            400: '#c9d0de',
+                            500: '#8d9bb6',
+                            600: '#6b7492',
+                            700: '#63708a',
+                            800: '#5d687e',
+                            900: '#3f4b63',
+                            950: '#313b4d',
+                        },
+                    },
+                },
+            },
+        }
+    </script>
+    <style>
+        /* Sidenav Collapse Styles */
+        .sidenav-expanded {
+            width: 16rem;
+            transition: width 0.3s ease-in-out;
+        }
+        .sidenav-collapsed {
+            width: 4rem;
+            transition: width 0.3s ease-in-out;
+        }
+        .sidenav-collapsed .sidenav-label,
+        .sidenav-collapsed .sidenav-chevron,
+        .sidenav-collapsed .sidenav-section-header,
+        .sidenav-collapsed .sidenav-children,
+        .sidenav-collapsed .sidenav-child-item {
+            opacity: 0;
+            width: 0;
+            overflow: hidden;
+            display: none;
+            transition: opacity 0.2s ease-in-out;
+        }
+        .sidenav-collapsed .sidenav-create-btn {
+            padding-left: 0;
+            padding-right: 0;
+            justify-content: center;
+        }
+        .sidenav-collapsed nav {
+            padding-left: 0.25rem;
+            padding-right: 0.25rem;
+        }
+        .sidenav-collapsed nav ul li a,
+        .sidenav-collapsed nav ul li button {
+            justify-content: center;
+            padding-left: 0.5rem;
+            padding-right: 0.5rem;
+        }
+        .sidenav-collapsed nav ul li a > div,
+        .sidenav-collapsed nav ul li button > div {
+            justify-content: center;
+        }
+        .sidenav-toggle-btn {
+            z-index: 100;
+        }
+        
+        /* CT Sans Font Family */
+        @font-face {
+            font-family: 'CTSans';
+            src: url('fonts/CTSans-Regular.woff2') format('woff2');
+            font-weight: 400;
+            font-style: normal;
+            font-display: swap;
+        }
+
+        @font-face {
+            font-family: 'CTSans';
+            src: url('fonts/CTSans-Semibold.woff2') format('woff2');
+            font-weight: 600;
+            font-style: normal;
+            font-display: swap;
+        }
+
+        @font-face {
+            font-family: 'CTSans';
+            src: url('fonts/CTSans-Bold.woff2') format('woff2');
+            font-weight: 700;
+            font-style: normal;
+            font-display: swap;
+        }
+
+        body {
+            font-family: 'CTSans', system-ui, sans-serif;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+        }
+
+        .custom-scrollbar::-webkit-scrollbar {
+            width: 8px;
+        }
+        
+        .custom-scrollbar::-webkit-scrollbar-track {
+            background: #f1f1f1;
+        }
+        
+        .custom-scrollbar::-webkit-scrollbar-thumb {
+            background: #888;
+            border-radius: 4px;
+        }
+        
+        .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+            background: #555;
+        }
+
+        .progress-bar {
+            background: linear-gradient(90deg, #186ded 0%, #65abff 100%);
+        }
+        
+        /* Change Indicator Chips */
+        .change-indicator {
+            display: inline-flex;
+            align-items: center;
+            padding: 2px 6px;
+            border-radius: 9999px;
+            font-size: 11px;
+            font-weight: 500;
+        }
+        .change-indicator.positive {
+            background-color: #ecfdf3;
+            color: #067647;
+        }
+        .change-indicator.negative {
+            background-color: #fef3f2;
+            color: #b42318;
+        }
+    </style>
+</head>
+<body class="bg-neutral-100">
+    <!-- Top Navigation Bar -->
+    <nav class="bg-white border-b border-neutral-300 px-4 md:px-6 lg:px-8 py-3 flex items-center justify-between">
+        <!-- Left Side - Logo & Hamburger -->
+        <div class="flex items-center">
+            <!-- Hamburger Menu - Mobile Only -->
+            <button 
+                onclick="toggleSidebar()"
+                class="lg:hidden p-2 text-neutral-600 hover:text-neutral-900 rounded-md hover:bg-neutral-200 transition-colors mr-3"
+                aria-label="Menu"
+            >
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
+                </svg>
+            </button>
+            
+            <!-- Logo -->
+            <img 
+                src="assets/ctctLogo.png" 
+                alt="Constant Contact" 
+                class="w-10 h-10 object-contain"
+            />
+        </div>
+        
+        <!-- Right Side - User Menu -->
+        <div class="flex items-center gap-3">
+            <!-- AI Assistant Button -->
+            <button onclick="openAIAssistant('general')" class="hidden sm:flex items-center gap-2 px-4 py-1.5 text-main-900 bg-gradient-to-r from-main-50 to-accent-100 hover:from-main-100 hover:to-accent-200 border border-main-200 rounded-md font-medium text-sm transition-colors">
+                <svg width="0" height="0" aria-hidden="true"><defs><linearGradient id="ai-gradient-btn-v1" x1="0" y1="0" x2="24" y2="24" gradientUnits="userSpaceOnUse"><stop stop-color="#186ded"></stop><stop stop-color="#875bf7" offset="85%"></stop></linearGradient></defs></svg>
+                <svg class="w-4 h-4" fill="none" stroke="url(#ai-gradient-btn-v1)" stroke-width="1.5" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><path d="M9.937 15.5A2 2 0 0 0 8.5 14.063l-6.135-1.582a.5.5 0 0 1 0-.962L8.5 9.936A2 2 0 0 0 9.937 8.5l1.582-6.135a.5.5 0 0 1 .963 0L14.063 8.5A2 2 0 0 0 15.5 9.937l6.135 1.581a.5.5 0 0 1 0 .964L15.5 14.063a2 2 0 0 0-1.437 1.437l-1.582 6.135a.5.5 0 0 1-.963 0z"></path><path d="M20 3v4"></path><path d="M22 5h-4"></path><path d="M4 17v2"></path><path d="M5 18H3"></path></svg>
+                AI assistant
+            </button>
+            
+            <!-- User Profile -->
+            <button class="flex items-center gap-2 hover:bg-neutral-100 rounded-md px-2 py-1.5 transition-colors">
+                <div class="w-8 h-8 bg-neutral-800 rounded-full flex items-center justify-center">
+                    <span class="text-sm font-medium text-white">UG</span>
+                </div>
+                <span class="text-sm font-medium text-neutral-900 hidden md:inline">UPS Global</span>
+                <svg class="w-4 h-4 text-neutral-600 hidden md:block" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m19 9-7 7-7-7" />
+                </svg>
+            </button>
+            
+            <!-- Help Icon - Hidden on small mobile -->
+            <button class="hidden sm:inline-flex items-center justify-center rounded-lg transition-colors focus:outline-none hover:bg-neutral-200 p-2.5" aria-label="help">
+                <div class="relative inline-flex items-center justify-center rounded-full outline outline-1.5 outline-offset-0 outline-main-300">
+                    <svg stroke="currentColor" fill="currentColor" stroke-width="1.5" viewBox="0 0 512 512" class="w-6 h-6 opacity-80 text-main-600" height="1em" width="1em" xmlns="http://www.w3.org/2000/svg">
+                        <path fill="none" stroke-miterlimit="10" stroke-width="32" d="M256 80a176 176 0 1 0 176 176A176 176 0 0 0 256 80z"></path>
+                        <path fill="none" stroke-linecap="round" stroke-miterlimit="10" stroke-width="28" d="M200 202.29s.84-17.5 19.57-32.57C230.68 160.77 244 158.18 256 158c10.93-.14 20.69 1.67 26.53 4.45 10 4.76 29.47 16.38 29.47 41.09 0 26-17 37.81-36.37 50.8S251 281.43 251 296"></path>
+                        <circle cx="250" cy="348" r="20"></circle>
+                    </svg>
+                </div>
+            </button>
+        </div>
+    </nav>
+
+    <!-- Main Container -->
+    <div class="flex min-h-screen pb-20">
+        <!-- Sidebar Backdrop (Mobile) -->
+        <div 
+            id="sidebar-backdrop" 
+            class="hidden fixed inset-0 bg-black bg-opacity-50 z-40 lg:hidden"
+            onclick="toggleSidebar()"
+        ></div>
+        
+        <!-- Left Sidebar Navigation - Rendered by component -->
+        <aside 
+            id="sidebar"
+            class="fixed lg:static inset-y-0 left-0 transform -translate-x-full lg:translate-x-0 transition-all duration-300 ease-in-out z-50 lg:z-auto w-64 bg-white border-r border-neutral-200 flex flex-col relative group sidenav-expanded overflow-visible"
+        >
+            <div id="sidebar-content" class="relative h-full overflow-visible"></div>
+        </aside>
+        <script src="components/left-nav.js"></script>
+
+        <!-- Main Content Area - Org Dashboard Home -->
+        <main class="flex-1 p-4 sm:p-6 lg:p-8 bg-neutral-100">
+            <!-- Welcome Banner -->
+            <div class="bg-white rounded-lg border border-neutral-300 p-6 mb-6">
+                <div class="flex flex-col lg:flex-row items-start lg:items-center justify-between gap-4">
+                    <div class="flex-1">
+                        <h1 class="text-2xl font-semibold text-neutral-900 mb-1">Welcome, Jake!</h1>
+                        <p class="text-neutral-700">You're almost done! Finish updating your profile for a personalized experience.</p>
+                    </div>
+                    <div class="flex items-center gap-4 w-full lg:w-auto">
+                        <div class="flex-1 lg:w-64">
+                            <div class="flex items-center gap-3 mb-1">
+                                <div class="flex-1 h-2 bg-neutral-300 rounded-full overflow-hidden">
+                                    <div class="progress-bar h-full rounded-full" style="width: 40%"></div>
+                                </div>
+                                <span class="text-sm font-medium text-neutral-700">40%</span>
+                            </div>
+                        </div>
+                        <button class="px-4 py-2 border border-main-600 text-main-600 rounded-md text-sm font-medium hover:bg-main-50 transition-colors whitespace-nowrap">
+                            Complete profile
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Quick Actions -->
+            <div class="mb-8">
+                <h2 class="text-lg font-semibold text-neutral-900 mb-4">Quick actions</h2>
+                <div class="grid grid-cols-2 lg:grid-cols-4 gap-4">
+                    <!-- Add accounts -->
+                    <button class="bg-white rounded-lg border border-neutral-300 p-6 hover:border-main-500 hover:shadow-md transition-all text-center group">
+                        <div class="w-10 h-10 bg-main-50 rounded-lg flex items-center justify-center mx-auto mb-3 group-hover:bg-main-100 transition-colors">
+                            <svg class="w-5 h-5 text-main-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z" />
+                            </svg>
+                        </div>
+                        <h3 class="font-medium text-main-600">Add accounts</h3>
+                    </button>
+
+                    <!-- Account billing -->
+                    <button class="bg-white rounded-lg border border-neutral-300 p-6 hover:border-main-500 hover:shadow-md transition-all text-center group">
+                        <div class="w-10 h-10 bg-main-50 rounded-lg flex items-center justify-center mx-auto mb-3 group-hover:bg-main-100 transition-colors">
+                            <svg class="w-5 h-5 text-main-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                            </svg>
+                        </div>
+                        <h3 class="font-medium text-main-600">Account billing</h3>
+                    </button>
+
+                    <!-- Share email template -->
+                    <button class="bg-white rounded-lg border border-neutral-300 p-6 hover:border-main-500 hover:shadow-md transition-all text-center group">
+                        <div class="w-10 h-10 bg-main-50 rounded-lg flex items-center justify-center mx-auto mb-3 group-hover:bg-main-100 transition-colors">
+                            <svg class="w-5 h-5 text-main-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.368 2.684 3 3 0 00-5.368-2.684z" />
+                            </svg>
+                        </div>
+                        <h3 class="font-medium text-main-600">Share email template</h3>
+                    </button>
+
+                    <!-- Run a report -->
+                    <button class="bg-white rounded-lg border border-neutral-300 p-6 hover:border-main-500 hover:shadow-md transition-all text-center group">
+                        <div class="w-10 h-10 bg-main-50 rounded-lg flex items-center justify-center mx-auto mb-3 group-hover:bg-main-100 transition-colors">
+                            <svg class="w-5 h-5 text-main-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+                            </svg>
+                        </div>
+                        <h3 class="font-medium text-main-600">Run a report</h3>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Organization performance (rise-ui / reference style) -->
+            <div class="mb-8">
+                <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-4">
+                    <div>
+                        <h2 class="text-lg font-semibold text-neutral-900">Organization performance</h2>
+                        <p class="text-sm text-neutral-500 mt-0.5">Overall performance across all accounts</p>
+                    </div>
+                    <div class="relative self-start sm:self-auto">
+                        <button type="button" onclick="toggleGlobalDateFilter()" class="flex items-center gap-2 px-3 py-2 text-sm font-medium text-neutral-700 bg-white border border-neutral-200 hover:bg-neutral-50 rounded-lg transition-colors shadow-sm" aria-label="Change dates">
+                            <svg class="w-4 h-4 text-neutral-500" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
+                            <span id="global-date-btn-label">Last 30 days</span>
+                            <svg class="w-4 h-4 text-neutral-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
+                        </button>
+                        <div id="global-date-filter-menu" class="hidden absolute right-0 top-full mt-1 w-48 bg-white rounded-xl shadow-xl border border-neutral-200 py-2 z-[80]">
+                            <p class="text-[10px] font-semibold text-neutral-400 uppercase tracking-wider px-3 py-1.5">Presets</p>
+                            <button onclick="setGlobalDateFilter('today', 'today')" class="global-filter-btn w-full text-left px-3 py-1.5 text-sm hover:bg-neutral-50 flex items-center gap-2" data-range="today">
+                                <svg class="global-filter-check w-4 h-4 text-transparent" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>
+                                <span>Today</span>
+                            </button>
+                            <button onclick="setGlobalDateFilter('yesterday', 'yesterday')" class="global-filter-btn w-full text-left px-3 py-1.5 text-sm hover:bg-neutral-50 flex items-center gap-2" data-range="yesterday">
+                                <svg class="global-filter-check w-4 h-4 text-transparent" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>
+                                <span>Yesterday</span>
+                            </button>
+                            <button onclick="setGlobalDateFilter('7d', 'in the last 7 days')" class="global-filter-btn w-full text-left px-3 py-1.5 text-sm hover:bg-neutral-50 flex items-center gap-2" data-range="7d">
+                                <svg class="global-filter-check w-4 h-4 text-transparent" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>
+                                <span>Last 7 days</span>
+                            </button>
+                            <button onclick="setGlobalDateFilter('30d', 'in the last 30 days')" class="global-filter-btn w-full text-left px-3 py-1.5 text-sm hover:bg-neutral-50 flex items-center gap-2" data-range="30d">
+                                <svg class="global-filter-check w-4 h-4 text-main-600" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>
+                                <span>Last 30 days</span>
+                            </button>
+                            <button onclick="setGlobalDateFilter('90d', 'in the last 90 days')" class="global-filter-btn w-full text-left px-3 py-1.5 text-sm hover:bg-neutral-50 flex items-center gap-2" data-range="90d">
+                                <svg class="global-filter-check w-4 h-4 text-transparent" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>
+                                <span>Last 90 days</span>
+                            </button>
+                            <button onclick="setGlobalDateFilter('this-month', 'this month')" class="global-filter-btn w-full text-left px-3 py-1.5 text-sm hover:bg-neutral-50 flex items-center gap-2" data-range="this-month">
+                                <svg class="global-filter-check w-4 h-4 text-transparent" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>
+                                <span>This month</span>
+                            </button>
+                            <button onclick="setGlobalDateFilter('last-month', 'last month')" class="global-filter-btn w-full text-left px-3 py-1.5 text-sm hover:bg-neutral-50 flex items-center gap-2" data-range="last-month">
+                                <svg class="global-filter-check w-4 h-4 text-transparent" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>
+                                <span>Last month</span>
+                            </button>
+                            <button onclick="setGlobalDateFilter('ytd', 'year to date')" class="global-filter-btn w-full text-left px-3 py-1.5 text-sm hover:bg-neutral-50 flex items-center gap-2" data-range="ytd">
+                                <svg class="global-filter-check w-4 h-4 text-transparent" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>
+                                <span>Year to date</span>
+                            </button>
+                            <button onclick="setGlobalDateFilter('12m', 'in the last 12 months')" class="global-filter-btn w-full text-left px-3 py-1.5 text-sm hover:bg-neutral-50 flex items-center gap-2" data-range="12m">
+                                <svg class="global-filter-check w-4 h-4 text-transparent" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>
+                                <span>Last 12 months</span>
+                            </button>
+                            <div class="border-t border-neutral-100 my-1"></div>
+                            <button onclick="openCustomDatePicker('global')" class="w-full text-left px-3 py-1.5 text-sm hover:bg-neutral-50 flex items-center gap-2">
+                                <svg class="w-4 h-4 text-neutral-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
+                                <span>Custom range...</span>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-4 sm:gap-5">
+                    <!-- Email engagement - rise-ui / reference style -->
+                    <a href="../email-engagement-report.html" class="metrics-card relative block bg-white rounded-2xl border border-neutral-100 p-5 shadow-sm no-underline text-inherit hover:shadow-md transition-shadow flex flex-col h-full group">
+                        <div class="flex items-start justify-between gap-2 mb-2">
+                            <p class="text-sm font-medium text-neutral-900">Email engagement</p>
+                            <span class="flex-shrink-0 p-1.5 rounded-lg bg-main-50 text-main-600 group-hover:bg-main-100 transition-colors" title="View report" aria-label="View report">
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M13 7l5 5m0 0l-5 5m5-5H6"/></svg>
+                            </span>
+                        </div>
+                        <div class="flex items-center gap-2 mb-1">
+                            <span class="text-3xl font-bold text-neutral-900">37%</span>
+                            <span class="inline-flex items-center gap-0.5 px-1.5 py-0.5 rounded-full text-xs font-medium bg-success-100 text-success-700">↑ 4%</span>
+                        </div>
+                        <p class="text-sm text-neutral-500 mb-3">Open rate · vs prior 30 days</p>
+                        <div class="flex items-center gap-2 mt-auto flex-wrap">
+                            <span class="px-2 py-1 text-xs border border-neutral-300 rounded-full text-neutral-600">34.3% click rate</span>
+                            <span class="px-2 py-1 text-xs border border-neutral-300 rounded-full text-neutral-600">1.3k sends</span>
+                        </div>
+                        <svg class="hidden xl:block absolute bottom-3 right-4 w-20 h-9 pointer-events-none" viewBox="0 0 100 40" fill="none" aria-hidden="true">
+                            <path d="M0 32 Q12 30 25 28 T50 24 T75 18 T100 12" stroke="#17b26a" stroke-width="2" stroke-linecap="round" fill="none"/>
+                        </svg>
+                    </a>
+                    <!-- Contact growth - reference style -->
+                    <div class="metrics-card relative bg-white rounded-2xl border border-neutral-100 p-5 shadow-sm flex flex-col h-full">
+                        <p class="text-sm font-medium text-neutral-900 mb-2">Contact growth</p>
+                        <div class="flex items-center gap-2 mb-1">
+                            <span class="text-3xl font-bold text-neutral-900">3%</span>
+                            <span class="inline-flex items-center gap-0.5 px-1.5 py-0.5 rounded-full text-xs font-medium bg-success-100 text-success-700">↑ 13%</span>
+                        </div>
+                        <p class="text-sm text-neutral-500 mb-3">Growth rate · vs prior 30 days</p>
+                        <div class="flex items-center gap-2 mt-auto flex-wrap">
+                            <span class="px-2 py-1 text-xs border border-neutral-300 rounded-full text-neutral-600">38.4k active</span>
+                            <span class="px-2 py-1 text-xs border border-neutral-300 rounded-full text-neutral-600">4.2k unsubscribed</span>
+                        </div>
+                        <svg class="hidden xl:block absolute bottom-3 right-4 w-20 h-9 pointer-events-none" viewBox="0 0 100 40" fill="none" aria-hidden="true">
+                            <path d="M0 35 Q15 32 30 28 T60 22 T100 10" stroke="#186ded" stroke-width="2" stroke-linecap="round" fill="none"/>
+                        </svg>
+                    </div>
+                    <!-- SMS engagement - reference style -->
+                    <div class="metrics-card relative bg-white rounded-2xl border border-neutral-100 p-5 shadow-sm flex flex-col h-full">
+                        <p class="text-sm font-medium text-neutral-900 mb-2">SMS engagement</p>
+                        <div class="flex items-center gap-2 mb-1">
+                            <span class="text-3xl font-bold text-neutral-900">96%</span>
+                            <span class="inline-flex items-center gap-0.5 px-1.5 py-0.5 rounded-full text-xs font-medium bg-success-100 text-success-700">↑ 2%</span>
+                        </div>
+                        <p class="text-sm text-neutral-500 mb-3">Delivery rate · vs prior 30 days</p>
+                        <div class="flex items-center gap-2 mt-auto flex-wrap">
+                            <span class="px-2 py-1 text-xs border border-neutral-300 rounded-full text-neutral-600">14.5% click rate</span>
+                            <span class="px-2 py-1 text-xs border border-neutral-300 rounded-full text-neutral-600">892 sends</span>
+                        </div>
+                        <svg class="hidden xl:block absolute bottom-3 right-4 w-20 h-9 pointer-events-none" viewBox="0 0 100 40" fill="none" aria-hidden="true">
+                            <path d="M0 30 Q20 28 40 24 T80 18 T100 12" stroke="#17b26a" stroke-width="2" stroke-linecap="round" fill="none"/>
+                        </svg>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Account Insights -->
+            <div class="mb-8">
+                <div class="flex items-center justify-between mb-4">
+                    <h2 class="text-lg font-semibold text-neutral-900">Account insights</h2>
+                    <div class="flex gap-2">
+                        <button class="p-2 text-neutral-600 hover:text-neutral-900 hover:bg-neutral-200 rounded-md transition-colors">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
+                            </svg>
+                        </button>
+                        <button class="p-2 text-neutral-600 hover:text-neutral-900 hover:bg-neutral-200 rounded-md transition-colors">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+                            </svg>
+                        </button>
+                    </div>
+                </div>
+                <div class="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-5 gap-4">
+                    <!-- Active -->
+                    <div class="bg-white rounded-lg border border-neutral-300 p-4">
+                        <div class="flex items-center gap-2 mb-2">
+                            <span class="text-sm text-neutral-700">Active</span>
+                            <button class="text-neutral-400 hover:text-neutral-600">
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                </svg>
+                            </button>
+                        </div>
+                        <p class="text-2xl font-semibold text-main-600">1</p>
+                    </div>
+
+                    <!-- Managed -->
+                    <div class="bg-white rounded-lg border border-neutral-300 p-4">
+                        <div class="flex items-center gap-2 mb-2">
+                            <span class="text-sm text-neutral-700">Managed</span>
+                            <button class="text-neutral-400 hover:text-neutral-600">
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                </svg>
+                            </button>
+                        </div>
+                        <p class="text-2xl font-semibold text-main-600">1</p>
+                    </div>
+
+                    <!-- Trials - active -->
+                    <div class="bg-white rounded-lg border border-neutral-300 p-4">
+                        <div class="flex items-center gap-2 mb-2">
+                            <span class="text-sm text-neutral-700">Trials - active</span>
+                            <button class="text-neutral-400 hover:text-neutral-600">
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                </svg>
+                            </button>
+                        </div>
+                        <p class="text-2xl font-semibold text-neutral-400">-</p>
+                    </div>
+
+                    <!-- Trials - expired -->
+                    <div class="bg-white rounded-lg border border-neutral-300 p-4">
+                        <div class="flex items-center gap-2 mb-2">
+                            <span class="text-sm text-neutral-700">Trials - expired</span>
+                            <button class="text-neutral-400 hover:text-neutral-600">
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                </svg>
+                            </button>
+                        </div>
+                        <p class="text-2xl font-semibold text-neutral-400">-</p>
+                    </div>
+
+                    <!-- Referred -->
+                    <div class="bg-white rounded-lg border border-neutral-300 p-4">
+                        <div class="flex items-center gap-2 mb-2">
+                            <span class="text-sm text-neutral-700">Referred</span>
+                            <button class="text-neutral-400 hover:text-neutral-600">
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                </svg>
+                            </button>
+                        </div>
+                        <p class="text-2xl font-semibold text-neutral-400">-</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Learn about exclusive tools -->
+            <div>
+                <h2 class="text-lg font-semibold text-neutral-900 mb-4">Learn about your exclusive tools</h2>
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                    <!-- Card 1 -->
+                    <div class="bg-main-50 rounded-lg p-6 flex gap-6">
+                        <div class="flex-1">
+                            <h3 class="text-lg font-semibold text-neutral-900 mb-2">Learn about managed vs. referred accounts</h3>
+                            <p class="text-sm text-neutral-700 mb-4">
+                                Referred accounts give clients full control; managed accounts let you take the lead. Choose the model that fits your needs.
+                            </p>
+                            <button class="px-4 py-2 bg-main-600 text-white rounded-md text-sm font-medium hover:bg-main-900 transition-colors">
+                                Learn more
+                            </button>
+                        </div>
+                        <img src="assets/recCardGraphic_03_480x480.png" alt="" class="w-24 h-24 object-contain hidden sm:block" onerror="this.style.display='none'">
+                    </div>
+
+                    <!-- Card 2 -->
+                    <div class="bg-main-50 rounded-lg p-6 flex gap-6">
+                        <div class="flex-1">
+                            <h3 class="text-lg font-semibold text-neutral-900 mb-2">Manage team access with user roles</h3>
+                            <p class="text-sm text-neutral-700 mb-4">
+                                Invite team members to collaborate in your account with customizable user roles.
+                            </p>
+                            <button class="px-4 py-2 bg-main-600 text-white rounded-md text-sm font-medium hover:bg-main-900 transition-colors">
+                                Learn more
+                            </button>
+                        </div>
+                        <img src="assets/recCardGraphic_04_480x480.png" alt="" class="w-24 h-24 object-contain hidden sm:block" onerror="this.style.display='none'">
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script>
+        // Toggle sidebar on mobile
+        function toggleSidebar() {
+            const sidebar = document.getElementById('sidebar');
+            const backdrop = document.getElementById('sidebar-backdrop');
+            
+            sidebar.classList.toggle('-translate-x-full');
+            backdrop.classList.toggle('hidden');
+        }
+
+        function toggleAccounts() {
+            const menu = document.getElementById('accounts-menu');
+            const chevron = document.getElementById('accounts-chevron');
+            menu.classList.toggle('hidden');
+            chevron.classList.toggle('rotate-180');
+        }
+
+        function toggleChannels() {
+            const menu = document.getElementById('channels-menu');
+            const chevron = document.getElementById('channels-chevron');
+            menu.classList.toggle('hidden');
+            chevron.classList.toggle('rotate-180');
+        }
+
+        // AI Assistant Modal
+        function openAIAssistant(context) {
+            const modal = document.getElementById('ai-assistant-modal');
+            const promptsContainer = document.getElementById('ai-prompts');
+            
+            const generalPrompts = [
+                'How can I improve my email open rates?',
+                'What are best practices for SMS marketing?',
+                'Show me my top performing campaigns'
+            ];
+            
+            const insightsPrompts = [
+                'Compare performance across all accounts',
+                'Which campaigns had the highest engagement?',
+                'Show me accounts that need attention'
+            ];
+            
+            const prompts = context === 'insights' ? insightsPrompts : generalPrompts;
+            
+            promptsContainer.innerHTML = prompts.map(prompt => `
+                <button class="w-full text-left px-4 py-3 text-sm text-neutral-700 bg-neutral-50 hover:bg-neutral-100 rounded-lg transition-colors">
+                    ${prompt}
+                </button>
+            `).join('');
+            
+            modal.classList.remove('hidden');
+        }
+
+        function closeAIAssistant() {
+            document.getElementById('ai-assistant-modal').classList.add('hidden');
+        }
+
+        // AI Insights Rating
+        function rateInsight(button, rating) {
+            const thumbsContainer = button.parentElement;
+            
+            if (rating === 'up') {
+                button.classList.add('bg-green-200', 'ring-2', 'ring-green-300');
+            } else {
+                button.classList.add('bg-red-200', 'ring-2', 'ring-red-300');
+            }
+            
+            setTimeout(() => {
+                thumbsContainer.style.opacity = '0';
+            }, 300);
+            
+            showToast('Thank you for your feedback!');
+        }
+        
+        function showToast(message) {
+            const container = document.getElementById('toast-container');
+            if (!container) return;
+            const toast = document.createElement('div');
+            toast.className = 'bg-neutral-900 text-white px-4 py-3 rounded-lg shadow-lg flex items-center gap-2';
+            toast.innerHTML = `
+                <svg class="w-5 h-5 text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
+                <span class="text-sm">${message}</span>
+            `;
+            container.appendChild(toast);
+            
+            setTimeout(() => {
+                toast.style.opacity = '0';
+                toast.style.transform = 'translateX(100%)';
+                toast.style.transition = 'all 0.3s ease';
+                setTimeout(() => toast.remove(), 300);
+            }, 3000);
+        }
+        
+        // Card Filter Functions
+        function toggleCardFilter(cardType) {
+            const menu = document.getElementById(`${cardType}-filter-menu`);
+            // Close all other menus first
+            document.querySelectorAll('[id$="-filter-menu"]').forEach(m => {
+                if (m.id !== `${cardType}-filter-menu`) m.classList.add('hidden');
+            });
+            menu.classList.toggle('hidden');
+        }
+        
+        // Date range labels for subtitle
+        const dateRangeLabels = {
+            'today': 'today',
+            'yesterday': 'yesterday',
+            '7d': 'in the last 7 days',
+            '30d': 'in the last 30 days',
+            '90d': 'in the last 90 days',
+            'ytd': 'year to date',
+            '12m': 'in the last 12 months'
+        };
+        
+        // Sample data for metric cards
+        const cardData = {
+            email: {
+                'today':     { openRate: '38.2%', opensCount: '48',    clickRate: '32.5%', clicksCount: '39',    bounceRate: '2.1%', bouncesCount: '3',    sendsTotal: '126',   sendsTrend: '+5%' },
+                'yesterday': { openRate: '35.8%', opensCount: '43',    clickRate: '31.0%', clicksCount: '37',    bounceRate: '2.4%', bouncesCount: '3',    sendsTotal: '120',   sendsTrend: '+3%' },
+                '7d':        { openRate: '37.1%', opensCount: '298',   clickRate: '33.8%', clicksCount: '271',   bounceRate: '2.3%', bouncesCount: '18',   sendsTotal: '803',   sendsTrend: '+10%' },
+                '30d':       { openRate: '36.5%', opensCount: '460',   clickRate: '34.3%', clicksCount: '432',   bounceRate: '2.5%', bouncesCount: '32',   sendsTotal: '1,260', sendsTrend: '+8%' },
+                '90d':       { openRate: '35.2%', opensCount: '1,320', clickRate: '33.5%', clicksCount: '1,255', bounceRate: '2.8%', bouncesCount: '105',  sendsTotal: '3,750', sendsTrend: '+6%' },
+                'ytd':       { openRate: '34.8%', opensCount: '2,450', clickRate: '32.1%', clicksCount: '2,260', bounceRate: '2.6%', bouncesCount: '183',  sendsTotal: '7,040', sendsTrend: '+12%' },
+                '12m':       { openRate: '34.5%', opensCount: '3,280', clickRate: '31.8%', clicksCount: '3,025', bounceRate: '2.7%', bouncesCount: '257',  sendsTotal: '9,520', sendsTrend: '+9%' }
+            },
+            contacts: {
+                'today':     { growthRate: '+0.1%', newCount: '45',    activeRate: '89.9%', activeCount: '38,290', churnRate: '0.01%', unsubCount: '5',   totalContacts: '42,600', totalTrend: '+0.1%' },
+                'yesterday': { growthRate: '+0.08%', newCount: '35',   activeRate: '89.8%', activeCount: '38,250', churnRate: '0.02%', unsubCount: '8',   totalContacts: '42,555', totalTrend: '+0.08%' },
+                '7d':        { growthRate: '+0.8%', newCount: '340',   activeRate: '89.8%', activeCount: '38,245', churnRate: '0.05%', unsubCount: '22',  totalContacts: '42,590', totalTrend: '+0.8%' },
+                '30d':       { growthRate: '+3.1%', newCount: '1,321', activeRate: '89.8%', activeCount: '38,240', churnRate: '0.16%', unsubCount: '68',  totalContacts: '42,580', totalTrend: '+3%' },
+                '90d':       { growthRate: '+8.5%', newCount: '3,520', activeRate: '89.5%', activeCount: '37,980', churnRate: '0.42%', unsubCount: '178', totalContacts: '42,400', totalTrend: '+8%' },
+                'ytd':       { growthRate: '+15.2%', newCount: '5,820', activeRate: '89.2%', activeCount: '37,650', churnRate: '0.71%', unsubCount: '300', totalContacts: '42,200', totalTrend: '+15%' },
+                '12m':       { growthRate: '+18.4%', newCount: '7,100', activeRate: '88.8%', activeCount: '37,280', churnRate: '0.88%', unsubCount: '370', totalContacts: '42,000', totalTrend: '+18%' }
+            },
+            sms: {
+                'today':     { deliveryRate: '97.5%', deliveredCount: '78',  clickRate: '16.2%', clicksCount: '13',  optoutRate: '0.0%', optoutsCount: '0',  sendsTotal: '80',  sendsTrend: '+12%' },
+                'yesterday': { deliveryRate: '96.8%', deliveredCount: '61',  clickRate: '15.1%', clicksCount: '9',   optoutRate: '1.6%', optoutsCount: '1',  sendsTotal: '63',  sendsTrend: '+8%' },
+                '7d':        { deliveryRate: '96.5%', deliveredCount: '415', clickRate: '15.4%', clicksCount: '64',  optoutRate: '0.7%', optoutsCount: '3',  sendsTotal: '430', sendsTrend: '+18%' },
+                '30d':       { deliveryRate: '96.0%', deliveredCount: '856', clickRate: '14.5%', clicksCount: '124', optoutRate: '0.9%', optoutsCount: '8',  sendsTotal: '892', sendsTrend: '+15%' },
+                '90d':       { deliveryRate: '95.8%', deliveredCount: '2,490', clickRate: '14.2%', clicksCount: '354', optoutRate: '0.8%', optoutsCount: '21', sendsTotal: '2,600', sendsTrend: '+12%' },
+                'ytd':       { deliveryRate: '95.5%', deliveredCount: '4,680', clickRate: '13.8%', clicksCount: '646', optoutRate: '0.7%', optoutsCount: '34', sendsTotal: '4,900', sendsTrend: '+22%' },
+                '12m':       { deliveryRate: '95.2%', deliveredCount: '5,850', clickRate: '13.5%', clicksCount: '790', optoutRate: '0.6%', optoutsCount: '37', sendsTotal: '6,150', sendsTrend: '+20%' }
+            }
+        };
+        
+        // Global date filter functions
+        function toggleGlobalDateFilter() {
+            const menu = document.getElementById('global-date-filter-menu');
+            menu.classList.toggle('hidden');
+        }
+        
+        const dateBtnLabels = { today: 'Today', yesterday: 'Yesterday', '7d': 'Last 7 days', '30d': 'Last 30 days', '90d': 'Last 90 days', 'this-month': 'This month', 'last-month': 'Last month', ytd: 'Year to date', '12m': 'Last 12 months' };
+        function setGlobalDateFilter(range, label) {
+            const timeLabel = document.getElementById('metrics-time-label');
+            if (timeLabel) timeLabel.textContent = label;
+            const btnLabel = document.getElementById('global-date-btn-label');
+            if (btnLabel && dateBtnLabels[range]) btnLabel.textContent = dateBtnLabels[range];
+            
+            // Update checkmarks
+            document.querySelectorAll('.global-filter-btn').forEach(btn => {
+                const check = btn.querySelector('.global-filter-check');
+                if (check) {
+                    if (btn.dataset.range === range) {
+                        check.classList.remove('text-transparent');
+                        check.classList.add('text-main-600');
+                    } else {
+                        check.classList.remove('text-main-600');
+                        check.classList.add('text-transparent');
+                    }
+                }
+            });
+            
+            // Close the menu
+            document.getElementById('global-date-filter-menu').classList.add('hidden');
+        }
+        
+        // Close global filter when clicking outside
+        document.addEventListener('click', function(e) {
+            if (!e.target.closest('[onclick="toggleGlobalDateFilter()"]') && !e.target.closest('#global-date-filter-menu')) {
+                const menu = document.getElementById('global-date-filter-menu');
+                if (menu) menu.classList.add('hidden');
+            }
+        });
+        
+        function setCardFilter(cardType, range) {
+            // Update subtitle
+            const subtitle = document.getElementById(`${cardType}-subtitle`);
+            if (subtitle && dateRangeLabels[range]) {
+                subtitle.textContent = dateRangeLabels[range];
+            }
+            
+            // Update checkmarks
+            const menu = document.getElementById(`${cardType}-filter-menu`);
+            if (menu) {
+                menu.querySelectorAll('.card-filter-btn').forEach(btn => {
+                    const check = btn.querySelector('.card-filter-check');
+                    if (check) {
+                        if (btn.dataset.range === range) {
+                            check.classList.remove('text-transparent');
+                            check.classList.add('text-main-600');
+                        } else {
+                            check.classList.add('text-transparent');
+                            check.classList.remove('text-main-600');
+                        }
+                    }
+                });
+            }
+            
+            // Update metric values based on card type
+            const data = cardData[cardType] && cardData[cardType][range];
+            if (data) {
+                if (cardType === 'email') {
+                    updateElement('email-open-rate', data.openRate);
+                    updateElement('email-opens-count', data.opensCount);
+                    updateElement('email-click-rate', data.clickRate);
+                    updateElement('email-clicks-count', data.clicksCount);
+                    updateElement('email-bounce-rate', data.bounceRate);
+                    updateElement('email-bounces-count', data.bouncesCount);
+                    updateElement('email-sends-total', data.sendsTotal);
+                    updateElement('email-sends-trend', data.sendsTrend);
+                } else if (cardType === 'contacts') {
+                    updateElement('contact-growth-rate', data.growthRate);
+                    updateElement('contact-new-count', data.newCount);
+                    updateElement('contact-active-rate', data.activeRate);
+                    updateElement('contact-active-count', data.activeCount);
+                    updateElement('contact-churn-rate', data.churnRate);
+                    updateElement('contact-unsub-count', data.unsubCount);
+                    updateElement('contact-total', data.totalContacts);
+                    updateElement('contact-total-trend', data.totalTrend);
+                } else if (cardType === 'sms') {
+                    updateElement('sms-delivery-rate', data.deliveryRate);
+                    updateElement('sms-delivered-count', data.deliveredCount);
+                    updateElement('sms-click-rate', data.clickRate);
+                    updateElement('sms-clicks-count', data.clicksCount);
+                    updateElement('sms-optout-rate', data.optoutRate);
+                    updateElement('sms-optouts-count', data.optoutsCount);
+                    updateElement('sms-sends', data.sendsTotal);
+                    updateElement('sms-sends-trend', data.sendsTrend);
+                }
+            }
+            
+            // Close menu
+            menu.classList.add('hidden');
+        }
+        
+        function updateElement(id, value) {
+            const el = document.getElementById(id);
+            if (el) el.textContent = value;
+        }
+        
+        let activeCustomDateCard = null;
+        
+        function openCustomDatePicker(cardType) {
+            document.getElementById(`${cardType}-filter-menu`).classList.add('hidden');
+            activeCustomDateCard = cardType;
+            
+            const endDate = new Date();
+            const startDate = new Date();
+            startDate.setDate(startDate.getDate() - 30);
+            
+            document.getElementById('date-start').value = formatDateForInput(startDate);
+            document.getElementById('date-end').value = formatDateForInput(endDate);
+            
+            renderCalendar('start', startDate.getMonth(), startDate.getFullYear());
+            renderCalendar('end', endDate.getMonth(), endDate.getFullYear());
+            
+            document.getElementById('date-picker-modal').classList.remove('hidden');
+        }
+        
+        function formatDateForInput(date) {
+            return date.toISOString().split('T')[0];
+        }
+        
+        function formatDateDisplay(dateStr) {
+            const date = new Date(dateStr + 'T00:00:00');
+            return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+        }
+        
+        function closeDatePicker() {
+            document.getElementById('date-picker-modal').classList.add('hidden');
+            activeCustomDateCard = null;
+        }
+        
+        function applyCustomDateRange() {
+            const startDate = document.getElementById('date-start').value;
+            const endDate = document.getElementById('date-end').value;
+            
+            if (!startDate || !endDate) { alert('Please select both dates'); return; }
+            if (new Date(startDate) > new Date(endDate)) { alert('Start date must be before end date'); return; }
+            
+            const dateRangeText = `${formatDateDisplay(startDate)} - ${formatDateDisplay(endDate)}`;
+            
+            // If global, update the header label
+            if (activeCustomDateCard === 'global') {
+                document.getElementById('metrics-time-label').textContent = dateRangeText;
+                // Clear all checkmarks
+                document.querySelectorAll('.global-filter-check').forEach(check => {
+                    check.classList.remove('text-main-600');
+                    check.classList.add('text-transparent');
+                });
+            } else {
+                const subtitle = document.getElementById(`${activeCustomDateCard}-subtitle`);
+                if (subtitle) {
+                    subtitle.textContent = dateRangeText;
+                }
+            }
+            
+            const card = document.querySelector(`[id="${activeCustomDateCard}-filter-menu"]`);
+            if (card) {
+                card.querySelectorAll('.card-filter-check').forEach(check => {
+                    check.classList.remove('text-main-600');
+                    check.classList.add('text-transparent');
+                });
+            }
+            
+            closeDatePicker();
+        }
+        
+        const calendarState = {
+            start: { month: new Date().getMonth(), year: new Date().getFullYear() },
+            end: { month: new Date().getMonth(), year: new Date().getFullYear() }
+        };
+        
+        function renderCalendar(type, month, year) {
+            calendarState[type] = { month, year };
+            const container = document.getElementById(`calendar-${type}`);
+            const monthLabel = document.getElementById(`month-label-${type}`);
+            
+            const months = ['January', 'February', 'March', 'April', 'May', 'June', 
+                           'July', 'August', 'September', 'October', 'November', 'December'];
+            monthLabel.textContent = `${months[month]} ${year}`;
+            
+            const firstDay = new Date(year, month, 1).getDay();
+            const daysInMonth = new Date(year, month + 1, 0).getDate();
+            const today = new Date();
+            const selectedDate = new Date(document.getElementById(`date-${type}`).value + 'T00:00:00');
+            
+            let html = '<div class="grid grid-cols-7 gap-1 text-center">';
+            ['S', 'M', 'T', 'W', 'T', 'F', 'S'].forEach(d => {
+                html += `<div class="text-xs text-neutral-400 py-1">${d}</div>`;
+            });
+            
+            for (let i = 0; i < firstDay; i++) { html += '<div></div>'; }
+            
+            for (let day = 1; day <= daysInMonth; day++) {
+                const dateStr = `${year}-${String(month + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
+                const isToday = today.getDate() === day && today.getMonth() === month && today.getFullYear() === year;
+                const isSelected = selectedDate.getDate() === day && selectedDate.getMonth() === month && selectedDate.getFullYear() === year;
+                const isFuture = new Date(dateStr) > today;
+                
+                let classes = 'w-8 h-8 text-sm rounded-full flex items-center justify-center cursor-pointer transition-colors ';
+                if (isSelected) classes += 'bg-main-600 text-white';
+                else if (isToday) classes += 'bg-main-100 text-main-700 font-medium';
+                else if (isFuture) classes += 'text-neutral-300 cursor-not-allowed';
+                else classes += 'hover:bg-neutral-100 text-neutral-700';
+                
+                html += `<div class="${classes}" ${!isFuture ? `onclick="selectDate('${type}', '${dateStr}')"` : ''}>${day}</div>`;
+            }
+            
+            html += '</div>';
+            container.innerHTML = html;
+        }
+        
+        function selectDate(type, dateStr) {
+            document.getElementById(`date-${type}`).value = dateStr;
+            const date = new Date(dateStr + 'T00:00:00');
+            renderCalendar(type, date.getMonth(), date.getFullYear());
+        }
+        
+        function changeMonth(type, delta) {
+            let { month, year } = calendarState[type];
+            month += delta;
+            if (month < 0) { month = 11; year--; }
+            if (month > 11) { month = 0; year++; }
+            renderCalendar(type, month, year);
+        }
+        
+        function setQuickRange(days) {
+            const endDate = new Date();
+            const startDate = new Date();
+            startDate.setDate(startDate.getDate() - days);
+            
+            document.getElementById('date-start').value = formatDateForInput(startDate);
+            document.getElementById('date-end').value = formatDateForInput(endDate);
+            
+            renderCalendar('start', startDate.getMonth(), startDate.getFullYear());
+            renderCalendar('end', endDate.getMonth(), endDate.getFullYear());
+        }
+        
+        // Close filter menus when clicking outside
+        document.addEventListener('click', function(e) {
+            if (!e.target.closest('[onclick^="toggleCardFilter"]') && !e.target.closest('[id$="-filter-menu"]')) {
+                document.querySelectorAll('[id$="-filter-menu"]').forEach(menu => {
+                    menu.classList.add('hidden');
+                });
+            }
+        });
+    </script>
+
+    <!-- AI Assistant Modal -->
+    <div id="ai-assistant-modal" class="hidden fixed inset-0 z-[9999] flex items-end justify-center">
+        <div class="absolute inset-0 bg-black/50 backdrop-blur-sm" onclick="closeAIAssistant()"></div>
+        <div class="relative w-full max-w-2xl bg-white rounded-t-3xl shadow-2xl max-h-[80vh] flex flex-col">
+            <!-- Header -->
+            <div class="flex items-center justify-between px-5 py-3 border-b border-neutral-200 bg-white rounded-t-3xl">
+                <div class="flex items-center gap-2">
+                    <svg width="0" height="0" aria-hidden="true"><defs><linearGradient id="ai-gradient-modal" x1="0" y1="0" x2="24" y2="24" gradientUnits="userSpaceOnUse"><stop stop-color="#186ded"></stop><stop stop-color="#875bf7" offset="85%"></stop></linearGradient></defs></svg>
+                    <svg class="w-5 h-5" fill="none" stroke="url(#ai-gradient-modal)" stroke-width="1.5" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><path d="M9.937 15.5A2 2 0 0 0 8.5 14.063l-6.135-1.582a.5.5 0 0 1 0-.962L8.5 9.936A2 2 0 0 0 9.937 8.5l1.582-6.135a.5.5 0 0 1 .963 0L14.063 8.5A2 2 0 0 0 15.5 9.937l6.135 1.581a.5.5 0 0 1 0 .964L15.5 14.063a2 2 0 0 0-1.437 1.437l-1.582 6.135a.5.5 0 0 1-.963 0z"></path><path d="M20 3v4"></path><path d="M22 5h-4"></path><path d="M4 17v2"></path><path d="M5 18H3"></path></svg>
+                    <p class="text-base font-semibold text-neutral-950">AI assistant</p>
+                    <span class="px-1.5 py-0.5 text-xs font-medium text-main-600 bg-main-100 border border-main-200 rounded-full leading-none">Beta</span>
+                </div>
+                <button onclick="closeAIAssistant()" class="p-2 text-neutral-500 hover:text-neutral-700 hover:bg-neutral-100 rounded-lg transition-colors">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+                </button>
+            </div>
+            
+            <!-- Content -->
+            <div class="flex-1 overflow-y-auto p-5">
+                <p class="text-sm text-neutral-500 mb-4">Try asking:</p>
+                <div id="ai-prompts" class="space-y-2"></div>
+            </div>
+            
+            <!-- Input -->
+            <div class="p-4 border-t border-neutral-200 bg-neutral-50 rounded-b-none">
+                <div class="flex gap-2">
+                    <input type="text" placeholder="Ask AI assistant..." class="flex-1 px-4 py-2.5 text-sm border border-neutral-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-main-500 focus:border-main-500">
+                    <button class="px-4 py-2.5 bg-main-600 text-white rounded-lg hover:bg-main-700 transition-colors">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"/></svg>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast Container -->
+    <div id="toast-container" class="fixed top-20 right-6 z-[9999] flex flex-col gap-2"></div>
+
+    <!-- Toggle Dot (shows when bar is hidden) -->
+    <button onclick="toggleAuthorBar()" class="fixed bottom-2 left-2 w-3 h-3 rounded-full z-50 transition-opacity" style="background-color: #5b21b6; opacity: 0.3;" onmouseover="this.style.opacity='0.6'" onmouseout="this.style.opacity='0.3'"></button>
+
+    <!-- Milestones Bar (same across M1–M5) -->
+    <div id="author-bar" class="fixed bottom-0 left-0 right-0 bg-zinc-900 border-t border-zinc-700 px-6 py-3 z-[9999]">
+        <div class="max-w-7xl mx-auto flex items-center justify-between">
+            <span class="text-zinc-500 text-sm">Org Dashboard prototypes</span>
+            <div class="flex items-center gap-2">
+                <span class="text-zinc-500 text-sm mr-2">Milestone:</span>
+                <a href="org-dashboard-m1.html" class="px-3 py-1.5 text-sm font-medium rounded-md bg-zinc-800 text-zinc-400 hover:bg-zinc-700 hover:text-white transition-colors" title="M1: current production">M1</a>
+                <span class="px-3 py-1.5 text-sm font-medium rounded-md bg-success-600 text-white" title="M2: org performance metrics">M2</span>
+                <a href="org-dashboard-m3.html" class="px-3 py-1.5 text-sm font-medium rounded-md bg-zinc-800 text-zinc-400 hover:bg-zinc-700 hover:text-white transition-colors" title="M3: performance leaderboard">M3</a>
+                <a href="org-dashboard-m4.html" class="px-3 py-1.5 text-sm font-medium rounded-md bg-zinc-800 text-zinc-400 hover:bg-zinc-700 hover:text-white transition-colors" title="M4: actionable insights">M4</a>
+                <a href="org-dashboard-m5.html" class="px-3 py-1.5 text-sm font-medium rounded-md bg-zinc-800 text-zinc-400 hover:bg-zinc-700 hover:text-white transition-colors" title="M5: conversational agentic-AI insights">M5</a>
+                <button onclick="toggleAuthorBar()" class="text-zinc-500 hover:text-white ml-2 p-1" aria-label="Hide bar">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/></svg>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Custom Date Range Picker Modal -->
+    <div id="date-picker-modal" class="hidden fixed inset-0 z-[9999] flex items-center justify-center">
+        <div class="absolute inset-0 bg-black/40 backdrop-blur-sm" onclick="closeDatePicker()"></div>
+        <div class="relative bg-white rounded-xl shadow-2xl p-6 max-w-2xl w-full mx-4">
+            <div class="flex items-center justify-between mb-6">
+                <h3 class="text-lg font-semibold text-neutral-900">Select date range</h3>
+                <button onclick="closeDatePicker()" class="p-1 hover:bg-neutral-100 rounded-lg transition-colors">
+                    <svg class="w-5 h-5 text-neutral-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+                </button>
+            </div>
+            <div class="flex gap-4 mb-6">
+                <div class="flex-1">
+                    <label class="block text-xs font-medium text-neutral-500 uppercase tracking-wide mb-1.5">Start date</label>
+                    <input type="date" id="date-start" class="w-full px-3 py-2 border border-neutral-300 rounded-lg text-sm focus:ring-2 focus:ring-main-500 focus:border-main-500 outline-none" onchange="renderCalendar('start', new Date(this.value + 'T00:00:00').getMonth(), new Date(this.value + 'T00:00:00').getFullYear())">
+                </div>
+                <div class="flex items-end pb-2">
+                    <svg class="w-5 h-5 text-neutral-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3"/></svg>
+                </div>
+                <div class="flex-1">
+                    <label class="block text-xs font-medium text-neutral-500 uppercase tracking-wide mb-1.5">End date</label>
+                    <input type="date" id="date-end" class="w-full px-3 py-2 border border-neutral-300 rounded-lg text-sm focus:ring-2 focus:ring-main-500 focus:border-main-500 outline-none" onchange="renderCalendar('end', new Date(this.value + 'T00:00:00').getMonth(), new Date(this.value + 'T00:00:00').getFullYear())">
+                </div>
+            </div>
+            <div class="grid grid-cols-2 gap-6 mb-6">
+                <div class="border border-neutral-200 rounded-lg p-4">
+                    <div class="flex items-center justify-between mb-3">
+                        <button onclick="changeMonth('start', -1)" class="p-1 hover:bg-neutral-100 rounded transition-colors">
+                            <svg class="w-5 h-5 text-neutral-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/></svg>
+                        </button>
+                        <span id="month-label-start" class="text-sm font-medium text-neutral-900">January 2026</span>
+                        <button onclick="changeMonth('start', 1)" class="p-1 hover:bg-neutral-100 rounded transition-colors">
+                            <svg class="w-5 h-5 text-neutral-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
+                        </button>
+                    </div>
+                    <div id="calendar-start"></div>
+                </div>
+                <div class="border border-neutral-200 rounded-lg p-4">
+                    <div class="flex items-center justify-between mb-3">
+                        <button onclick="changeMonth('end', -1)" class="p-1 hover:bg-neutral-100 rounded transition-colors">
+                            <svg class="w-5 h-5 text-neutral-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/></svg>
+                        </button>
+                        <span id="month-label-end" class="text-sm font-medium text-neutral-900">February 2026</span>
+                        <button onclick="changeMonth('end', 1)" class="p-1 hover:bg-neutral-100 rounded transition-colors">
+                            <svg class="w-5 h-5 text-neutral-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
+                        </button>
+                    </div>
+                    <div id="calendar-end"></div>
+                </div>
+            </div>
+            <div class="flex flex-wrap gap-2 mb-6 pb-6 border-b border-neutral-200">
+                <span class="text-xs text-neutral-500 mr-2 py-1">Quick select:</span>
+                <button onclick="setQuickRange(7)" class="px-3 py-1 text-xs bg-neutral-100 hover:bg-neutral-200 rounded-full text-neutral-700 transition-colors">Last 7 days</button>
+                <button onclick="setQuickRange(14)" class="px-3 py-1 text-xs bg-neutral-100 hover:bg-neutral-200 rounded-full text-neutral-700 transition-colors">Last 14 days</button>
+                <button onclick="setQuickRange(30)" class="px-3 py-1 text-xs bg-neutral-100 hover:bg-neutral-200 rounded-full text-neutral-700 transition-colors">Last 30 days</button>
+                <button onclick="setQuickRange(60)" class="px-3 py-1 text-xs bg-neutral-100 hover:bg-neutral-200 rounded-full text-neutral-700 transition-colors">Last 60 days</button>
+                <button onclick="setQuickRange(90)" class="px-3 py-1 text-xs bg-neutral-100 hover:bg-neutral-200 rounded-full text-neutral-700 transition-colors">Last 90 days</button>
+            </div>
+            <div class="flex justify-end gap-3">
+                <button onclick="closeDatePicker()" class="px-4 py-2 text-sm font-medium text-neutral-700 hover:bg-neutral-100 rounded-lg transition-colors">Cancel</button>
+                <button onclick="applyCustomDateRange()" class="px-4 py-2 text-sm font-medium bg-main-600 text-white hover:bg-main-700 rounded-lg transition-colors">Apply range</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+    function toggleAuthorBar() {
+        const bar = document.getElementById('author-bar');
+        bar.style.display = bar.style.display === 'none' ? 'block' : 'none';
+    }
+    </script>
+</body>
+</html>

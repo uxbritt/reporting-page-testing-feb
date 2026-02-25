@@ -1,0 +1,949 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Campaigns - CTCT for Teams</title>
+  <link rel="stylesheet" href="mobile-responsive.css">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://unpkg.com/lucide@0.263.1/dist/umd/lucide.js"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Source+Sans+3:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <script>
+    // Safe lucide helper
+    function safeCreateIcons() {
+      if (typeof lucide !== 'undefined' && lucide.createIcons) {
+        lucide.createIcons();
+      }
+    }
+
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            'ctct-blue': '#0070EB',
+            'main': {
+              50: '#eff6ff', 100: '#dbeafe', 200: '#bfdbfe', 300: '#93c5fd',
+              400: '#60a5fa', 500: '#0070EB', 600: '#2563eb', 700: '#1d4ed8'
+            },
+            'neutral': {
+              50: '#fafafa', 100: '#f4f4f5', 200: '#e4e4e7', 300: '#d4d4d8',
+              400: '#a1a1aa', 500: '#71717a', 600: '#52525b', 700: '#3f3f46',
+              800: '#27272a', 900: '#18181b'
+            }
+          }
+        }
+      }
+    }
+  </script>
+  <style>
+    body { font-family: 'Source Sans 3', sans-serif; }
+    .campaign-card:hover .campaign-preview { transform: scale(1.02); }
+    .campaign-preview { transition: transform 0.2s ease; }
+    .ai-gradient-text {
+      background: linear-gradient(135deg, #8B5CF6 0%, #3B82F6 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+    .pending-pulse {
+      animation: pulse 2s infinite;
+    }
+    @keyframes pulse {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.5; }
+    }
+  </style>
+</head>
+<body class="bg-neutral-50 min-h-screen">
+
+  <!-- Secret toggle dot -->
+  <button onclick="toggleAuthorBar()" class="fixed bottom-2 left-2 w-3 h-3 rounded-full z-50 transition-opacity" style="background-color: #5b21b6; opacity: 0.3;" onmouseover="this.style.opacity='0.6'" onmouseout="this.style.opacity='0.3'"></button>
+
+  <!-- Bottom Footer Bar (hidden by default) -->
+  <div id="author-bar" class="fixed bottom-0 left-0 right-0 h-12 bg-neutral-800 flex items-center justify-between px-6 z-40 hidden">
+    <a href="index.html" class="flex items-center gap-2 text-neutral-400 hover:text-white text-sm">
+      <i data-lucide="arrow-left" class="w-4 h-4"></i> All Prototypes
+    </a>
+    <p class="text-sm text-neutral-400">Campaigns — All Campaigns View</p>
+    <div class="flex items-center gap-4">
+      <a href="teams-signup-flow.html" onclick="sessionStorage.clear()" class="flex items-center gap-2 text-neutral-400 hover:text-white text-sm">
+        <i data-lucide="rotate-ccw" class="w-4 h-4"></i> Reset
+      </a>
+      <button onclick="toggleAuthorBar()" class="text-neutral-500 hover:text-white ml-2">
+        <i data-lucide="x" class="w-4 h-4"></i>
+      </button>
+    </div>
+  </div>
+  
+  <script>
+    // Safe lucide helper
+    function safeCreateIcons() {
+      if (typeof lucide !== 'undefined' && lucide.createIcons) {
+        lucide.createIcons();
+      }
+    }
+
+    function toggleAuthorBar() {
+      const bar = document.getElementById('author-bar');
+      bar.classList.toggle('hidden');
+      safeCreateIcons();
+    }
+  </script>
+
+  <!-- TOP BAR -->
+  <header class="fixed top-0 left-0 right-0 h-16 bg-white border-b border-neutral-100 flex items-center px-6 z-50">
+    <!-- Logo -->
+    <div class="flex items-center">
+      <img src="assets/ctctLogo.png" alt="Constant Contact" class="w-8 h-8 object-contain">
+    </div>
+
+    <!-- Center - Search and Create -->
+    <div class="flex items-center gap-3 mx-auto">
+      <div class="relative">
+        <input type="text" placeholder="Search" class="w-48 pl-4 pr-10 py-2 border border-neutral-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-ctct-blue focus:border-transparent">
+        <i data-lucide="search" class="w-4 h-4 text-neutral-400 absolute right-3 top-1/2 -translate-y-1/2"></i>
+      </div>
+      <button class="px-6 py-2 bg-ctct-blue hover:opacity-90 text-white rounded-lg font-medium text-sm">
+        Create
+      </button>
+    </div>
+
+    <!-- Right side -->
+    <div class="flex items-center gap-3">
+      <button class="flex items-center gap-2 px-4 py-2 hover:bg-blue-50 rounded-full text-sm">
+        <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="url(#ai-gradient)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <defs>
+            <linearGradient id="ai-gradient" x1="0%" y1="0%" x2="100%" y2="100%">
+              <stop offset="0%" style="stop-color:#8B5CF6"/>
+              <stop offset="100%" style="stop-color:#3B82F6"/>
+            </linearGradient>
+          </defs>
+          <path d="m12 3-1.912 5.813a2 2 0 0 1-1.275 1.275L3 12l5.813 1.912a2 2 0 0 1 1.275 1.275L12 21l1.912-5.813a2 2 0 0 1 1.275-1.275L21 12l-5.813-1.912a2 2 0 0 1-1.275-1.275L12 3Z"/>
+          <path d="M5 3v4"/><path d="M19 17v4"/><path d="M3 5h4"/><path d="M17 19h4"/>
+        </svg>
+        <span class="font-medium ai-gradient-text">AI assistant</span>
+      </button>
+      
+      <button class="flex items-center gap-2 px-2 py-1 hover:bg-neutral-50 rounded-lg text-sm">
+        <div class="w-6 h-6 bg-amber-800 rounded flex items-center justify-center">
+          <span class="text-amber-400 text-xs font-bold">u</span>
+        </div>
+        <span class="text-neutral-700">UPS Global</span>
+        <i data-lucide="chevron-down" class="w-4 h-4 text-neutral-400"></i>
+      </button>
+      
+      <button class="p-2 text-neutral-400 hover:text-neutral-600">
+        <i data-lucide="help-circle" class="w-5 h-5"></i>
+      </button>
+    </div>
+  </header>
+
+  <div class="flex h-screen pt-16 pb-10">
+    <!-- Left Sidebar -->
+    <aside class="w-64 bg-white flex flex-col pt-3">
+      <!-- Navigation -->
+      <div class="flex-1 overflow-y-auto px-3">
+        <nav>
+          <!-- Org Dashboard -->
+          <a href="option-b-northstar-empty.html" class="block py-3 px-4 text-sm text-neutral-600 hover:bg-main-50 rounded-xl mb-1 transition-colors">Org Dashboard</a>
+
+          <!-- Workspaces -->
+          <a href="workspaces-list.html" class="block py-3 px-4 text-sm text-neutral-600 hover:bg-main-50 rounded-xl mb-1 transition-colors">Workspaces</a>
+
+          <!-- Reporting -->
+          <a href="folder-reporting.html" class="block py-3 px-4 text-sm text-neutral-600 hover:bg-main-50 rounded-xl mb-1 transition-colors">Reporting</a>
+
+          <!-- Campaigns - Active -->
+          <a href="campaigns-list.html" class="block py-3 px-4 text-sm font-semibold text-neutral-700 bg-main-50 rounded-xl mb-1">Campaigns</a>
+
+          <!-- Contacts -->
+          <a href="contacts-list.html" class="block py-3 px-4 text-sm text-neutral-600 hover:bg-main-50 rounded-xl mb-1 transition-colors">Contacts</a>
+
+          <!-- Brands -->
+          <a href="brands.html" class="block py-3 px-4 text-sm text-neutral-600 hover:bg-main-50 rounded-xl mb-1 transition-colors">Brands</a>
+
+          <!-- Automations -->
+          <a href="#" class="block py-3 px-4 text-sm text-neutral-600 hover:bg-main-50 rounded-xl transition-colors">Automations</a>
+        </nav>
+      </div>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="flex-1 overflow-y-auto px-8 py-6">
+      <div class="max-w-5xl">
+        <!-- Breadcrumb -->
+        <div id="breadcrumb-container" class="flex items-center gap-2 text-sm mb-6">
+          <a href="option-b-northstar-empty.html" class="flex items-center gap-1.5 text-neutral-500 hover:text-blue-600">
+            <i data-lucide="home" class="w-4 h-4"></i>
+            Org dashboard
+          </a>
+          <span class="text-neutral-400">/</span>
+          <span class="text-neutral-900 font-medium">Campaigns</span>
+        </div>
+
+        <!-- Org-level notice (shown when not in workspace context) -->
+        <div id="org-notice" class="flex items-center gap-3 mb-6 p-4 bg-amber-50 border border-amber-200 rounded-xl">
+          <i data-lucide="info" class="w-5 h-5 text-amber-600 flex-shrink-0"></i>
+          <p class="text-sm text-amber-800">
+            Viewing all campaigns across workspaces. Click on a campaign or draft to go to its workspace to edit.
+          </p>
+        </div>
+
+        <!-- Page Header -->
+        <div class="flex items-center justify-between mb-6">
+          <div class="flex items-center gap-3">
+            <h1 id="page-title" class="text-2xl font-bold text-neutral-900">Campaigns</h1>
+            <span id="page-count" class="px-2.5 py-1 bg-neutral-100 text-neutral-600 text-xs font-medium rounded-full">156</span>
+          </div>
+          <div class="flex items-center gap-3">
+            <!-- Filter / view options -->
+            <div class="flex items-center bg-neutral-100 rounded-lg p-1">
+              <button onclick="switchStatusFilter('all')" id="filter-all" class="flex items-center gap-1.5 px-3 py-1.5 rounded-md text-sm font-medium bg-white shadow-sm text-neutral-900">
+                All
+              </button>
+              <button onclick="switchStatusFilter('pending')" id="filter-pending" class="flex items-center gap-1.5 px-3 py-1.5 rounded-md text-sm font-medium text-neutral-500 hover:text-neutral-700">
+                <span class="w-2 h-2 bg-amber-400 rounded-full"></span>
+                Pending
+                <span class="px-1.5 py-0.5 bg-amber-100 text-amber-700 text-xs rounded-full">8</span>
+              </button>
+              <button onclick="switchStatusFilter('approved')" id="filter-approved" class="flex items-center gap-1.5 px-3 py-1.5 rounded-md text-sm font-medium text-neutral-500 hover:text-neutral-700">
+                Approved
+              </button>
+              <button onclick="switchStatusFilter('rejected')" id="filter-rejected" class="flex items-center gap-1.5 px-3 py-1.5 rounded-md text-sm font-medium text-neutral-500 hover:text-neutral-700">
+                Declined
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- AWAITING APPROVAL Section -->
+        <section id="section-pending" class="mb-10">
+          <div class="flex items-center justify-between mb-4">
+            <div class="flex items-center gap-3">
+              <h2 class="text-sm font-semibold text-neutral-500 uppercase tracking-wider flex items-center gap-2">
+                <span class="w-2 h-2 bg-amber-400 rounded-full pending-pulse"></span>
+                Awaiting Approval
+              </h2>
+              <span class="px-2 py-0.5 bg-amber-100 text-amber-700 text-xs font-medium rounded-full">8</span>
+            </div>
+            <button class="px-3 py-1.5 text-sm text-neutral-500 hover:text-neutral-700 hover:bg-neutral-100 rounded-lg transition-colors flex items-center gap-1">
+              <i data-lucide="settings" class="w-4 h-4"></i>
+              Approval settings
+            </button>
+          </div>
+
+          <!-- Pending Approval List -->
+          <div class="bg-white rounded-2xl border border-neutral-200 overflow-hidden divide-y divide-neutral-100">
+            <!-- Pending Row 1 -->
+            <div class="approval-row flex items-center justify-between px-5 py-4 hover:bg-neutral-50 transition-colors cursor-pointer" data-campaign-id="1" data-workspace="UPS New Jersey" onclick="openPreviewModal(1)">
+              <div class="flex items-center gap-4">
+                <div class="relative">
+                  <div class="w-14 h-10 rounded-lg overflow-hidden border border-neutral-200 flex-shrink-0 bg-neutral-100">
+                    <img src="assets/email1.png" alt="Campaign preview" class="w-full h-full object-cover object-top">
+                  </div>
+                  <span class="absolute -top-1 -right-1 w-3 h-3 bg-amber-400 rounded-full border-2 border-white"></span>
+                </div>
+                <div>
+                  <div class="flex items-center gap-2">
+                    <p class="font-medium text-neutral-900">VIP Club Rewards - January Edition</p>
+                    <span class="px-2 py-0.5 bg-amber-100 text-amber-700 text-[10px] font-medium rounded-full">Urgent</span>
+                  </div>
+                  <p class="text-sm text-neutral-400">Email • 2,341 recipients • Scheduled for tomorrow</p>
+                </div>
+              </div>
+              <div class="flex items-center gap-3">
+                <span class="workspace-badge flex items-center gap-2 px-3 py-1.5 bg-blue-50 text-blue-600 text-xs rounded-full">
+                  <span class="w-5 h-5 bg-blue-500 rounded-full flex items-center justify-center text-white text-[10px] font-bold">NJ</span>
+                  UPS New Jersey
+                </span>
+                <div class="flex items-center gap-1">
+                  <button onclick="event.stopPropagation(); openApprovalModal(1, 'approve')" class="p-2 text-green-600 hover:bg-green-50 rounded-lg transition-colors" title="Approve">
+                    <i data-lucide="check" class="w-4 h-4"></i>
+                  </button>
+                  <button onclick="event.stopPropagation(); openApprovalModal(1, 'reject')" class="p-2 text-red-500 hover:bg-red-50 rounded-lg transition-colors" title="Decline">
+                    <i data-lucide="x" class="w-4 h-4"></i>
+                  </button>
+                </div>
+                <i data-lucide="chevron-right" class="w-5 h-5 text-neutral-300"></i>
+              </div>
+            </div>
+
+            <!-- Pending Row 2 -->
+            <div class="approval-row flex items-center justify-between px-5 py-4 hover:bg-neutral-50 transition-colors cursor-pointer" data-campaign-id="2" data-workspace="UPS New York" onclick="openPreviewModal(2)">
+              <div class="flex items-center gap-4">
+                <div class="relative">
+                  <div class="w-14 h-10 rounded-lg overflow-hidden border border-neutral-200 flex-shrink-0 bg-neutral-100">
+                    <img src="assets/email2.png" alt="Campaign preview" class="w-full h-full object-cover object-top">
+                  </div>
+                  <span class="absolute -top-1 -right-1 w-3 h-3 bg-amber-400 rounded-full border-2 border-white"></span>
+                </div>
+                <div>
+                  <p class="font-medium text-neutral-900">New Year Promotions - 2026 Kickoff</p>
+                  <p class="text-sm text-neutral-400">Email • 892 recipients • 5 hours ago</p>
+                </div>
+              </div>
+              <div class="flex items-center gap-3">
+                <span class="workspace-badge flex items-center gap-2 px-3 py-1.5 bg-green-50 text-green-600 text-xs rounded-full">
+                  <span class="w-5 h-5 bg-green-500 rounded-full flex items-center justify-center text-white text-[10px] font-bold">NY</span>
+                  UPS New York
+                </span>
+                <div class="flex items-center gap-1">
+                  <button onclick="event.stopPropagation(); openApprovalModal(2, 'approve')" class="p-2 text-green-600 hover:bg-green-50 rounded-lg transition-colors" title="Approve">
+                    <i data-lucide="check" class="w-4 h-4"></i>
+                  </button>
+                  <button onclick="event.stopPropagation(); openApprovalModal(2, 'reject')" class="p-2 text-red-500 hover:bg-red-50 rounded-lg transition-colors" title="Decline">
+                    <i data-lucide="x" class="w-4 h-4"></i>
+                  </button>
+                </div>
+                <i data-lucide="chevron-right" class="w-5 h-5 text-neutral-300"></i>
+              </div>
+            </div>
+
+            <!-- Pending Row 3 -->
+            <div class="approval-row flex items-center justify-between px-5 py-4 hover:bg-neutral-50 transition-colors cursor-pointer" data-campaign-id="3" data-workspace="UPS Connecticut" onclick="openPreviewModal(3)">
+              <div class="flex items-center gap-4">
+                <div class="relative">
+                  <div class="w-14 h-10 rounded-lg overflow-hidden border border-neutral-200 flex-shrink-0 bg-neutral-100">
+                    <img src="assets/social1.png" alt="Campaign preview" class="w-full h-full object-cover object-top">
+                  </div>
+                  <span class="absolute -top-1 -right-1 w-3 h-3 bg-amber-400 rounded-full border-2 border-white"></span>
+                </div>
+                <div>
+                  <p class="font-medium text-neutral-900">Winter Collection Launch - Instagram Post</p>
+                  <p class="text-sm text-neutral-400">Instagram • ~5.2k followers • 1 day ago</p>
+                </div>
+              </div>
+              <div class="flex items-center gap-3">
+                <span class="workspace-badge flex items-center gap-2 px-3 py-1.5 bg-purple-50 text-purple-600 text-xs rounded-full">
+                  <span class="w-5 h-5 bg-purple-500 rounded-full flex items-center justify-center text-white text-[10px] font-bold">CT</span>
+                  UPS Connecticut
+                </span>
+                <div class="flex items-center gap-1">
+                  <button onclick="event.stopPropagation(); openApprovalModal(3, 'approve')" class="p-2 text-green-600 hover:bg-green-50 rounded-lg transition-colors" title="Approve">
+                    <i data-lucide="check" class="w-4 h-4"></i>
+                  </button>
+                  <button onclick="event.stopPropagation(); openApprovalModal(3, 'reject')" class="p-2 text-red-500 hover:bg-red-50 rounded-lg transition-colors" title="Decline">
+                    <i data-lucide="x" class="w-4 h-4"></i>
+                  </button>
+                </div>
+                <i data-lucide="chevron-right" class="w-5 h-5 text-neutral-300"></i>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- SENT Section -->
+        <section id="section-sent" class="mb-10">
+          <div class="flex items-center justify-between mb-4">
+            <div class="flex items-center gap-3">
+              <h2 class="text-sm font-semibold text-neutral-500 uppercase tracking-wider">Sent</h2>
+              <span class="px-2 py-0.5 bg-neutral-100 text-neutral-600 text-xs font-medium rounded-full">32</span>
+            </div>
+            <div class="flex items-center gap-2 text-sm text-neutral-400">
+              <button class="p-1 hover:bg-neutral-100 rounded" onclick="prevSentSlide()">
+                <i data-lucide="chevron-left" class="w-4 h-4"></i>
+              </button>
+              <span id="sent-page">1/3</span>
+              <button class="p-1 hover:bg-neutral-100 rounded" onclick="nextSentSlide()">
+                <i data-lucide="chevron-right" class="w-4 h-4"></i>
+              </button>
+            </div>
+          </div>
+
+          <!-- Sent Campaigns Carousel -->
+          <div class="relative overflow-hidden">
+            <div id="sent-carousel" class="flex gap-4 transition-transform duration-300" style="transform: translateX(0)">
+              <!-- Email Campaign 1 -->
+              <div class="campaign-card flex-shrink-0 w-64 bg-white rounded-2xl border border-neutral-200 overflow-hidden hover:shadow-lg hover:border-neutral-300 transition-all cursor-pointer" data-workspace="UPS New York">
+                <div class="campaign-preview h-36 overflow-hidden bg-neutral-100">
+                  <img src="assets/email1.png" alt="VIP Club rewards" class="w-full h-full object-cover object-top">
+                </div>
+                <div class="p-4">
+                  <div class="grid grid-cols-2 gap-3 mb-3">
+                    <div class="text-center">
+                      <p class="text-lg font-bold text-neutral-900">60</p>
+                      <p class="text-xs text-neutral-400">Views</p>
+                    </div>
+                    <div class="text-center">
+                      <p class="text-lg font-bold text-neutral-900">18</p>
+                      <p class="text-xs text-neutral-400">Clicks</p>
+                    </div>
+                  </div>
+                  <div class="border-t border-neutral-100 pt-3">
+                    <p class="font-medium text-neutral-900 text-sm truncate">VIP Club rewards</p>
+                    <div class="flex items-center justify-between">
+                      <p class="text-xs text-neutral-400">Email</p>
+                      <span class="workspace-badge text-[10px] text-blue-600 bg-blue-50 px-1.5 py-0.5 rounded">NY</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Email Campaign 2 -->
+              <div class="campaign-card flex-shrink-0 w-64 bg-white rounded-2xl border border-neutral-200 overflow-hidden hover:shadow-lg hover:border-neutral-300 transition-all cursor-pointer" data-workspace="UPS Greenwich">
+                <div class="campaign-preview h-36 overflow-hidden bg-neutral-100">
+                  <img src="assets/email2.png" alt="New Year Promo" class="w-full h-full object-cover object-top">
+                </div>
+                <div class="p-4">
+                  <div class="grid grid-cols-2 gap-3 mb-3">
+                    <div class="text-center">
+                      <p class="text-lg font-bold text-neutral-900">245</p>
+                      <p class="text-xs text-neutral-400">Views</p>
+                    </div>
+                    <div class="text-center">
+                      <p class="text-lg font-bold text-neutral-900">42</p>
+                      <p class="text-xs text-neutral-400">Clicks</p>
+                    </div>
+                  </div>
+                  <div class="border-t border-neutral-100 pt-3">
+                    <p class="font-medium text-neutral-900 text-sm truncate">New Year promotions</p>
+                    <div class="flex items-center justify-between">
+                      <p class="text-xs text-neutral-400">Email</p>
+                      <span class="workspace-badge text-[10px] text-green-600 bg-green-50 px-1.5 py-0.5 rounded">GR</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Social Campaign 1 -->
+              <div class="campaign-card flex-shrink-0 w-64 bg-white rounded-2xl border border-neutral-200 overflow-hidden hover:shadow-lg hover:border-neutral-300 transition-all cursor-pointer" data-workspace="UPS Northeast">
+                <div class="campaign-preview h-36 overflow-hidden bg-neutral-100">
+                  <img src="assets/social1.png" alt="Instagram Post" class="w-full h-full object-cover object-top">
+                </div>
+                <div class="p-4">
+                  <div class="grid grid-cols-2 gap-3 mb-3">
+                    <div class="text-center">
+                      <p class="text-lg font-bold text-neutral-900">1.2k</p>
+                      <p class="text-xs text-neutral-400">Views</p>
+                    </div>
+                    <div class="text-center">
+                      <p class="text-lg font-bold text-neutral-900">89</p>
+                      <p class="text-xs text-neutral-400">Likes</p>
+                    </div>
+                  </div>
+                  <div class="border-t border-neutral-100 pt-3">
+                    <p class="font-medium text-neutral-900 text-sm truncate">Winter collection launch</p>
+                    <div class="flex items-center justify-between">
+                      <p class="text-xs text-neutral-400">Instagram post</p>
+                      <span class="workspace-badge text-[10px] text-orange-600 bg-orange-50 px-1.5 py-0.5 rounded">NE</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Email Campaign 3 -->
+              <div class="campaign-card flex-shrink-0 w-64 bg-white rounded-2xl border border-neutral-200 overflow-hidden hover:shadow-lg hover:border-neutral-300 transition-all cursor-pointer" data-workspace="UPS Connecticut">
+                <div class="campaign-preview h-36 overflow-hidden bg-neutral-100">
+                  <img src="assets/email3.png" alt="Product Update" class="w-full h-full object-cover object-top">
+                </div>
+                <div class="p-4">
+                  <div class="grid grid-cols-2 gap-3 mb-3">
+                    <div class="text-center">
+                      <p class="text-lg font-bold text-neutral-900">180</p>
+                      <p class="text-xs text-neutral-400">Views</p>
+                    </div>
+                    <div class="text-center">
+                      <p class="text-lg font-bold text-neutral-900">34</p>
+                      <p class="text-xs text-neutral-400">Clicks</p>
+                    </div>
+                  </div>
+                  <div class="border-t border-neutral-100 pt-3">
+                    <p class="font-medium text-neutral-900 text-sm truncate">Product update announcement</p>
+                    <div class="flex items-center justify-between">
+                      <p class="text-xs text-neutral-400">Email</p>
+                      <span class="workspace-badge text-[10px] text-purple-600 bg-purple-50 px-1.5 py-0.5 rounded">CT</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- DRAFTS Section -->
+        <section id="section-drafts">
+          <div class="flex items-center justify-between mb-4">
+            <div class="flex items-center gap-3">
+              <h2 class="text-sm font-semibold text-neutral-500 uppercase tracking-wider">Drafts</h2>
+              <span class="px-2 py-0.5 bg-neutral-100 text-neutral-600 text-xs font-medium rounded-full">124</span>
+            </div>
+          </div>
+
+          <!-- Drafts List -->
+          <div class="bg-white rounded-2xl border border-neutral-200 overflow-hidden">
+            <!-- Draft Row 1 -->
+            <div class="draft-row flex items-center justify-between px-5 py-4 hover:bg-neutral-50 transition-colors border-b border-neutral-100 cursor-pointer" data-workspace="UPS New York">
+              <div class="flex items-center gap-4">
+                <div class="w-14 h-10 rounded-lg overflow-hidden border border-neutral-200 flex-shrink-0 bg-neutral-100">
+                  <img src="assets/email1.png" alt="Draft preview" class="w-full h-full object-cover object-top">
+                </div>
+                <div>
+                  <p class="font-medium text-neutral-900">New menu items release 2025</p>
+                  <p class="text-sm text-neutral-400">Instagram post</p>
+                </div>
+              </div>
+              <div class="flex items-center gap-4">
+                <span class="workspace-badge flex items-center gap-2 px-3 py-1.5 bg-blue-50 text-blue-600 text-xs rounded-full">
+                  <span class="w-5 h-5 bg-blue-500 rounded-full flex items-center justify-center text-white text-[10px] font-bold">NY</span>
+                  UPS New York
+                </span>
+                <i data-lucide="chevron-right" class="w-5 h-5 text-neutral-300"></i>
+              </div>
+            </div>
+
+            <!-- Draft Row 2 -->
+            <div class="draft-row flex items-center justify-between px-5 py-4 hover:bg-neutral-50 transition-colors border-b border-neutral-100 cursor-pointer" data-workspace="UPS Greenwich">
+              <div class="flex items-center gap-4">
+                <div class="w-14 h-10 rounded-lg overflow-hidden bg-teal-50 flex items-center justify-center flex-shrink-0 border border-neutral-200">
+                  <i data-lucide="workflow" class="w-5 h-5 text-teal-500"></i>
+                </div>
+                <div>
+                  <p class="font-medium text-neutral-900">VIP SMS and Email series</p>
+                  <p class="text-sm text-neutral-400">Automation</p>
+                </div>
+              </div>
+              <div class="flex items-center gap-4">
+                <span class="workspace-badge flex items-center gap-2 px-3 py-1.5 bg-green-50 text-green-600 text-xs rounded-full">
+                  <span class="w-5 h-5 bg-green-500 rounded-full flex items-center justify-center text-white text-[10px] font-bold">GR</span>
+                  UPS Greenwich
+                </span>
+                <i data-lucide="chevron-right" class="w-5 h-5 text-neutral-300"></i>
+              </div>
+            </div>
+
+            <!-- Draft Row 3 -->
+            <div class="draft-row flex items-center justify-between px-5 py-4 hover:bg-neutral-50 transition-colors cursor-pointer" data-workspace="UPS Northeast">
+              <div class="flex items-center gap-4">
+                <div class="w-14 h-10 rounded-lg overflow-hidden border border-neutral-200 flex-shrink-0 bg-neutral-100">
+                  <img src="assets/email2.png" alt="Draft preview" class="w-full h-full object-cover object-top">
+                </div>
+                <div>
+                  <p class="font-medium text-neutral-900">Spring collection preview</p>
+                  <p class="text-sm text-neutral-400">Email</p>
+                </div>
+              </div>
+              <div class="flex items-center gap-4">
+                <span class="workspace-badge flex items-center gap-2 px-3 py-1.5 bg-orange-50 text-orange-600 text-xs rounded-full">
+                  <span class="w-5 h-5 bg-orange-500 rounded-full flex items-center justify-center text-white text-[10px] font-bold">NE</span>
+                  UPS Northeast
+                </span>
+                <i data-lucide="chevron-right" class="w-5 h-5 text-neutral-300"></i>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- DECLINED Section (hidden by default) -->
+        <section id="section-declined" class="hidden mb-10">
+          <div class="flex items-center justify-between mb-4">
+            <div class="flex items-center gap-3">
+              <h2 class="text-sm font-semibold text-neutral-500 uppercase tracking-wider flex items-center gap-2">
+                <span class="w-2 h-2 bg-red-400 rounded-full"></span>
+                Declined
+              </h2>
+              <span class="px-2 py-0.5 bg-red-100 text-red-600 text-xs font-medium rounded-full">3</span>
+            </div>
+          </div>
+
+          <div class="bg-white rounded-2xl border border-red-100 overflow-hidden divide-y divide-neutral-100">
+            <div class="flex items-center justify-between px-5 py-4 hover:bg-neutral-50 transition-colors">
+              <div class="flex items-center gap-4">
+                <div class="relative">
+                  <div class="w-14 h-10 rounded-lg overflow-hidden border border-red-200 flex-shrink-0 bg-red-50 flex items-center justify-center">
+                    <i data-lucide="x" class="w-5 h-5 text-red-400"></i>
+                  </div>
+                </div>
+                <div>
+                  <p class="font-medium text-neutral-900">Flash Sale - 80% Off Everything</p>
+                  <p class="text-sm text-red-500">Declined: Discount exceeds guidelines (max 50%)</p>
+                </div>
+              </div>
+              <div class="flex items-center gap-3">
+                <span class="workspace-badge flex items-center gap-2 px-3 py-1.5 bg-purple-50 text-purple-600 text-xs rounded-full">
+                  <span class="w-5 h-5 bg-purple-500 rounded-full flex items-center justify-center text-white text-[10px] font-bold">CT</span>
+                  UPS Connecticut
+                </span>
+                <button class="px-3 py-1.5 text-sm text-neutral-600 hover:bg-neutral-100 rounded-lg">View</button>
+              </div>
+            </div>
+          </div>
+        </section>
+      </div>
+    </main>
+  </div>
+
+  <!-- Preview Modal -->
+  <div id="preview-modal" class="hidden fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-8">
+    <div class="bg-white rounded-2xl max-w-4xl w-full max-h-[90vh] overflow-hidden flex flex-col">
+      <div class="flex items-center justify-between p-5 border-b border-neutral-100">
+        <div>
+          <div class="flex items-center gap-2 mb-1">
+            <span class="px-2 py-0.5 bg-amber-100 text-amber-700 text-xs font-medium rounded-full flex items-center gap-1">
+              <span class="w-1.5 h-1.5 bg-amber-500 rounded-full"></span>
+              Awaiting Approval
+            </span>
+          </div>
+          <h2 id="preview-title" class="text-lg font-semibold text-neutral-900">Campaign Preview</h2>
+          <p id="preview-subtitle" class="text-sm text-neutral-500">Submitted by Sarah Johnson • UPS New Jersey</p>
+        </div>
+        <button onclick="closePreviewModal()" class="p-2 hover:bg-neutral-100 rounded-full">
+          <i data-lucide="x" class="w-5 h-5 text-neutral-500"></i>
+        </button>
+      </div>
+      
+      <div class="flex-1 overflow-auto p-5 bg-neutral-50">
+        <!-- Email Preview Frame -->
+        <div class="max-w-lg mx-auto bg-white rounded-xl shadow-lg overflow-hidden border border-neutral-200">
+          <!-- UPS Holiday Shipping Email -->
+          <div class="bg-amber-800 p-6">
+            <div class="flex items-center justify-between mb-4">
+              <img src="assets/upsLogo.png" alt="UPS" class="h-8 object-contain brightness-0 invert">
+              <span class="text-amber-200 text-sm">Holiday Shipping</span>
+            </div>
+            <h1 class="text-2xl font-bold text-white mb-2">Ship Your Holidays on Time!</h1>
+            <p class="text-amber-100">Don't miss the deadline for holiday delivery</p>
+          </div>
+          <div class="p-6">
+            <div class="bg-amber-50 rounded-xl p-4 mb-4 border border-amber-200">
+              <p class="font-semibold text-amber-900 text-lg mb-1">🎄 Holiday Shipping Deadlines</p>
+              <p class="text-amber-700 text-sm">Ground: Dec 15 • 2-Day: Dec 21 • Next Day: Dec 23</p>
+            </div>
+            <p class="text-neutral-600 mb-4">Dear valued customer,</p>
+            <p class="text-neutral-600 mb-4">The holidays are approaching fast! Make sure your packages arrive on time with our reliable shipping services.</p>
+            <button class="w-full bg-amber-800 text-white py-3 rounded-full font-medium hover:bg-amber-900 transition-colors">Schedule a Pickup →</button>
+          </div>
+        </div>
+      </div>
+      
+      <div class="flex items-center justify-between p-5 border-t border-neutral-100 bg-white">
+        <div class="flex items-center gap-4 text-sm text-neutral-500">
+          <span class="flex items-center gap-1"><i data-lucide="users" class="w-4 h-4"></i> <span id="preview-recipients">2,341 recipients</span></span>
+          <span class="flex items-center gap-1"><i data-lucide="calendar" class="w-4 h-4"></i> <span id="preview-schedule">Jan 7, 2026 at 9:00 AM</span></span>
+        </div>
+        <div class="flex items-center gap-3">
+          <button onclick="openApprovalModalFromPreview('reject')" class="px-4 py-2 border border-red-200 text-red-600 rounded-lg text-sm font-medium hover:bg-red-50 flex items-center gap-2">
+            <i data-lucide="x" class="w-4 h-4"></i>
+            Decline
+          </button>
+          <button onclick="openApprovalModalFromPreview('approve')" class="px-4 py-2 bg-green-600 text-white rounded-lg text-sm font-medium hover:bg-green-700 flex items-center gap-2">
+            <i data-lucide="check" class="w-4 h-4"></i>
+            Approve
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Approval/Rejection Modal -->
+  <div id="approval-modal" class="hidden fixed inset-0 bg-black/50 z-[60] flex items-center justify-center p-8">
+    <div class="bg-white rounded-2xl max-w-md w-full">
+      <div class="p-6">
+        <div id="approve-content">
+          <div class="w-12 h-12 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
+            <i data-lucide="check" class="w-6 h-6 text-green-600"></i>
+          </div>
+          <h2 class="text-lg font-semibold text-neutral-900 text-center mb-2">Approve Campaign?</h2>
+          <p class="text-sm text-neutral-500 text-center mb-6">This campaign will be scheduled to send at the planned time. The workspace will be notified of your approval.</p>
+          
+          <div class="mb-4">
+            <label class="block text-sm font-medium text-neutral-700 mb-2">Add a note (optional)</label>
+            <textarea class="w-full border border-neutral-200 rounded-xl p-3 text-sm focus:outline-none focus:ring-2 focus:ring-green-100" rows="3" placeholder="Great campaign! Looking forward to the results."></textarea>
+          </div>
+        </div>
+        
+        <div id="reject-content" class="hidden">
+          <div class="w-12 h-12 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-4">
+            <i data-lucide="x" class="w-6 h-6 text-red-600"></i>
+          </div>
+          <h2 class="text-lg font-semibold text-neutral-900 text-center mb-2">Decline Campaign?</h2>
+          <p class="text-sm text-neutral-500 text-center mb-6">The workspace will be notified and can revise and resubmit.</p>
+          
+          <div class="mb-4">
+            <label class="block text-sm font-medium text-neutral-700 mb-2">Reason for declining <span class="text-red-500">*</span></label>
+            <textarea class="w-full border border-neutral-200 rounded-xl p-3 text-sm focus:outline-none focus:ring-2 focus:ring-red-100" rows="3" placeholder="Please provide feedback on what needs to be changed..."></textarea>
+          </div>
+        </div>
+        
+        <div class="flex items-center gap-3">
+          <button onclick="closeApprovalModal()" class="flex-1 px-4 py-2 border border-neutral-200 text-neutral-700 rounded-lg text-sm font-medium hover:bg-neutral-50">
+            Cancel
+          </button>
+          <button id="confirm-approve" onclick="confirmApproval()" class="flex-1 px-4 py-2 bg-green-600 text-white rounded-lg text-sm font-medium hover:bg-green-700">
+            Confirm Approval
+          </button>
+          <button id="confirm-reject" class="hidden flex-1 px-4 py-2 bg-red-600 text-white rounded-lg text-sm font-medium hover:bg-red-700" onclick="confirmRejection()">
+            Confirm Decline
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // Safe lucide helper
+    function safeCreateIcons() {
+      if (typeof lucide !== 'undefined' && lucide.createIcons) {
+        lucide.createIcons();
+      }
+    }
+
+    // Campaign data for preview modal
+    const campaignData = {
+      1: {
+        title: 'VIP Club Rewards - January Edition',
+        subtitle: 'Submitted by Sarah Johnson • UPS New Jersey',
+        recipients: '2,341 recipients',
+        schedule: 'Jan 7, 2026 at 9:00 AM',
+        workspace: 'UPS New Jersey'
+      },
+      2: {
+        title: 'New Year Promotions - 2026 Kickoff',
+        subtitle: 'Submitted by Michael Chen • UPS New York',
+        recipients: '892 recipients',
+        schedule: 'Jan 10, 2026 at 10:00 AM',
+        workspace: 'UPS New York'
+      },
+      3: {
+        title: 'Winter Collection Launch - Instagram Post',
+        subtitle: 'Submitted by Emily Rodriguez • UPS Connecticut',
+        recipients: '~5.2k followers',
+        schedule: 'Jan 8, 2026 at 2:00 PM',
+        workspace: 'UPS Connecticut'
+      }
+    };
+    
+    let currentCampaignId = null;
+    
+    // Parse URL parameters
+    const urlParams = new URLSearchParams(window.location.search);
+    const workspaceParam = urlParams.get('workspace');
+    const folderParam = urlParams.get('folder');
+    const openApprovalParam = urlParams.get('openApproval');
+    const isWorkspaceMode = !!workspaceParam;
+    
+    // Initialize page based on mode
+    function initializePage() {
+      const breadcrumb = document.getElementById('breadcrumb-container');
+      const pageTitle = document.getElementById('page-title');
+      const pageCount = document.getElementById('page-count');
+      const footerText = document.querySelector('.fixed.bottom-0 p');
+      const orgNotice = document.getElementById('org-notice');
+      
+      if (isWorkspaceMode) {
+        // Workspace mode - show workspace-specific view
+        document.title = `Campaigns - ${workspaceParam}`;
+        pageTitle.textContent = 'Campaigns';
+        pageCount.textContent = '12';
+        footerText.textContent = `Campaigns — ${workspaceParam}`;
+        
+        breadcrumb.innerHTML = `
+          <a href="option-b-northstar-empty.html" class="flex items-center gap-1.5 text-neutral-500 hover:text-blue-600">
+            <i data-lucide="home" class="w-4 h-4"></i>
+            Org dashboard
+          </a>
+          <span class="text-neutral-400">/</span>
+          <a href="workspaces-list.html" class="text-neutral-500 hover:text-blue-600">Workspaces</a>
+          <span class="text-neutral-400">/</span>
+          <a href="workspace-detail.html?workspace=${encodeURIComponent(workspaceParam)}${folderParam ? '&folder=' + encodeURIComponent(folderParam) : ''}" class="text-neutral-500 hover:text-blue-600">${workspaceParam}</a>
+          <span class="text-neutral-400">/</span>
+          <span class="text-neutral-900 font-medium">Campaigns</span>
+        `;
+        
+        if (orgNotice) orgNotice.classList.add('hidden');
+        
+        document.querySelectorAll('.workspace-badge').forEach(badge => {
+          badge.classList.add('hidden');
+        });
+        
+        document.querySelectorAll('.campaign-card').forEach(card => {
+          card.classList.add('cursor-pointer');
+          card.onclick = () => alert('Opening campaign editor...');
+        });
+        
+        document.querySelectorAll('.draft-row').forEach(row => {
+          row.onclick = () => alert('Opening draft editor...');
+        });
+        
+      } else {
+        document.title = 'Campaigns - CTCT for Teams';
+        
+        if (orgNotice) orgNotice.classList.remove('hidden');
+        
+        document.querySelectorAll('.campaign-card').forEach(card => {
+          const workspaceName = card.dataset.workspace || 'UPS New York';
+          card.onclick = () => {
+            if (confirm(`This campaign belongs to "${workspaceName}". Go to workspace to edit?`)) {
+              window.location.href = `workspace-detail.html?workspace=${encodeURIComponent(workspaceName)}`;
+            }
+          };
+        });
+        
+        document.querySelectorAll('.draft-row').forEach(row => {
+          const workspaceName = row.dataset.workspace;
+          if (workspaceName) {
+            row.onclick = () => {
+              window.location.href = `workspace-detail.html?workspace=${encodeURIComponent(workspaceName)}`;
+            };
+          }
+        });
+      }
+      
+      // Check if we should open a specific approval preview
+      if (openApprovalParam) {
+        const campaignId = parseInt(openApprovalParam);
+        if (campaignData[campaignId]) {
+          setTimeout(() => openPreviewModal(campaignId), 300);
+        }
+      }
+      
+      safeCreateIcons();
+    }
+    
+    // Initialize Lucide icons
+    safeCreateIcons();
+    
+    // Status filter switching
+    function switchStatusFilter(filter) {
+      // Update filter buttons
+      ['all', 'pending', 'approved', 'rejected'].forEach(f => {
+        const btn = document.getElementById(`filter-${f}`);
+        if (btn) {
+          btn.classList.remove('bg-white', 'shadow-sm', 'text-neutral-900');
+          btn.classList.add('text-neutral-500');
+        }
+      });
+      
+      const activeBtn = document.getElementById(`filter-${filter}`);
+      if (activeBtn) {
+        activeBtn.classList.remove('text-neutral-500');
+        activeBtn.classList.add('bg-white', 'shadow-sm', 'text-neutral-900');
+      }
+      
+      // Show/hide sections based on filter
+      const pendingSection = document.getElementById('section-pending');
+      const sentSection = document.getElementById('section-sent');
+      const draftsSection = document.getElementById('section-drafts');
+      const declinedSection = document.getElementById('section-declined');
+      
+      if (filter === 'all') {
+        pendingSection.classList.remove('hidden');
+        sentSection.classList.remove('hidden');
+        draftsSection.classList.remove('hidden');
+        declinedSection.classList.add('hidden');
+      } else if (filter === 'pending') {
+        pendingSection.classList.remove('hidden');
+        sentSection.classList.add('hidden');
+        draftsSection.classList.add('hidden');
+        declinedSection.classList.add('hidden');
+      } else if (filter === 'approved') {
+        pendingSection.classList.add('hidden');
+        sentSection.classList.remove('hidden');
+        draftsSection.classList.add('hidden');
+        declinedSection.classList.add('hidden');
+      } else if (filter === 'rejected') {
+        pendingSection.classList.add('hidden');
+        sentSection.classList.add('hidden');
+        draftsSection.classList.add('hidden');
+        declinedSection.classList.remove('hidden');
+      }
+    }
+    
+    // Sent carousel state
+    let sentSlide = 0;
+    const totalSentSlides = 3;
+    
+    function updateSentCarousel() {
+      const carousel = document.getElementById('sent-carousel');
+      const slideWidth = 256 + 16;
+      carousel.style.transform = `translateX(-${sentSlide * slideWidth * 2}px)`;
+      document.getElementById('sent-page').textContent = `${sentSlide + 1}/${totalSentSlides}`;
+    }
+    
+    function nextSentSlide() {
+      if (sentSlide < totalSentSlides - 1) {
+        sentSlide++;
+        updateSentCarousel();
+      }
+    }
+    
+    function prevSentSlide() {
+      if (sentSlide > 0) {
+        sentSlide--;
+        updateSentCarousel();
+      }
+    }
+    
+    // Preview Modal
+    function openPreviewModal(campaignId) {
+      currentCampaignId = campaignId;
+      const data = campaignData[campaignId] || campaignData[1];
+      
+      document.getElementById('preview-title').textContent = data.title;
+      document.getElementById('preview-subtitle').textContent = data.subtitle;
+      document.getElementById('preview-recipients').textContent = data.recipients;
+      document.getElementById('preview-schedule').textContent = data.schedule;
+      
+      document.getElementById('preview-modal').classList.remove('hidden');
+      safeCreateIcons();
+    }
+    
+    function closePreviewModal() {
+      document.getElementById('preview-modal').classList.add('hidden');
+      currentCampaignId = null;
+    }
+    
+    // Approval Modal
+    function openApprovalModal(campaignId, action) {
+      currentCampaignId = campaignId;
+      const modal = document.getElementById('approval-modal');
+      const approveContent = document.getElementById('approve-content');
+      const rejectContent = document.getElementById('reject-content');
+      const confirmApprove = document.getElementById('confirm-approve');
+      const confirmReject = document.getElementById('confirm-reject');
+      
+      if (action === 'approve') {
+        approveContent.classList.remove('hidden');
+        rejectContent.classList.add('hidden');
+        confirmApprove.classList.remove('hidden');
+        confirmReject.classList.add('hidden');
+      } else {
+        approveContent.classList.add('hidden');
+        rejectContent.classList.remove('hidden');
+        confirmApprove.classList.add('hidden');
+        confirmReject.classList.remove('hidden');
+      }
+      
+      modal.classList.remove('hidden');
+      safeCreateIcons();
+    }
+    
+    function openApprovalModalFromPreview(action) {
+      closePreviewModal();
+      setTimeout(() => {
+        openApprovalModal(currentCampaignId || 1, action);
+      }, 200);
+    }
+    
+    function closeApprovalModal() {
+      document.getElementById('approval-modal').classList.add('hidden');
+    }
+    
+    function confirmApproval() {
+      alert('Campaign approved! The workspace has been notified.');
+      closeApprovalModal();
+      // In a real app, this would update the campaign status
+    }
+    
+    function confirmRejection() {
+      alert('Campaign declined. The workspace has been notified with your feedback.');
+      closeApprovalModal();
+      // In a real app, this would update the campaign status
+    }
+    
+    // Initialize page
+    initializePage();
+  </script>
+  <script src="mobile-nav.js"></script>
+</body>
+</html>

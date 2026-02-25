@@ -1,0 +1,883 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Reporting JTBD — CTCT for Teams</title>
+  <link rel="stylesheet" href="mobile-responsive.css">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            main: {
+              50: '#f0f7ff', 100: '#e0f0ff', 200: '#b9e0fe', 300: '#7cc8fd', 400: '#36aaf8',
+              500: '#0c8ce9', 600: '#006fc7', 700: '#0059a1', 800: '#054b85', 900: '#0a406e'
+            },
+            accent: {
+              50: '#faf5ff', 100: '#f3e8ff', 200: '#e9d5ff', 300: '#d8b4fe', 400: '#c084fc',
+              500: '#a855f7', 600: '#9333ea', 700: '#7c3aed', 800: '#6b21a8', 900: '#581c87'
+            }
+          },
+          fontFamily: {
+            sans: ['CTSans', 'system-ui', 'sans-serif']
+          }
+        }
+      }
+    }
+  </script>
+  <style>
+    @font-face {
+      font-family: 'CTSans';
+      src: url('fonts/CTSans-Regular.woff2') format('woff2');
+      font-weight: 400;
+      font-style: normal;
+      font-display: swap;
+    }
+    @font-face {
+      font-family: 'CTSans';
+      src: url('fonts/CTSans-Semibold.woff2') format('woff2');
+      font-weight: 600;
+      font-style: normal;
+      font-display: swap;
+    }
+    @font-face {
+      font-family: 'CTSans';
+      src: url('fonts/CTSans-Bold.woff2') format('woff2');
+      font-weight: 700;
+      font-style: normal;
+      font-display: swap;
+    }
+
+    .slide {
+      display: none;
+      animation: fadeIn 0.4s ease-out;
+    }
+    .slide.active {
+      display: flex;
+    }
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    .gradient-text {
+      background: linear-gradient(135deg, #06b6d4 0%, #3B82F6 50%, #8B5CF6 100%) !important;
+      -webkit-background-clip: text !important;
+      -webkit-text-fill-color: transparent !important;
+      background-clip: text !important;
+      text-fill-color: transparent !important;
+      color: transparent !important;
+    }
+    html {
+      height: 100%;
+      margin: 0;
+      padding: 0;
+      background: linear-gradient(135deg, #0f0f1a 0%, #131825 25%, #0a0e17 50%, #0d1220 75%, #0f0f1a 100%);
+      background-attachment: fixed;
+      overflow-x: hidden;
+    }
+    body {
+      min-height: 100%;
+      margin: 0;
+      padding: 0;
+      background: linear-gradient(135deg, #0f0f1a 0%, #131825 25%, #0a0e17 50%, #0d1220 75%, #0f0f1a 100%);
+      background-attachment: fixed;
+      overflow-x: hidden;
+    }
+    .card-glow {
+      transition: all 0.3s ease;
+    }
+    .card-glow:hover {
+      transform: translateY(-2px);
+    }
+    .slide-card {
+      background: rgba(15, 23, 42, 0.6);
+      border: 1px solid rgba(100, 116, 139, 0.3);
+      backdrop-filter: blur(12px);
+    }
+    .dot {
+      padding: 0;
+      border: 0;
+      outline: none;
+      cursor: pointer;
+      min-width: 0;
+      min-height: 0;
+    }
+    
+    /* Mobile-First Responsive Styles */
+    @media (max-width: 768px) {
+      body {
+        font-size: 14px;
+      }
+      
+      .slide h1 {
+        font-size: 2rem !important;
+      }
+      
+      .slide h2 {
+        font-size: 1.75rem !important;
+      }
+      
+      .slide h3 {
+        font-size: 1.25rem !important;
+      }
+      
+      .slide p {
+        font-size: 0.875rem !important;
+      }
+      
+      /* Hide large arrow buttons on mobile */
+      button[onclick*="prevSlide"],
+      button[onclick*="nextSlide"] {
+        display: none !important;
+      }
+      
+      /* Hide dots on mobile */
+      .dot {
+        display: none !important;
+      }
+      
+      /* Show mobile nav buttons */
+      .mobile-nav-btn {
+        display: flex !important;
+      }
+      
+      /* Adjust spacing */
+      .slide {
+        padding: 1rem !important;
+      }
+      
+      /* Mobile bottom bar */
+      .nav-footer {
+        padding: 0.75rem 1rem !important;
+      }
+    }
+    
+    /* Touch swipe support */
+    .slide-container {
+      touch-action: pan-y;
+    }
+  </style>
+</head>
+<body class="min-h-screen font-sans text-white m-0 p-0">
+
+  <!-- Slide Container -->
+  <div class="slide-container min-h-screen flex items-center justify-center pb-20 px-4 md:px-8">
+    
+    <!-- Slide 1: Title -->
+    <div id="slide-1" class="slide cover-slide active flex-col items-center justify-center text-center max-w-5xl w-full">
+      <div class="mb-8">
+        <div class="flex items-center justify-center gap-3 mb-6">
+          <span class="inline-block px-4 py-1.5 bg-zinc-900 text-zinc-400 rounded-full text-sm font-medium">Teams</span>
+          <span class="inline-block px-3 py-1.5 bg-zinc-800 text-zinc-500 rounded-full text-xs font-medium">FML Market</span>
+        </div>
+        <h1 class="text-4xl md:text-6xl font-bold text-white mb-8 leading-tight">Org Reporting<br><span class="gradient-text">Jobs To Be Done</span></h1>
+        <p class="text-xl md:text-2xl text-zinc-400 mb-10">Understanding what users need from cross-workspace reporting</p>
+      </div>
+      <div class="flex items-center gap-3 text-zinc-500 mt-8">
+        <span class="text-sm">Use arrows or dots to navigate</span>
+      </div>
+    </div>
+
+    <!-- Slide 2: The Problem Today -->
+    <div id="slide-2" class="slide flex-col items-center justify-center max-w-5xl w-full">
+      <div class="w-full text-center">
+        <h2 class="text-3xl md:text-5xl font-bold text-white mb-6">The Reporting Problem</h2>
+        <p class="text-xl md:text-2xl text-zinc-400 mb-12">What's broken for multi-location customers today</p>
+        
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-8 text-left max-w-4xl mx-auto">
+          <div class="border border-zinc-800 rounded-xl p-8">
+            <h3 class="text-white font-semibold text-2xl mb-4">No Roll-up Visibility</h3>
+            <p class="text-zinc-400 text-lg leading-relaxed">Must log into each workspace individually to check performance. No way to see all locations at once.</p>
+          </div>
+          
+          <div class="border border-zinc-800 rounded-xl p-8">
+            <h3 class="text-white font-semibold text-2xl mb-4">Manual Data Gathering</h3>
+            <p class="text-zinc-400 text-lg leading-relaxed">Hours spent exporting and combining data from 25+ accounts into spreadsheets for leadership reports.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Slide 3: User Types -->
+    <div id="slide-3" class="slide flex-col items-center justify-center max-w-5xl w-full">
+      <div class="w-full text-center">
+        <h2 class="text-3xl md:text-5xl font-bold text-white mb-6">Who Needs Reporting?</h2>
+        <p class="text-xl md:text-2xl text-zinc-400 mb-12">Three user types with different needs</p>
+        
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-8 text-center">
+          <div class="border border-zinc-800 rounded-xl p-8">
+            <h3 class="text-white font-semibold text-2xl mb-3">Org Admin</h3>
+            <p class="text-zinc-400 text-lg">See all locations, compare performance, export for leadership</p>
+          </div>
+          
+          <div class="border border-zinc-800 rounded-xl p-8">
+            <h3 class="text-white font-semibold text-2xl mb-3">Regional Manager</h3>
+            <p class="text-zinc-400 text-lg">Monitor their region, compare locations, report to org admin</p>
+          </div>
+          
+          <div class="border border-zinc-800 rounded-xl p-8">
+            <h3 class="text-white font-semibold text-2xl mb-3">Workspace User</h3>
+            <p class="text-zinc-400 text-lg">Track own campaigns, no cross-workspace needs</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Slide 4: Jobs To Be Done -->
+    <div id="slide-4" class="slide flex-col items-center justify-center max-w-5xl w-full">
+      <div class="w-full text-center">
+        <h2 class="text-3xl md:text-5xl font-bold text-white mb-6">Core Reporting Jobs</h2>
+        <p class="text-xl md:text-2xl text-zinc-400 mb-12">What users are trying to accomplish</p>
+        
+        <div class="border border-zinc-800 rounded-2xl overflow-hidden">
+          <table class="w-full text-left">
+            <thead class="border-b border-zinc-800">
+              <tr>
+                <th class="px-6 py-4 text-sm text-zinc-500 uppercase tracking-wide w-1/4">When I...</th>
+                <th class="px-6 py-4 text-sm text-zinc-500 uppercase tracking-wide w-1/3">I want to...</th>
+                <th class="px-6 py-4 text-sm text-zinc-500 uppercase tracking-wide w-1/3">So I can...</th>
+              </tr>
+            </thead>
+            <tbody class="divide-y divide-zinc-800">
+              <tr>
+                <td class="px-6 py-5 text-zinc-400 text-base">Review monthly results</td>
+                <td class="px-6 py-5 text-white text-base font-medium">See all workspaces side-by-side</td>
+                <td class="px-6 py-5 text-zinc-400 text-base">Identify top and low performers</td>
+              </tr>
+              <tr>
+                <td class="px-6 py-5 text-zinc-400 text-base">Notice underperformance</td>
+                <td class="px-6 py-5 text-white text-base font-medium">Quickly see which locations need help</td>
+                <td class="px-6 py-5 text-zinc-400 text-base">Intervene before it gets worse</td>
+              </tr>
+              <tr>
+                <td class="px-6 py-5 text-zinc-400 text-base">Have a stakeholder meeting</td>
+                <td class="px-6 py-5 text-white text-base font-medium">Export aggregate metrics</td>
+                <td class="px-6 py-5 text-zinc-400 text-base">Prove ROI and justify budget</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- Slide 5: Research Cover -->
+    <div id="slide-5" class="slide cover-slide flex-col items-center justify-center max-w-5xl w-full">
+      <div class="w-full text-center">
+        <div class="mb-8">
+          <span class="inline-block px-4 py-2 bg-gradient-to-r from-emerald-900/30 to-cyan-900/30 border border-emerald-700/50 rounded-full text-sm font-semibold text-emerald-300 mb-6">Research & Validation</span>
+          <h1 class="text-4xl md:text-6xl font-bold mb-6 leading-tight"><span class="gradient-text">What We Learned</span></h1>
+          <p class="text-xl md:text-2xl text-zinc-400 max-w-3xl mx-auto">Insights from user testing sessions and a targeted survey of 82 multi-location managers</p>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mt-8 md:mt-12 mb-10">
+          <!-- Pendo Survey Card -->
+          <div class="bg-gradient-to-br from-emerald-950/50 to-emerald-900/30 border border-emerald-800/50 rounded-2xl p-8 text-left">
+            <div class="flex items-center gap-3 mb-4">
+              <div class="w-12 h-12 bg-emerald-500/20 rounded-xl flex items-center justify-center">
+                <svg class="w-6 h-6 text-emerald-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+              </div>
+              <div>
+                <h3 class="text-2xl font-bold text-white">82</h3>
+                <p class="text-sm text-zinc-500">Survey Respondents</p>
+              </div>
+            </div>
+            <h4 class="text-white font-semibold mb-2">Pendo In-App Survey</h4>
+            <p class="text-zinc-400 text-sm mb-4">Targeted users managing multiple locations/accounts to understand their reporting needs and priorities</p>
+            <div class="flex items-center gap-4 text-xs text-zinc-500 mb-4">
+              <div class="flex items-center gap-1">
+                <svg class="w-3 h-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+                Jan 7-15, 2026
+              </div>
+              <div class="flex items-center gap-1">
+                <svg class="w-3 h-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+                31% open to interviews
+              </div>
+            </div>
+            <a href="https://app.pendo.io/s/5947641860980736/guides/PDkforWq64N6NB1_JncVI-fH9Z0?view=poll-responses" target="_blank" rel="noopener noreferrer" class="inline-flex items-center gap-2 text-sm text-emerald-400 hover:text-emerald-300 transition-colors">
+              View Full Survey
+              <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
+            </a>
+          </div>
+
+          <!-- User Testing Card -->
+          <div class="bg-gradient-to-br from-blue-950/50 to-blue-900/30 border border-blue-800/50 rounded-2xl p-8 text-left">
+            <div class="flex items-center gap-3 mb-4">
+              <div class="w-12 h-12 bg-blue-500/20 rounded-xl flex items-center justify-center">
+                <svg class="w-6 h-6 text-blue-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+              </div>
+              <div>
+                <h3 class="text-2xl font-bold text-white">4</h3>
+                <p class="text-sm text-zinc-500">Testing Participants</p>
+              </div>
+            </div>
+            <h4 class="text-white font-semibold mb-2">User Testing Sessions</h4>
+            <p class="text-zinc-400 text-sm mb-4">Moderated sessions with multi-location managers to observe navigation patterns and gather qualitative feedback</p>
+            <div class="flex items-center gap-4 text-xs text-zinc-500 mb-4">
+              <div class="flex items-center gap-1">
+                <svg class="w-3 h-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/></svg>
+                Navigation prototype
+              </div>
+              <div class="flex items-center gap-1">
+                <svg class="w-3 h-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/></svg>
+                Qualitative insights
+              </div>
+            </div>
+            <a href="https://app.usertesting.com/workspaces/1102095/study/5871868/sessions?shared_via=link&share_id=1LbwkDrC1W" target="_blank" rel="noopener noreferrer" class="inline-flex items-center gap-2 text-sm text-blue-400 hover:text-blue-300 transition-colors">
+              View Testing Report
+              <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
+            </a>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Slide 6: Survey - Feature Priorities -->
+    <div id="slide-6" class="slide flex-col items-center justify-center max-w-6xl w-full">
+      <div class="w-full">
+        <div class="text-center mb-8">
+          <h2 class="text-3xl md:text-5xl font-bold text-white mb-4">Feature Priorities</h2>
+          <p class="text-lg text-zinc-400 mb-2">Pendo Survey • n=82 • January 7-15, 2026</p>
+          <a href="https://app.pendo.io/s/5947641860980736/guides/PDkforWq64N6NB1_JncVI-fH9Z0?view=poll-responses" target="_blank" rel="noopener noreferrer" class="text-sm text-zinc-500 hover:text-white inline-flex items-center gap-1">
+            View full survey →
+          </a>
+        </div>
+        
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+          <!-- Filter: Respondent Roles -->
+          <div class="lg:col-span-3 bg-zinc-950 border border-zinc-800 rounded-xl p-5">
+            <h3 class="text-white font-semibold text-sm mb-4">Filter by Role</h3>
+            <div class="space-y-3">
+              <label class="flex items-center gap-3 cursor-pointer group">
+                <input type="checkbox" checked class="w-4 h-4 rounded border-zinc-700 bg-zinc-900 text-blue-500 focus:ring-2 focus:ring-blue-500 focus:ring-offset-0 focus:ring-offset-zinc-950 cursor-pointer">
+                <div class="flex items-center gap-2 flex-1">
+                  <div class="w-2 h-2 bg-blue-500 rounded-full"></div>
+                  <span class="text-sm text-zinc-300 group-hover:text-white transition-colors">Account Owner</span>
+                </div>
+                <span class="text-xs font-medium text-zinc-500">45%</span>
+              </label>
+              <label class="flex items-center gap-3 cursor-pointer group">
+                <input type="checkbox" checked class="w-4 h-4 rounded border-zinc-700 bg-zinc-900 text-cyan-500 focus:ring-2 focus:ring-cyan-500 focus:ring-offset-0 focus:ring-offset-zinc-950 cursor-pointer">
+                <div class="flex items-center gap-2 flex-1">
+                  <div class="w-2 h-2 bg-cyan-500 rounded-full"></div>
+                  <span class="text-sm text-zinc-300 group-hover:text-white transition-colors">Account Manager</span>
+                </div>
+                <span class="text-xs font-medium text-zinc-500">31%</span>
+              </label>
+              <label class="flex items-center gap-3 cursor-pointer group">
+                <input type="checkbox" checked class="w-4 h-4 rounded border-zinc-700 bg-zinc-900 text-emerald-500 focus:ring-2 focus:ring-emerald-500 focus:ring-offset-0 focus:ring-offset-zinc-950 cursor-pointer">
+                <div class="flex items-center gap-2 flex-1">
+                  <div class="w-2 h-2 bg-emerald-500 rounded-full"></div>
+                  <span class="text-sm text-zinc-300 group-hover:text-white transition-colors">Campaign Creator</span>
+                </div>
+                <span class="text-xs font-medium text-zinc-500">20%</span>
+              </label>
+              <label class="flex items-center gap-3 cursor-pointer group">
+                <input type="checkbox" class="w-4 h-4 rounded border-zinc-700 bg-zinc-900 text-zinc-500 focus:ring-2 focus:ring-zinc-500 focus:ring-offset-0 focus:ring-offset-zinc-950 cursor-pointer">
+                <div class="flex items-center gap-2 flex-1">
+                  <div class="w-2 h-2 bg-zinc-600 rounded-full"></div>
+                  <span class="text-sm text-zinc-300 group-hover:text-white transition-colors">Not Sure</span>
+                </div>
+                <span class="text-xs font-medium text-zinc-500">4%</span>
+              </label>
+            </div>
+            <div class="mt-4 pt-4 border-t border-zinc-800">
+              <button class="w-full text-xs text-cyan-400 hover:text-cyan-300 transition-colors">Reset Filters</button>
+            </div>
+          </div>
+
+          <!-- Top Feature Priorities -->
+          <div class="lg:col-span-6 bg-zinc-950 border border-zinc-800 rounded-xl p-5">
+            <div class="flex items-center justify-between mb-4">
+              <h3 class="text-white font-semibold text-sm">Top Feature Priorities (Avg Rating 1-5)</h3>
+              <span class="text-xs text-zinc-600">Higher = More Important</span>
+            </div>
+            <div class="space-y-3">
+              <div>
+                <div class="flex items-center justify-between mb-1">
+                  <span class="text-xs text-zinc-400">Campaign metrics for own account</span>
+                  <span class="text-xs font-medium text-emerald-400">4.8</span>
+                </div>
+                <div class="h-2 bg-zinc-900 rounded-full overflow-hidden">
+                  <div class="h-full bg-gradient-to-r from-emerald-500 to-emerald-400" style="width: 96%"></div>
+                </div>
+              </div>
+              <div>
+                <div class="flex items-center justify-between mb-1">
+                  <span class="text-xs text-zinc-400">Manage & monitor own campaigns</span>
+                  <span class="text-xs font-medium text-emerald-400">4.7</span>
+                </div>
+                <div class="h-2 bg-zinc-900 rounded-full overflow-hidden">
+                  <div class="h-full bg-gradient-to-r from-emerald-500 to-cyan-400" style="width: 94%"></div>
+                </div>
+              </div>
+              <div>
+                <div class="flex items-center justify-between mb-1">
+                  <span class="text-xs text-zinc-400">Campaign metrics across subaccounts</span>
+                  <span class="text-xs font-medium text-cyan-400">4.2</span>
+                </div>
+                <div class="h-2 bg-zinc-900 rounded-full overflow-hidden">
+                  <div class="h-full bg-gradient-to-r from-cyan-500 to-blue-400" style="width: 84%"></div>
+                </div>
+              </div>
+              <div>
+                <div class="flex items-center justify-between mb-1">
+                  <span class="text-xs text-zinc-400">Upcoming scheduled campaigns</span>
+                  <span class="text-xs font-medium text-blue-400">4.1</span>
+                </div>
+                <div class="h-2 bg-zinc-900 rounded-full overflow-hidden">
+                  <div class="h-full bg-gradient-to-r from-blue-500 to-blue-400" style="width: 82%"></div>
+                </div>
+              </div>
+              <div>
+                <div class="flex items-center justify-between mb-1">
+                  <span class="text-xs text-zinc-400">Manage & monitor subaccounts</span>
+                  <span class="text-xs font-medium text-blue-400">3.9</span>
+                </div>
+                <div class="h-2 bg-zinc-900 rounded-full overflow-hidden">
+                  <div class="h-full bg-gradient-to-r from-blue-500 to-indigo-400" style="width: 78%"></div>
+                </div>
+              </div>
+              <div>
+                <div class="flex items-center justify-between mb-1">
+                  <span class="text-xs text-zinc-400">Subaccounts requiring action</span>
+                  <span class="text-xs font-medium text-indigo-400">3.7</span>
+                </div>
+                <div class="h-2 bg-zinc-900 rounded-full overflow-hidden">
+                  <div class="h-full bg-gradient-to-r from-indigo-500 to-purple-400" style="width: 74%"></div>
+                </div>
+              </div>
+              <div>
+                <div class="flex items-center justify-between mb-1">
+                  <span class="text-xs text-zinc-400">Campaigns awaiting approval</span>
+                  <span class="text-xs font-medium text-purple-400">3.6</span>
+                </div>
+                <div class="h-2 bg-zinc-900 rounded-full overflow-hidden">
+                  <div class="h-full bg-gradient-to-r from-purple-500 to-purple-400" style="width: 72%"></div>
+                </div>
+              </div>
+              <div>
+                <div class="flex items-center justify-between mb-1">
+                  <span class="text-xs text-zinc-400">Top/lowest performing campaigns</span>
+                  <span class="text-xs font-medium text-violet-400">3.5</span>
+                </div>
+                <div class="h-2 bg-zinc-900 rounded-full overflow-hidden">
+                  <div class="h-full bg-gradient-to-r from-violet-500 to-violet-400" style="width: 70%"></div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Right Column -->
+          <div class="lg:col-span-3 space-y-5">
+
+            <!-- Interview Willingness -->
+            <div class="bg-zinc-950 border border-zinc-800 rounded-xl p-5">
+              <h3 class="text-white font-semibold text-sm mb-3">Interview Participation</h3>
+              <div class="flex items-center justify-between mb-2">
+                <span class="text-xs text-zinc-500">Willing to interview</span>
+                <span class="text-2xl font-bold text-emerald-400">31%</span>
+              </div>
+              <div class="h-2 bg-zinc-900 rounded-full overflow-hidden">
+                <div class="h-full bg-emerald-500" style="width: 31%"></div>
+              </div>
+              <p class="text-xs text-zinc-600 mt-2">13 of 42 respondents</p>
+            </div>
+
+            <!-- Key Stat -->
+            <div class="bg-gradient-to-br from-emerald-900/40 to-cyan-900/40 border border-emerald-700/50 rounded-xl p-5">
+              <div class="flex items-start gap-3">
+                <div class="w-10 h-10 bg-emerald-500/20 rounded-lg flex items-center justify-center flex-shrink-0">
+                  <svg class="w-5 h-5 text-emerald-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg>
+                </div>
+                <div>
+                  <div class="text-2xl font-bold text-white mb-1">4.8/5.0</div>
+                  <p class="text-xs text-emerald-300">Avg rating for own account metrics</p>
+                  <p class="text-xs text-zinc-500 mt-1">Highest priority feature</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Slide 7: Survey - Use Cases & Pain Points -->
+    <div id="slide-7" class="slide flex-col items-center justify-center max-w-6xl w-full">
+      <div class="w-full">
+        <div class="text-center mb-8">
+          <h2 class="text-3xl md:text-5xl font-bold text-white mb-4">Use Cases & Pain Points</h2>
+          <p class="text-lg text-zinc-400 mb-2">Pendo Survey • n=82 • January 7-15, 2026</p>
+          <a href="https://app.pendo.io/s/5947641860980736/guides/PDkforWq64N6NB1_JncVI-fH9Z0?view=poll-responses" target="_blank" rel="noopener noreferrer" class="text-sm text-zinc-500 hover:text-white inline-flex items-center gap-1">
+            View full survey →
+          </a>
+        </div>
+
+        <!-- Open-Text Survey Responses -->
+        <div>
+          <div class="flex items-center gap-2 mb-6">
+            <h3 class="text-white font-semibold text-xl">How Users Describe Their CTCT Use</h3>
+          </div>
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div class="border border-zinc-800 rounded-xl p-6">
+              <div class="mb-4">
+                <div class="text-base font-semibold text-white">Multi-Location Management</div>
+              </div>
+              <p class="text-base text-white italic leading-relaxed mb-3">"I fully manage multiple accounts by creating content and sending newsletters on behalf of financial advisors to their clients."</p>
+              <div class="text-sm text-zinc-400">— Survey respondent, manages 10+ accounts</div>
+            </div>
+            <div class="border border-zinc-800 rounded-xl p-6">
+              <div class="mb-4">
+                <div class="text-base font-semibold text-white">Franchise Coordination</div>
+              </div>
+              <p class="text-base text-white italic leading-relaxed mb-3">"I send emails on behalf of my own business as well as other businesses. We're all franchises so I act as an agency."</p>
+              <div class="text-sm text-zinc-400">— Survey respondent, franchise coordinator</div>
+            </div>
+            <div class="border border-zinc-800 rounded-xl p-6">
+              <div class="mb-4">
+                <div class="text-base font-semibold text-white">Education & Internal Comms</div>
+              </div>
+              <p class="text-base text-white italic leading-relaxed mb-3">"I create mostly internal newsletters that target either faculty and staff or external newsletters to college presidents."</p>
+              <div class="text-sm text-zinc-400">— Survey respondent, higher education</div>
+            </div>
+            <div class="border border-zinc-800 rounded-xl p-6">
+              <div class="mb-4">
+                <div class="text-base font-semibold text-white">Analytics-Focused</div>
+              </div>
+              <p class="text-base text-white italic leading-relaxed mb-3">"Analytics-focused, comparing campaigns, and reviewing drafts before they go out."</p>
+              <div class="text-sm text-zinc-400">— Survey respondent, analytics role</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Slide 8: What Users Said (Consolidated) -->
+    <div id="slide-8" class="slide flex-col items-center justify-center max-w-6xl w-full">
+      <div class="w-full">
+        <div class="text-center mb-10">
+          <h2 class="text-3xl md:text-5xl font-bold text-white mb-4">What Users Said</h2>
+          <p class="text-lg text-zinc-400 mb-2">User testing sessions • 4 participants</p>
+          <a href="https://app.usertesting.com/workspaces/1102095/study/5871868/sessions?shared_via=link&share_id=1LbwkDrC1W" target="_blank" rel="noopener noreferrer" class="text-sm text-zinc-500 hover:text-white inline-flex items-center gap-1">
+            View full report →
+          </a>
+        </div>
+        
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-5xl mx-auto text-left">
+          <!-- User Testing Quotes -->
+          <div class="border border-zinc-800 rounded-xl p-6">
+            <div class="flex items-center gap-3 mb-4">
+              <div class="w-10 h-10 bg-zinc-800 rounded-full flex items-center justify-center text-white font-bold text-sm">VL</div>
+              <div class="flex-1">
+                <div class="text-white font-semibold text-base">victorialeo</div>
+                <div class="text-zinc-400 text-sm">70 locations, 5/5 confidence</div>
+              </div>
+              <div class="px-3 py-1 bg-zinc-800 rounded text-sm text-zinc-300">Testing</div>
+            </div>
+            <p class="text-white italic text-base leading-relaxed mb-4">"I manage 70 locations across 5 states. Having everything in one view would save me hours every week."</p>
+            <div class="mt-4 pt-4 border-t border-zinc-800">
+              <a href="https://app.usertesting.com/workspaces/1102095/study/5871868/sessions?shared_via=link&share_id=1LbwkDrC1W" target="_blank" rel="noopener noreferrer" class="text-sm text-zinc-400 hover:text-white flex items-center gap-2">
+                <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
+                View full report
+              </a>
+            </div>
+          </div>
+
+          <div class="border border-zinc-800 rounded-xl p-6">
+            <div class="flex items-center gap-3 mb-4">
+              <div class="w-10 h-10 bg-zinc-800 rounded-full flex items-center justify-center text-white font-bold text-sm">E3</div>
+              <div class="flex-1">
+                <div class="text-white font-semibold text-base">elite314</div>
+                <div class="text-zinc-400 text-sm">V1 tester, 4/5 confidence</div>
+              </div>
+              <div class="px-3 py-1 bg-zinc-800 rounded text-sm text-zinc-300">Testing</div>
+            </div>
+            <p class="text-white italic text-base leading-relaxed mb-4">"Reporting is a really big one. Being able to look at my reporting and switch between accounts quickly."</p>
+            <div class="mt-4 pt-4 border-t border-zinc-800">
+              <a href="https://app.usertesting.com/workspaces/1102095/study/5871868/sessions?shared_via=link&share_id=1LbwkDrC1W" target="_blank" rel="noopener noreferrer" class="text-sm text-zinc-400 hover:text-white flex items-center gap-2">
+                <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
+                View full report
+              </a>
+            </div>
+          </div>
+
+          <div class="border border-zinc-800 rounded-xl p-6">
+            <div class="flex items-center gap-3 mb-4">
+              <div class="w-10 h-10 bg-zinc-800 rounded-full flex items-center justify-center text-white font-bold text-sm">CH</div>
+              <div class="flex-1">
+                <div class="text-white font-semibold text-base">cha</div>
+                <div class="text-zinc-400 text-sm">1 location, 1.5/5 confidence</div>
+              </div>
+              <div class="px-3 py-1 bg-zinc-800 rounded text-sm text-zinc-300">Testing</div>
+            </div>
+            <p class="text-white italic text-base leading-relaxed mb-4">"I'd want to see what's happening at each location without having to click into each one separately."</p>
+            <div class="mt-4 pt-4 border-t border-zinc-800">
+              <a href="https://app.usertesting.com/workspaces/1102095/study/5871868/sessions?shared_via=link&share_id=1LbwkDrC1W" target="_blank" rel="noopener noreferrer" class="text-sm text-zinc-400 hover:text-white flex items-center gap-2">
+                <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
+                View full report
+              </a>
+            </div>
+          </div>
+        </div>
+
+        <!-- Research Links Footer -->
+        <div class="mt-8 flex items-center justify-center">
+          <a href="https://app.usertesting.com/workspaces/1102095/study/5871868/sessions?shared_via=link&share_id=1LbwkDrC1W" target="_blank" rel="noopener noreferrer" class="flex items-center gap-2 px-5 py-3 bg-zinc-900 hover:bg-zinc-800 border border-zinc-700 rounded-lg text-sm text-zinc-300 hover:text-white transition-colors">
+            <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+            View Full User Testing Report
+          </a>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- Big Left Arrow -->
+  <button onclick="prevSlide()" class="fixed left-6 top-1/2 -translate-y-1/2 w-14 h-14 bg-zinc-900 hover:bg-zinc-800 border border-zinc-700 rounded-full flex items-center justify-center text-zinc-400 hover:text-white transition-all z-50">
+    <svg class="w-8 h-8" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m15 18-6-6 6-6"/></svg>
+  </button>
+  
+  <!-- Big Right Arrow -->
+  <button onclick="nextSlide()" class="fixed right-6 top-1/2 -translate-y-1/2 w-14 h-14 bg-zinc-900 hover:bg-zinc-800 border border-zinc-700 rounded-full flex items-center justify-center text-zinc-400 hover:text-white transition-all z-50">
+    <svg class="w-8 h-8" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m9 18 6-6-6-6"/></svg>
+  </button>
+
+  <!-- Navigation Footer -->
+  <div class="nav-footer fixed bottom-0 left-0 right-0 px-4 md:px-8 py-4 flex items-center justify-between bg-black md:bg-gradient-to-t md:from-black md:to-transparent border-t border-zinc-800 md:border-t-0">
+    <!-- Mobile: Previous Button -->
+    <button onclick="prevSlide()" class="flex md:hidden items-center justify-center w-10 h-10 bg-zinc-900 hover:bg-zinc-800 border border-zinc-700 rounded-lg text-white transition-all">
+      <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m15 18-6-6 6-6"/></svg>
+    </button>
+    
+    <!-- Desktop: Back to Research -->
+    <a href="research-dashboard.html" class="hidden md:block text-zinc-600 hover:text-white text-sm transition-colors">Back to Research</a>
+    
+    <!-- Desktop: Dots Navigation -->
+    <div class="hidden md:flex items-center gap-1.5">
+      <button onclick="goToSlide(1)" class="dot w-1.5 h-1.5 rounded-full bg-white transition-all p-0 border-0"></button>
+      <button onclick="goToSlide(2)" class="dot w-1.5 h-1.5 rounded-full bg-zinc-700 hover:bg-zinc-600 transition-all p-0 border-0"></button>
+      <button onclick="goToSlide(3)" class="dot w-1.5 h-1.5 rounded-full bg-zinc-700 hover:bg-zinc-600 transition-all p-0 border-0"></button>
+      <button onclick="goToSlide(4)" class="dot w-1.5 h-1.5 rounded-full bg-zinc-700 hover:bg-zinc-600 transition-all p-0 border-0"></button>
+      <button onclick="goToSlide(5)" class="dot w-1.5 h-1.5 rounded-full bg-zinc-700 hover:bg-zinc-600 transition-all p-0 border-0"></button>
+      <button onclick="goToSlide(6)" class="dot w-1.5 h-1.5 rounded-full bg-zinc-700 hover:bg-zinc-600 transition-all p-0 border-0"></button>
+      <button onclick="goToSlide(7)" class="dot w-1.5 h-1.5 rounded-full bg-zinc-700 hover:bg-zinc-600 transition-all p-0 border-0"></button>
+      <button onclick="goToSlide(8)" class="dot w-1.5 h-1.5 rounded-full bg-zinc-700 hover:bg-zinc-600 transition-all p-0 border-0"></button>
+    </div>
+    
+    <!-- Slide Counter (prominent on mobile) -->
+    <div class="flex items-center gap-2">
+      <span class="hidden md:inline text-xs md:text-sm text-zinc-600">Slide</span>
+      <span id="slide-counter" class="text-sm md:text-sm text-white font-medium">1 / 8</span>
+    </div>
+    
+    <!-- Mobile: Next Button -->
+    <button onclick="nextSlide()" class="flex md:hidden items-center justify-center w-10 h-10 bg-zinc-900 hover:bg-zinc-800 border border-zinc-700 rounded-lg text-white transition-all">
+      <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m9 18 6-6-6-6"/></svg>
+    </button>
+  </div>
+
+  <script>
+    const totalSlides = 8;
+    let currentSlide = 1;
+    
+    // Get slide number from URL hash or sessionStorage
+    function getInitialSlide() {
+      const hash = window.location.hash;
+      if (hash && hash.startsWith('#slide-')) {
+        const slideNum = parseInt(hash.replace('#slide-', ''));
+        if (slideNum >= 1 && slideNum <= totalSlides) {
+          return slideNum;
+        }
+      }
+      const stored = parseInt(sessionStorage.getItem('reportingJtbdSlide'));
+      if (stored >= 1 && stored <= totalSlides) {
+        return stored;
+      }
+      return 1;
+    }
+    
+    currentSlide = getInitialSlide();
+
+    function showSlide(n, updateUrl = true) {
+      document.querySelectorAll('.slide').forEach(s => s.classList.remove('active'));
+      const slideEl = document.getElementById('slide-' + n);
+      if (!slideEl) {
+        n = 1;
+      }
+      const activeSlide = document.getElementById('slide-' + n);
+      activeSlide.classList.add('active');
+      
+      // Toggle body background based on cover slide
+      if (activeSlide.classList.contains('cover-slide')) {
+        document.body.classList.add('cover-active');
+      } else {
+        document.body.classList.remove('cover-active');
+      }
+      
+      document.getElementById('slide-counter').textContent = n + ' / ' + totalSlides;
+      
+      document.querySelectorAll('.dot').forEach((dot, i) => {
+        if (i + 1 === n) {
+          dot.classList.remove('bg-zinc-700');
+          dot.classList.add('bg-white');
+        } else {
+          dot.classList.remove('bg-white');
+          dot.classList.add('bg-zinc-700');
+        }
+      });
+      
+      currentSlide = n;
+      sessionStorage.setItem('reportingJtbdSlide', n);
+      
+      // Update URL hash
+      if (updateUrl) {
+        history.pushState(null, null, '#slide-' + n);
+      }
+    }
+
+    function nextSlide() {
+      if (currentSlide < totalSlides) {
+        showSlide(currentSlide + 1);
+      }
+    }
+
+    function prevSlide() {
+      if (currentSlide > 1) {
+        showSlide(currentSlide - 1);
+      }
+    }
+
+    function goToSlide(n) {
+      showSlide(n);
+    }
+    
+    // Handle browser back/forward buttons
+    window.addEventListener('hashchange', () => {
+      const newSlide = getInitialSlide();
+      if (newSlide !== currentSlide) {
+        showSlide(newSlide, false); // Don't update URL since it already changed
+      }
+    });
+
+    // Show initial slide
+    showSlide(currentSlide, true);
+
+    // Touch swipe support for mobile
+    let touchStartX = 0;
+    let touchEndX = 0;
+    
+    const slideContainer = document.querySelector('.slide-container');
+    
+    slideContainer.addEventListener('touchstart', (e) => {
+      touchStartX = e.changedTouches[0].screenX;
+    });
+    
+    slideContainer.addEventListener('touchend', (e) => {
+      touchEndX = e.changedTouches[0].screenX;
+      handleSwipe();
+    });
+    
+    function handleSwipe() {
+      const swipeThreshold = 50;
+      const diff = touchStartX - touchEndX;
+      
+      if (Math.abs(diff) > swipeThreshold) {
+        if (diff > 0) {
+          // Swipe left - next slide
+          nextSlide();
+        } else {
+          // Swipe right - previous slide
+          prevSlide();
+        }
+      }
+    }
+
+    // Keyboard navigation
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'ArrowRight' || e.key === ' ') {
+        nextSlide();
+      } else if (e.key === 'ArrowLeft') {
+        prevSlide();
+      }
+    });
+
+    // Filter functionality for dashboard slide
+    const filterCheckboxes = document.querySelectorAll('#slide-6 input[type="checkbox"]');
+    const resetButton = document.querySelector('#slide-6 button');
+    
+    if (filterCheckboxes.length > 0) {
+      filterCheckboxes.forEach(checkbox => {
+        checkbox.addEventListener('change', updateDashboard);
+      });
+      
+      if (resetButton) {
+        resetButton.addEventListener('click', resetFilters);
+      }
+    }
+    
+    function updateDashboard() {
+      // Get checked states
+      const accountOwner = filterCheckboxes[0]?.checked;
+      const accountManager = filterCheckboxes[1]?.checked;
+      const campaignCreator = filterCheckboxes[2]?.checked;
+      const notSure = filterCheckboxes[3]?.checked;
+      
+      // Count how many are checked
+      const checkedCount = [accountOwner, accountManager, campaignCreator, notSure].filter(Boolean).length;
+      
+      // If all or none checked, show full values
+      if (checkedCount === 0 || checkedCount === 4) {
+        // Show default values (all respondents)
+        updateChart([4.8, 4.7, 4.2, 4.1, 3.9, 3.7, 3.6, 3.5], [96, 94, 84, 82, 78, 74, 72, 70]);
+      } else {
+        // Adjust values based on selected roles (simulate filtering)
+        // Account Owners tend to value campaign metrics more
+        // Account Managers value monitoring features
+        // Campaign Creators value creative tools
+        let adjusted = [4.8, 4.7, 4.2, 4.1, 3.9, 3.7, 3.6, 3.5];
+        
+        if (accountOwner && !accountManager && !campaignCreator) {
+          adjusted = [4.9, 4.6, 4.4, 4.0, 3.8, 3.5, 3.4, 3.3];
+        } else if (accountManager && !accountOwner && !campaignCreator) {
+          adjusted = [4.7, 4.8, 4.3, 4.2, 4.1, 3.9, 3.7, 3.6];
+        } else if (campaignCreator && !accountOwner && !accountManager) {
+          adjusted = [4.6, 4.9, 4.0, 4.3, 3.7, 3.5, 3.3, 3.4];
+        }
+        
+        const widths = adjusted.map(v => Math.round((v / 5.0) * 100));
+        updateChart(adjusted, widths);
+      }
+    }
+    
+    function updateChart(scores, widths) {
+      const bars = document.querySelectorAll('#slide-6 .lg\\:col-span-6 .space-y-3 > div');
+      bars.forEach((bar, i) => {
+        if (i < scores.length) {
+          const scoreEl = bar.querySelector('.flex .text-xs.font-medium');
+          const progressBar = bar.querySelector('.h-2 > div');
+          if (scoreEl) scoreEl.textContent = scores[i].toFixed(1);
+          if (progressBar) progressBar.style.width = widths[i] + '%';
+        }
+      });
+      
+      // Update the big stat card
+      const bigStat = document.querySelector('#slide-6 .text-2xl.font-bold.text-emerald-400');
+      if (bigStat) {
+        bigStat.textContent = scores[0].toFixed(1) + '/5.0';
+      }
+    }
+    
+    function resetFilters() {
+      filterCheckboxes.forEach((checkbox, i) => {
+        checkbox.checked = i < 3; // Check first 3, uncheck "Not Sure"
+      });
+      updateDashboard();
+    }
+
+  </script>
+</body>
+</html>
+
+
+

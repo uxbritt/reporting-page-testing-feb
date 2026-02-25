@@ -1,0 +1,2374 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>CTCT for Teams — Workspaces</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://unpkg.com/lucide@0.263.1/dist/umd/lucide.js"></script>
+  <script>
+    // Safe lucide helper
+    function safeCreateIcons() {
+      if (typeof lucide !== 'undefined' && lucide.createIcons) {
+        lucide.createIcons();
+      }
+    }
+
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            ctct: {
+              blue: '#4B7BF5',
+              'blue-light': '#EEF4FF',
+              orange: '#F5A623'
+            }
+          },
+          fontFamily: {
+            sans: ['CTSans', 'system-ui', 'sans-serif']
+          }
+        }
+      }
+    }
+  </script>
+  <style>
+    @font-face {
+      font-family: 'CTSans';
+      src: url('fonts/CTSans-Regular.woff2') format('woff2');
+      font-weight: 400;
+      font-style: normal;
+      font-display: swap;
+    }
+    @font-face {
+      font-family: 'CTSans';
+      src: url('fonts/CTSans-Semibold.woff2') format('woff2');
+      font-weight: 600;
+      font-style: normal;
+      font-display: swap;
+    }
+    @font-face {
+      font-family: 'CTSans';
+      src: url('fonts/CTSans-Bold.woff2') format('woff2');
+      font-weight: 700;
+      font-style: normal;
+      font-display: swap;
+    }
+    body { 
+      line-height: 1.5; 
+      background: #F8F9FB; 
+    }
+    .ai-gradient-text {
+      background: linear-gradient(90deg, #8B5CF6 0%, #3B82F6 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+    
+    /* Pendo-style tooltip */
+    .onboarding-tooltip {
+      position: absolute;
+      z-index: 1000;
+      animation: tooltipFadeIn 0.3s ease-out;
+    }
+    
+    @keyframes tooltipFadeIn {
+      from {
+        opacity: 0;
+        transform: translateY(-10px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+    
+    .tooltip-arrow {
+      position: absolute;
+      width: 0;
+      height: 0;
+      border-left: 10px solid transparent;
+      border-right: 10px solid transparent;
+      border-bottom: 10px solid #1e40af;
+      top: -10px;
+      left: 24px;
+    }
+    
+    /* Spotlight effect for onboarding */
+    .onboarding-spotlight {
+      position: relative;
+      z-index: 50;
+      box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.4), 0 4px 20px rgba(59, 130, 246, 0.15);
+      border-radius: 1rem;
+    }
+    
+    /* Pulse animation for workspace card during onboarding */
+    @keyframes gentlePulse {
+      0%, 100% { box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.4), 0 4px 20px rgba(59, 130, 246, 0.15); }
+      50% { box-shadow: 0 0 0 6px rgba(59, 130, 246, 0.25), 0 4px 24px rgba(59, 130, 246, 0.2); }
+    }
+    
+    .onboarding-spotlight {
+      animation: gentlePulse 2s ease-in-out infinite;
+    }
+  </style>
+</head>
+<body class="font-sans">
+  <!-- SVG Gradient Definition for AI icon -->
+  <svg width="0" height="0" class="hidden">
+    <defs>
+      <linearGradient id="ai-gradient" x1="0%" y1="0%" x2="100%" y2="0%">
+        <stop offset="0%" style="stop-color:#8B5CF6"/>
+        <stop offset="100%" style="stop-color:#3B82F6"/>
+      </linearGradient>
+    </defs>
+  </svg>
+
+  <!-- Secret toggle dot -->
+  <button onclick="toggleAuthorBar()" class="fixed bottom-2 left-2 w-3 h-3 rounded-full z-50 transition-opacity" style="background-color: #5b21b6; opacity: 0.3;" onmouseover="this.style.opacity='0.6'" onmouseout="this.style.opacity='0.3'"></button>
+
+  <!-- Bottom Footer Bar (hidden by default) -->
+  <div id="author-bar" class="fixed bottom-0 left-0 right-0 h-12 bg-gray-800 flex items-center justify-between px-6 z-40 hidden">
+    <a href="index.html" class="flex items-center gap-2 text-gray-400 hover:text-white text-sm">
+      <i data-lucide="arrow-left" class="w-4 h-4"></i> All Prototypes
+    </a>
+    <p class="text-sm text-gray-400">Workspaces — Folders & Workspaces View</p>
+    <div class="flex items-center gap-4">
+      <div class="flex items-center gap-2 bg-gray-700 rounded-lg px-3 py-1.5">
+        <span class="text-xs text-gray-400">data=</span>
+        <button id="toggle-empty" onclick="setDataMode('empty')" class="px-2.5 py-1 text-xs rounded text-gray-400 hover:text-white">empty</button>
+        <button id="toggle-filled" onclick="setDataMode('filled')" class="px-2.5 py-1 text-xs rounded bg-gray-600 text-white">filled</button>
+        <button id="toggle-onboarding" onclick="setDataMode('onboarding')" class="px-2.5 py-1 text-xs rounded text-gray-400 hover:text-white">onboarding</button>
+      </div>
+      <a href="teams-signup-flow.html" onclick="sessionStorage.clear()" class="flex items-center gap-2 text-gray-400 hover:text-white text-sm">
+        <i data-lucide="rotate-ccw" class="w-4 h-4"></i> Reset
+      </a>
+      <button onclick="toggleAuthorBar()" class="text-gray-500 hover:text-white ml-2">
+        <i data-lucide="x" class="w-4 h-4"></i>
+      </button>
+    </div>
+  </div>
+
+  <!-- TOP BAR -->
+  <header class="fixed top-0 left-0 right-0 h-16 bg-white border-b border-gray-100 flex items-center px-6 z-50">
+    <!-- Logo -->
+    <div class="flex items-center">
+      <img src="assets/ctctLogo.png" alt="Constant Contact" class="w-8 h-8 object-contain">
+    </div>
+
+    <!-- Center - Search and Create -->
+    <div class="flex items-center gap-3 mx-auto">
+      <div class="relative">
+        <input type="text" id="topbar-search-input" placeholder="Search" onclick="openGlobalSearchDialog()" onkeydown="handleTopbarSearchKeydown(event)" class="w-48 pl-4 pr-10 py-2 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-ctct-blue focus:border-transparent cursor-pointer">
+        <i data-lucide="search" class="w-4 h-4 text-gray-400 absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none"></i>
+      </div>
+      <button onclick="openCreateWorkspaceModal()" class="px-6 py-2 bg-ctct-blue hover:opacity-90 text-white rounded-lg font-medium text-sm">
+        Create
+      </button>
+    </div>
+
+    <!-- Right side -->
+    <div class="flex items-center gap-3">
+      <!-- User Avatar Dropdown -->
+      <div class="relative">
+        <button onclick="toggleHeaderDropdown('user-dropdown')" class="w-9 h-9 rounded-full overflow-hidden border-2 border-transparent hover:border-blue-200 transition-colors">
+          <img src="https://images.unsplash.com/photo-1531746020798-e6953c6e8e04?w=100&h=100&fit=crop&crop=face" alt="User" class="w-full h-full object-cover">
+      </button>
+        <div id="user-dropdown" class="hidden absolute right-0 top-full mt-2 w-64 bg-white rounded-2xl shadow-xl border border-gray-100 py-4 z-[60]">
+          <div class="flex items-center gap-3 px-5 pb-4 border-b border-gray-100">
+            <div class="w-14 h-14 rounded-full overflow-hidden">
+              <img src="https://images.unsplash.com/photo-1531746020798-e6953c6e8e04?w=100&h=100&fit=crop&crop=face" alt="User" class="w-full h-full object-cover">
+            </div>
+            <div>
+              <p class="text-base font-semibold text-gray-800">AriaSmith</p>
+              <p class="text-sm text-gray-500">Account owner</p>
+            </div>
+          </div>
+          <div class="pt-3 px-2">
+            <a href="#" class="block px-4 py-3 text-base text-gray-600 hover:bg-gray-50 rounded-xl transition-colors">Profile</a>
+            <a href="#" class="block px-4 py-3 text-base text-gray-600 hover:bg-gray-50 rounded-xl transition-colors">Settings</a>
+            <a href="#" class="block px-4 py-3 text-base text-gray-600 hover:bg-gray-50 rounded-xl transition-colors">Log out</a>
+          </div>
+        </div>
+      </div>
+
+      <!-- Organization Dropdown -->
+      <div class="relative">
+        <button onclick="toggleHeaderDropdown('org-dropdown')" class="flex items-center gap-2 px-3 py-2 hover:bg-gray-50 rounded-lg text-sm transition-colors">
+          <span class="text-gray-700 font-medium">UPS Global</span>
+          <i data-lucide="chevron-down" class="w-4 h-4 text-gray-400 transition-transform" id="org-dropdown-chevron"></i>
+        </button>
+        <div id="org-dropdown" class="hidden absolute right-0 top-full mt-2 w-72 bg-white rounded-2xl shadow-xl border border-gray-100 py-4 z-[60]">
+          <div class="flex items-center gap-3 px-5 pb-4 border-b border-gray-100">
+            <div class="w-14 h-14 rounded-xl bg-gray-100 flex items-center justify-center overflow-hidden">
+              <img src="assets/upsLogo.png" alt="UPS" class="w-10 h-10 object-contain">
+        </div>
+            <div>
+              <p class="text-base font-semibold text-gray-800">UPS Global</p>
+              <p class="text-sm text-gray-500">Enterprise</p>
+            </div>
+          </div>
+          <div class="pt-3 px-2">
+            <a href="#" class="block px-4 py-3 text-base text-gray-600 hover:bg-gray-50 rounded-xl transition-colors">Members</a>
+            <a href="#" class="block px-4 py-3 text-base text-gray-600 hover:bg-gray-50 rounded-xl transition-colors">Settings</a>
+            <a href="#" class="block px-4 py-3 text-base text-gray-600 hover:bg-gray-50 rounded-xl transition-colors">Integrations</a>
+            <a href="#" class="block px-4 py-3 text-base text-gray-600 hover:bg-gray-50 rounded-xl transition-colors">Plans and pricing</a>
+          </div>
+        </div>
+      </div>
+
+      <!-- Notifications -->
+      <div class="relative">
+        <button onclick="toggleHeaderDropdown('notifications-dropdown')" class="p-2 text-blue-500 hover:bg-blue-50 rounded-lg relative transition-colors">
+          <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9"/><path d="M10.3 21a1.94 1.94 0 0 0 3.4 0"/></svg>
+          <span class="absolute top-1.5 right-1.5 w-2.5 h-2.5 bg-amber-500 rounded-full border-2 border-white"></span>
+      </button>
+        <div id="notifications-dropdown" class="hidden absolute right-0 top-full mt-2 w-80 bg-white rounded-2xl shadow-xl border border-gray-100 z-[60]">
+          <div class="flex items-center justify-between px-5 py-4 border-b border-gray-100">
+            <h3 class="text-xs font-semibold text-gray-500 uppercase tracking-wide">Recent Activity</h3>
+          </div>
+          <div class="max-h-64 overflow-y-auto p-3 space-y-2">
+            <a href="campaigns-list.html?openApproval=1" class="flex items-center gap-3 p-2 rounded-xl hover:bg-gray-50">
+              <div class="w-10 h-8 rounded bg-gray-100"></div>
+              <div class="flex-1">
+                <p class="text-sm font-medium text-gray-800">Campaign approval request</p>
+                <p class="text-xs text-gray-400">1 hr ago</p>
+              </div>
+            </a>
+          </div>
+        </div>
+      </div>
+
+      <!-- Help -->
+      <div class="relative">
+        <button onclick="toggleHeaderDropdown('help-dropdown')" class="p-2 text-gray-400 hover:text-gray-600 hover:bg-gray-50 rounded-lg transition-colors">
+        <i data-lucide="help-circle" class="w-5 h-5"></i>
+        </button>
+        <div id="help-dropdown" class="hidden absolute right-0 top-full mt-2 w-72 bg-white rounded-2xl shadow-xl border border-gray-100 z-[60]">
+          <div class="flex items-center justify-between px-5 py-4 border-b border-gray-100">
+            <h3 class="text-base font-semibold text-gray-800">Help & Training</h3>
+            <button onclick="toggleHeaderDropdown('help-dropdown')" class="p-1 text-gray-400 hover:text-gray-600">
+              <i data-lucide="x" class="w-5 h-5"></i>
+      </button>
+          </div>
+          <div class="p-4">
+            <div class="relative mb-4">
+              <i data-lucide="search" class="w-4 h-4 text-gray-400 absolute left-3 top-1/2 -translate-y-1/2"></i>
+              <input type="text" placeholder="Search Knowledge Base" class="w-full pl-10 pr-4 py-2.5 border border-gray-200 rounded-lg text-sm">
+            </div>
+            <div class="space-y-2">
+              <a href="#" class="block py-2 text-sm text-gray-600 hover:text-blue-600">Create an email</a>
+              <a href="#" class="block py-2 text-sm text-gray-600 hover:text-blue-600">Browse Knowledge Base</a>
+            </div>
+          </div>
+          <div class="px-4 pb-4 space-y-2">
+            <a href="#" class="flex items-center justify-between p-3 border border-gray-200 rounded-xl hover:bg-gray-50">
+              <span class="text-sm text-gray-700">Contact Us</span>
+              <i data-lucide="arrow-right" class="w-4 h-4 text-gray-400"></i>
+            </a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <div class="flex h-screen pt-16 pb-10">
+    <!-- Left Sidebar -->
+    <aside class="w-56 bg-white flex flex-col pt-3 flex-shrink-0">
+      <!-- Navigation -->
+      <div class="flex-1 overflow-y-auto px-3">
+        <nav id="main-nav">
+          <!-- Org Dashboard (hidden for location managers) -->
+          <a id="nav-org-dashboard" href="option-b-northstar-empty.html" class="block py-3 px-4 text-sm text-slate-600 hover:bg-sky-50 rounded-xl mb-1 transition-colors">Org Dashboard</a>
+
+          <!-- Workspaces - Active -->
+          <a id="nav-workspaces" href="workspaces-list.html" class="block py-3 px-4 text-sm font-semibold text-slate-700 bg-sky-50 rounded-xl mb-1">Workspaces</a>
+
+          <!-- Reporting (hidden for location managers) -->
+          <a id="nav-reporting" href="folder-reporting.html" class="block py-3 px-4 text-sm text-slate-600 hover:bg-sky-50 rounded-xl mb-1 transition-colors">Reporting</a>
+
+          <!-- Campaigns -->
+          <a id="nav-campaigns" href="campaigns-list.html" class="block py-3 px-4 text-sm text-slate-600 hover:bg-sky-50 rounded-xl mb-1 transition-colors">Campaigns</a>
+
+          <!-- Contacts -->
+          <a id="nav-contacts" href="contacts-list.html" class="block py-3 px-4 text-sm text-slate-600 hover:bg-sky-50 rounded-xl mb-1 transition-colors">Contacts</a>
+
+          <!-- Brands (hidden for location managers) -->
+          <a id="nav-brands" href="brands.html" class="block py-3 px-4 text-sm text-slate-600 hover:bg-sky-50 rounded-xl mb-1 transition-colors">Brands</a>
+
+          <!-- Automations (hidden for location managers) -->
+          <a id="nav-automations" href="#" class="block py-3 px-4 text-sm text-slate-600 hover:bg-sky-50 rounded-xl transition-colors">Automations</a>
+        </nav>
+      </div>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="flex-1 overflow-y-auto px-8 py-6">
+      <div class="max-w-7xl">
+        <!-- Page Header -->
+        <div class="flex items-center justify-between mb-6">
+          <div>
+            <!-- Breadcrumbs (shown when drilling into a folder) -->
+            <div id="folder-breadcrumbs" class="hidden flex items-center gap-2 text-sm mb-2">
+              <button onclick="navigateToRoot()" class="text-gray-500 hover:text-blue-600 flex items-center gap-1">
+                <i data-lucide="home" class="w-4 h-4"></i>
+                Workspaces
+              </button>
+              <span id="breadcrumb-path" class="flex items-center gap-2"></span>
+          </div>
+            <h1 id="page-title" class="text-2xl font-bold text-gray-900">Workspaces</h1>
+          </div>
+          <div class="flex items-center gap-4">
+            <!-- Search -->
+            <div class="relative">
+              <i data-lucide="search" class="w-4 h-4 text-gray-400 absolute left-3 top-1/2 -translate-y-1/2"></i>
+              <input 
+                type="text" 
+                id="workspace-search" 
+                placeholder="Search folders and workspaces..." 
+                oninput="handleWorkspaceSearch(this.value)"
+                class="w-72 pl-9 pr-4 py-2 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              >
+              <button onclick="clearWorkspaceSearch()" id="search-clear-btn" class="hidden absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600">
+                <i data-lucide="x" class="w-4 h-4"></i>
+              </button>
+            </div>
+            <!-- View Toggle -->
+            <div class="flex items-center bg-gray-100 rounded-lg p-1">
+              <button id="view-grid-btn" onclick="setViewMode('grid')" class="flex items-center gap-1.5 px-3 py-1.5 rounded-md text-sm font-medium text-gray-500 hover:text-gray-700">
+                <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="7" height="7" x="3" y="3" rx="1"/><rect width="7" height="7" x="14" y="3" rx="1"/><rect width="7" height="7" x="14" y="14" rx="1"/><rect width="7" height="7" x="3" y="14" rx="1"/></svg>
+                Grid
+              </button>
+              <button id="view-tree-btn" onclick="setViewMode('tree')" class="flex items-center gap-1.5 px-3 py-1.5 rounded-md text-sm font-medium bg-white shadow-sm text-gray-900">
+                <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 10a1 1 0 0 0 1-1V6a1 1 0 0 0-1-1h-2.5a1 1 0 0 1-.8-.4l-.9-1.2A1 1 0 0 0 15 3h-2a1 1 0 0 0-1 1v5a1 1 0 0 0 1 1Z"/><path d="M20 21a1 1 0 0 0 1-1v-3a1 1 0 0 0-1-1h-2.9a1 1 0 0 1-.88-.55l-.42-.85a1 1 0 0 0-.88-.55H13a1 1 0 0 0-1 1v4a1 1 0 0 0 1 1Z"/><path d="M3 5a2 2 0 0 0 2 2h3"/><path d="M3 3v13a2 2 0 0 0 2 2h3"/></svg>
+                Tree
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Search Results Container (hidden by default) -->
+        <div id="search-results-container" class="hidden mb-6">
+          <div class="bg-white rounded-2xl border border-gray-100 p-6">
+            <div class="flex items-center justify-between mb-4">
+              <h2 class="text-sm font-semibold text-gray-500">Search results</h2>
+              <span id="search-results-count" class="text-sm text-gray-400">0 results</span>
+            </div>
+            <div id="search-results-content" class="space-y-1">
+              <!-- Search results will be inserted here -->
+            </div>
+            <!-- No Results State -->
+            <div id="no-results-state" class="hidden text-center py-8">
+              <div class="w-12 h-12 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                <i data-lucide="search-x" class="w-6 h-6 text-gray-400"></i>
+              </div>
+              <h3 class="text-gray-900 font-medium mb-1">No results found</h3>
+              <p class="text-sm text-gray-500">Try a different search term or check your spelling</p>
+            </div>
+          </div>
+          </div>
+
+        <!-- GRID VIEW Section (hidden by default since we start in tree view) -->
+        <div id="hubs-section" class="hidden">
+          <!-- Empty state for folders -->
+          <div id="hubs-empty-state" class="bg-white rounded-2xl border border-gray-100 border-dashed p-8 text-center hidden">
+            <div class="w-12 h-12 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
+              <i data-lucide="folder" class="w-6 h-6 text-gray-400"></i>
+            </div>
+            <h3 class="text-gray-900 font-medium mb-2">No folders yet</h3>
+            <p class="text-sm text-gray-500 mb-4 max-w-md mx-auto">Folders help you organize multiple workspaces together, see rolled-up reporting across them, and manage shared brand assets like templates and images.</p>
+          </div>
+
+          <!-- Nested card grid container -->
+          <div id="hubs-container" class="space-y-6">
+            <!-- Folder cards will be dynamically inserted here -->
+          </div>
+        </div>
+        
+        <!-- Tree View Container (shown by default) -->
+        <div id="tree-view-container" class="">
+          <div class="bg-white rounded-2xl border border-gray-100 p-6">
+            <!-- Expand/Collapse All Controls -->
+            <div class="flex items-center gap-3 mb-4 pb-4 border-b border-gray-100">
+              <button onclick="expandAllNodes()" class="flex items-center gap-1.5 px-3 py-1.5 text-sm text-gray-600 hover:text-gray-900 hover:bg-gray-50 rounded-lg transition-colors">
+                <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m3 8 4-4 4 4"/><path d="M7 4v16"/><path d="m21 16-4 4-4-4"/><path d="M17 20V4"/></svg>
+                Expand All
+              </button>
+              <button onclick="collapseAllNodes()" class="flex items-center gap-1.5 px-3 py-1.5 text-sm text-gray-600 hover:text-gray-900 hover:bg-gray-50 rounded-lg transition-colors">
+                <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m7 20 4-4-4-4"/><path d="M11 16H3"/><path d="m17 4-4 4 4 4"/><path d="M13 8h8"/></svg>
+                Collapse All
+              </button>
+            </div>
+            <div id="tree-content" class="space-y-2">
+              <!-- Tree nodes will be dynamically inserted here -->
+            </div>
+          </div>
+        </div>
+
+        <!-- WORKSPACES Section -->
+        <div id="workspaces-section" class="hidden">
+          <div class="mb-4">
+            <div class="flex items-center gap-2 mb-1">
+              <h2 class="text-sm font-semibold text-gray-500 uppercase tracking-wide">Workspaces</h2>
+              <span id="workspace-count" class="text-sm text-gray-400">0</span>
+            </div>
+            <p class="text-sm text-gray-400">Workspaces are where your team creates and sends campaigns and manages contact lists</p>
+          </div>
+
+          <!-- Workspaces Table -->
+          <div class="bg-white rounded-2xl border border-gray-100 overflow-hidden">
+            <!-- Table Header -->
+            <div class="grid grid-cols-12 gap-4 px-5 py-3 bg-gray-50 border-b border-gray-100 text-xs font-medium text-gray-500 uppercase tracking-wide">
+              <div class="col-span-4">Workspace</div>
+              <div class="col-span-2 text-right">Contacts</div>
+              <div class="col-span-2 text-right">Campaigns</div>
+              <div class="col-span-2 text-right">Last active</div>
+              <div class="col-span-2"></div>
+            </div>
+            <div id="workspaces-container" class="divide-y divide-gray-50">
+              <!-- Workspace rows will be dynamically inserted here -->
+            </div>
+          </div>
+          
+          <!-- Workspaces Pagination -->
+          <div id="workspaces-pagination" class="flex items-center justify-between mt-4">
+            <span id="workspace-showing" class="text-sm text-gray-500">Showing 1-10 of 20</span>
+            <div class="flex items-center gap-2">
+              <button onclick="changeWorkspacePage(-1)" id="ws-prev-btn" class="px-3 py-1.5 text-sm border border-gray-200 rounded-lg text-gray-500 hover:bg-gray-50 disabled:opacity-40" disabled>Previous</button>
+              <button onclick="changeWorkspacePage(1)" id="ws-next-btn" class="px-3 py-1.5 text-sm border border-gray-200 rounded-lg text-gray-500 hover:bg-gray-50 disabled:opacity-40">Next</button>
+            </div>
+          </div>
+        </div>
+          
+        <!-- Empty state if nothing was created -->
+        <div id="empty-state" class="bg-white rounded-2xl border border-gray-100 p-12 text-center hidden">
+          <div class="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
+            <i data-lucide="briefcase" class="w-8 h-8 text-gray-400"></i>
+          </div>
+          <h3 class="text-lg font-medium text-gray-900 mb-2">No workspaces yet</h3>
+          <p class="text-gray-500 mb-4">Create your first workspace to get started</p>
+          <button onclick="openCreateWorkspaceModal()" class="inline-flex items-center gap-2 px-4 py-2 bg-ctct-blue text-white rounded-lg text-sm font-medium hover:opacity-90">
+            <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="M12 5v14"/></svg>
+            Create workspace
+          </button>
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <script>
+    // Safe lucide helper
+    function safeCreateIcons() {
+      if (typeof lucide !== 'undefined' && lucide.createIcons) {
+        lucide.createIcons();
+      }
+    }
+
+    // Toggle author bar visibility
+    function toggleAuthorBar() {
+      const bar = document.getElementById('author-bar');
+      bar.classList.toggle('hidden');
+      safeCreateIcons();
+    }
+    
+    // Parse URL parameters (used for initial creation from signup flow)
+    const urlParams = new URLSearchParams(window.location.search);
+    const workspacesParam = urlParams.get('workspaces');
+    const folderParam = urlParams.get('folder');
+    
+    // If URL has params, save to sessionStorage and clean URL
+    if (workspacesParam || folderParam) {
+      if (workspacesParam) {
+        const newWorkspaces = workspacesParam.split(',').map(w => decodeURIComponent(w.trim())).filter(w => w);
+        // Merge with existing workspaces in session
+        const existingWorkspaces = JSON.parse(sessionStorage.getItem('workspaces') || '[]');
+        const allWorkspaces = [...new Set([...existingWorkspaces, ...newWorkspaces])];
+        sessionStorage.setItem('workspaces', JSON.stringify(allWorkspaces));
+      }
+      if (folderParam) {
+        // Add to folders array
+        const existingHubs = JSON.parse(sessionStorage.getItem('hubs') || '[]');
+        const folderData = {
+          name: folderParam,
+          workspaces: workspacesParam ? workspacesParam.split(',').map(w => decodeURIComponent(w.trim())).filter(w => w) : []
+        };
+        // Check if folder already exists, if not add it
+        if (!existingHubs.find(h => h.name === folderParam)) {
+          existingHubs.push(folderData);
+          sessionStorage.setItem('hubs', JSON.stringify(existingHubs));
+        }
+      }
+      // Clean URL
+      window.history.replaceState({}, document.title, window.location.pathname);
+    }
+    
+    // Load from sessionStorage
+    const hubs = JSON.parse(sessionStorage.getItem('hubs') || '[]');
+    const standaloneWorkspaces = JSON.parse(sessionStorage.getItem('workspaces') || '[]');
+    
+    // For backwards compatibility, also check URL params if nothing in session
+    let workspaces = standaloneWorkspaces;
+    let hubName = hubs.length > 0 ? hubs[0].name : null;
+    if (hubs.length > 0) {
+      workspaces = hubs[0].workspaces;
+    }
+    
+    // Get initials from name
+    function getInitials(name) {
+      const words = name.split(' ').filter(w => w);
+      if (words.length >= 2) {
+        return (words[0][0] + words[1][0]).toUpperCase();
+      }
+      return name.substring(0, 2).toUpperCase();
+    }
+    
+    // Generate a color based on name
+    function getColor(name) {
+      const colors = ['bg-green-500', 'bg-blue-500', 'bg-purple-500', 'bg-orange-500', 'bg-teal-500', 'bg-pink-500'];
+      let hash = 0;
+      for (let i = 0; i < name.length; i++) {
+        hash = name.charCodeAt(i) + ((hash << 5) - hash);
+      }
+      return colors[Math.abs(hash) % colors.length];
+    }
+    
+    const hubsSection = document.getElementById('hubs-section');
+    const hubsContainer = document.getElementById('hubs-container');
+    const workspacesSection = document.getElementById('workspaces-section');
+    const workspacesContainer = document.getElementById('workspaces-container');
+    const workspaceCountEl = document.getElementById('workspace-count');
+    const emptyState = document.getElementById('empty-state');
+    const hubsEmptyState = document.getElementById('hubs-empty-state');
+    
+    // Filled state sample data - UPS Global hierarchy with parent folders
+    const filledFolders = [
+      // UPS US - Parent Folder containing regional folders
+      { 
+        name: 'UPS US', 
+        isParentHub: true,
+        childFolders: ['UPS Northeast', 'UPS Southeast', 'UPS Southwest', 'UPS Northwest'],
+        workspaces: [],
+        contacts: '34.9k', 
+        campaigns: 133,
+        folders: 4,
+        totalWorkspaces: 18,
+        members: 24
+      },
+      // UPS EU - Parent Folder containing regional folders
+      { 
+        name: 'UPS EU', 
+        isParentHub: true,
+        childFolders: ['UPS UK & Ireland', 'UPS DACH', 'UPS Nordics', 'UPS Southern Europe'],
+        workspaces: [],
+        contacts: '22.8k', 
+        campaigns: 98,
+        folders: 4,
+        totalWorkspaces: 14,
+        members: 18
+      }
+    ];
+    
+    // View mode: 'grid' or 'tree' (default to tree)
+    let viewMode = 'tree';
+    let currentSearchQuery = '';
+    
+    // Folder navigation state
+    let currentFolderPath = []; // Array of folder names representing the navigation path
+    let currentFolder = null; // The currently viewed folder object
+    
+    // Tree view state (must be defined before renderTreeView is called)
+    const expandedNodes = new Set();
+    
+    // Expand all nodes by default on first load
+    function initExpandedNodes() {
+      // Add all folder nodes to expanded set
+      filledFolders.forEach(folder => {
+        const folderData = typeof folder === 'object' ? folder : { name: folder };
+        const nodeId = `folder-${folderData.name.replace(/\s+/g, '-')}`;
+        expandedNodes.add(nodeId);
+        
+        // Also expand child folders
+        if (folderData.isParentHub && childFoldersData[folderData.name]) {
+          childFoldersData[folderData.name].forEach(child => {
+            const childNodeId = `hub-${child.name.replace(/\s+/g, '-')}`;
+            expandedNodes.add(childNodeId);
+          });
+        }
+      });
+    }
+    
+    // Expand all nodes
+    function expandAllNodes() {
+      filledFolders.forEach(folder => {
+        const folderData = typeof folder === 'object' ? folder : { name: folder };
+        const nodeId = `folder-${folderData.name.replace(/\s+/g, '-')}`;
+        expandedNodes.add(nodeId);
+        
+        if (folderData.isParentHub && childFoldersData[folderData.name]) {
+          childFoldersData[folderData.name].forEach(child => {
+            const childNodeId = `hub-${child.name.replace(/\s+/g, '-')}`;
+            expandedNodes.add(childNodeId);
+          });
+        }
+      });
+      renderTreeView();
+    }
+    
+    // Collapse all nodes
+    function collapseAllNodes() {
+      expandedNodes.clear();
+      renderTreeView();
+    }
+    
+    // Child folders data (shown when drilling into parent folder)
+    const childFoldersData = {
+      'UPS US': [
+        { name: 'UPS Northeast', workspaces: ['UPS New York', 'UPS Connecticut', 'UPS Massachusetts', 'UPS New Jersey', 'UPS Pennsylvania'], contacts: '12.4k', campaigns: 45 },
+        { name: 'UPS Southeast', workspaces: ['UPS Florida', 'UPS Georgia', 'UPS North Carolina', 'UPS South Carolina', 'UPS Virginia'], contacts: '9.8k', campaigns: 38 },
+        { name: 'UPS Southwest', workspaces: ['UPS Texas', 'UPS Arizona', 'UPS New Mexico', 'UPS Oklahoma'], contacts: '7.5k', campaigns: 28 },
+        { name: 'UPS Northwest', workspaces: ['UPS Washington', 'UPS Oregon', 'UPS Idaho', 'UPS Montana'], contacts: '5.2k', campaigns: 22 }
+      ],
+      'UPS EU': [
+        { name: 'UPS UK & Ireland', workspaces: ['UPS London', 'UPS Manchester', 'UPS Dublin', 'UPS Edinburgh'], contacts: '8.2k', campaigns: 34 },
+        { name: 'UPS DACH', workspaces: ['UPS Germany', 'UPS Austria', 'UPS Switzerland'], contacts: '6.5k', campaigns: 28 },
+        { name: 'UPS Nordics', workspaces: ['UPS Sweden', 'UPS Norway', 'UPS Denmark', 'UPS Finland'], contacts: '4.8k', campaigns: 22 },
+        { name: 'UPS Southern Europe', workspaces: ['UPS Spain', 'UPS Italy', 'UPS Portugal'], contacts: '3.3k', campaigns: 14 }
+      ]
+    };
+    
+    // Standalone workspaces at Global level (not in any folder)
+    const filledStandaloneWorkspaces = [
+      'UPS Foundation',
+      'UPS Student Program'
+    ];
+    
+    // Onboarding mode - first-time team experience
+    const onboardingWorkspace = {
+      name: 'My First Workspace',
+      description: 'This workspace was created for you to get started. Workspaces are where your team creates campaigns, manages contacts, and tracks performance.'
+    };
+    
+    // Track if onboarding tooltip has been dismissed
+    let onboardingTooltipDismissed = sessionStorage.getItem('onboardingTooltipDismissed') === 'true';
+    
+    // Default to 'filled' for better initial experience with sample data
+    let currentDataMode = 'filled';
+    const storedDataMode = sessionStorage.getItem('dataMode');
+    if (storedDataMode === 'empty' || storedDataMode === 'filled' || storedDataMode === 'onboarding') {
+      currentDataMode = storedDataMode;
+    }
+    
+    // Role-based access control
+    const userRole = sessionStorage.getItem('accessLevel') || new URLSearchParams(window.location.search).get('role') || 'global';
+    const accessFolder = sessionStorage.getItem('accessFolder') || '';
+    const accessWorkspace = sessionStorage.getItem('accessWorkspace') || '';
+    const userName = sessionStorage.getItem('userName') || 'Sarah Chen';
+    
+    // Filter folders based on role
+    function getFilteredFolders() {
+      if (currentDataMode !== 'filled') return hubs;
+      
+      if (userRole === 'global') {
+        // Global sees everything
+        return filledFolders;
+      } else if (userRole === 'regional') {
+        // Regional sees only their folder (e.g., UPS Northeast under UPS US)
+        // Show UPS US but only with access to Northeast
+        return filledFolders.filter(f => f.name === 'UPS US');
+      } else if (userRole === 'location' || userRole === 'workspace') {
+        // Location manager sees nothing at folder level - redirect to workspace
+        return [];
+      }
+      return filledFolders;
+    }
+    
+    // Filter child folders based on role
+    function getFilteredChildFolders(parentFolderName) {
+      const children = childFoldersData[parentFolderName] || [];
+      
+      if (userRole === 'global') {
+        return children;
+      } else if (userRole === 'regional') {
+        // Only show Northeast folder
+        return children.filter(c => c.name === 'UPS Northeast');
+      }
+      return children;
+    }
+    
+    // Check if user has access to a workspace
+    function hasWorkspaceAccess(workspaceName) {
+      if (userRole === 'global') return true;
+      if (userRole === 'regional') {
+        // Check if workspace is in Northeast
+        const northeastWorkspaces = ['UPS New York', 'UPS Connecticut', 'UPS Massachusetts', 'UPS New Jersey', 'UPS Pennsylvania'];
+        return northeastWorkspaces.includes(workspaceName);
+      }
+      if (userRole === 'location' || userRole === 'workspace') {
+        return workspaceName === (accessWorkspace || 'UPS New York');
+      }
+      return true;
+    }
+    
+    // Update page title based on role
+    function updatePageTitleForRole() {
+      const pageTitle = document.getElementById('page-title');
+      if (userRole === 'regional' && accessFolder) {
+        pageTitle.textContent = accessFolder;
+      } else if (userRole === 'location' || userRole === 'workspace') {
+        pageTitle.textContent = accessWorkspace || 'UPS New York';
+      }
+    }
+    
+    // Update navigation visibility based on role
+    function updateNavigationForRole() {
+      const navOrgDashboard = document.getElementById('nav-org-dashboard');
+      const navReporting = document.getElementById('nav-reporting');
+      const navBrands = document.getElementById('nav-brands');
+      const navAutomations = document.getElementById('nav-automations');
+      
+      if (userRole === 'location' || userRole === 'workspace') {
+        // Location managers can't access org-level features
+        if (navOrgDashboard) navOrgDashboard.classList.add('hidden');
+        if (navReporting) navReporting.classList.add('hidden');
+        if (navBrands) navBrands.classList.add('hidden');
+        if (navAutomations) navAutomations.classList.add('hidden');
+      } else if (userRole === 'regional') {
+        // Regional managers have limited reporting access
+        if (navReporting) navReporting.href = 'folder-reporting.html?folder=' + encodeURIComponent(accessFolder || 'UPS Northeast');
+      }
+      
+      // Update user avatar
+      const userAvatar = document.querySelector('.rounded-full.bg-blue-500');
+      if (userAvatar && userName) {
+        const initials = userName.split(' ').map(n => n[0]).join('').toUpperCase();
+        userAvatar.textContent = initials;
+      }
+    }
+    
+    // Initialize role-based UI on page load
+    document.addEventListener('DOMContentLoaded', function() {
+      updateNavigationForRole();
+      renderContent();
+      safeCreateIcons();
+    });
+    
+    // Pagination state
+    let folderCurrentPage = 1;
+    const hubsPerPage = 6; // 2 rows of 3
+    let wsCurrentPage = 1;
+    const workspacesPerPage = 10;
+    
+    // Currently open menu
+    let openMenuId = null;
+    
+    function changeFolderPage(delta) {
+      const displayFolders = currentDataMode === 'filled' ? filledFolders : hubs;
+      const totalPages = Math.ceil(displayFolders.length / hubsPerPage);
+      folderCurrentPage = Math.max(1, Math.min(folderCurrentPage + delta, totalPages));
+      renderContent();
+    }
+    
+    function changeWorkspacePage(delta) {
+      const displayWorkspaces = currentDataMode === 'filled' ? filledStandaloneWorkspaces : standaloneWorkspaces;
+      const totalPages = Math.ceil(displayWorkspaces.length / workspacesPerPage);
+      wsCurrentPage = Math.max(1, Math.min(wsCurrentPage + delta, totalPages));
+      renderContent();
+    }
+    
+    function toggleWorkspaceMenu(id, event) {
+      event.preventDefault();
+      event.stopPropagation();
+      
+      // Close any open menu
+      if (openMenuId && openMenuId !== id) {
+        document.getElementById(`menu-${openMenuId}`)?.classList.add('hidden');
+      }
+      
+      const menu = document.getElementById(`menu-${id}`);
+      if (menu) {
+        menu.classList.toggle('hidden');
+        openMenuId = menu.classList.contains('hidden') ? null : id;
+      }
+    }
+    
+    function toggleOrganizeSubmenu(id, event) {
+      event.preventDefault();
+      event.stopPropagation();
+      const submenu = document.getElementById(`organize-submenu-${id}`);
+      if (submenu) submenu.classList.toggle('hidden');
+    }
+    
+    function openMoveDialog(workspaceName) {
+      document.getElementById('move-workspace-name').textContent = workspaceName;
+      document.getElementById('move-dialog').classList.remove('hidden');
+      document.body.style.overflow = 'hidden';
+      
+      // Populate folder options
+      const displayFolders = currentDataMode === 'filled' ? filledFolders : hubs;
+      const hubOptions = document.getElementById('move-folder-options');
+      hubOptions.innerHTML = displayFolders.map(h => {
+        const folderData = typeof h === 'object' ? h : { name: h };
+        return `
+          <label class="flex items-center gap-3 p-3 hover:bg-gray-50 rounded-xl cursor-pointer">
+            <input type="radio" name="move-destination" value="${folderData.name}" class="w-4 h-4 text-blue-600">
+            <div class="w-8 h-8 ${getColor(folderData.name)} rounded-full flex items-center justify-center text-white text-xs font-bold">${getInitials(folderData.name)}</div>
+            <span class="text-sm text-gray-900">${folderData.name}</span>
+          </label>
+        `;
+      }).join('') + `
+        <label class="flex items-center gap-3 p-3 hover:bg-gray-50 rounded-xl cursor-pointer border-t border-gray-100 mt-2 pt-4">
+          <input type="radio" name="move-destination" value="__standalone__" class="w-4 h-4 text-blue-600">
+          <div class="w-8 h-8 bg-gray-400 rounded-full flex items-center justify-center text-white text-xs font-bold">—</div>
+          <span class="text-sm text-gray-900">Remove from folder (standalone)</span>
+        </label>
+      `;
+      
+      // Close the overflow menu
+      if (openMenuId) {
+        document.getElementById(`menu-${openMenuId}`)?.classList.add('hidden');
+        openMenuId = null;
+      }
+    }
+    
+    function closeMoveDialog() {
+      document.getElementById('move-dialog').classList.add('hidden');
+      document.body.style.overflow = '';
+    }
+    
+    function confirmMove() {
+      // In a real app, this would move the workspace
+      closeMoveDialog();
+      alert('Workspace moved successfully!');
+    }
+    
+    // Close menus when clicking outside
+    document.addEventListener('click', () => {
+      if (openMenuId) {
+        document.getElementById(`menu-${openMenuId}`)?.classList.add('hidden');
+        openMenuId = null;
+      }
+    });
+    
+    // Navigate to a folder
+    function navigateToFolder(folderName, parentFolderName = null) {
+      const allFolders = currentDataMode === 'filled' ? filledFolders : hubs;
+      
+      // Check if it's a top-level parent folder
+      const parentFolder = allFolders.find(f => f.name === folderName);
+      if (parentFolder) {
+        currentFolderPath = [folderName];
+        currentFolder = parentFolder;
+      } else if (parentFolderName) {
+        // It's a child folder
+        const childFolders = childFoldersData[parentFolderName] || [];
+        const childFolder = childFolders.find(c => c.name === folderName);
+        if (childFolder) {
+          currentFolderPath = [parentFolderName, folderName];
+          currentFolder = childFolder;
+        }
+      }
+      
+      updateBreadcrumbs();
+      renderContent();
+    }
+    
+    // Navigate back to root
+    function navigateToRoot() {
+      currentFolderPath = [];
+      currentFolder = null;
+      updateBreadcrumbs();
+      renderContent();
+    }
+    
+    // Navigate to a specific level in the path
+    function navigateToLevel(level) {
+      if (level === 0) {
+        navigateToRoot();
+      } else if (level === 1 && currentFolderPath.length >= 1) {
+        navigateToFolder(currentFolderPath[0]);
+      }
+    }
+    
+    // Update breadcrumbs display
+    function updateBreadcrumbs() {
+      const breadcrumbsEl = document.getElementById('folder-breadcrumbs');
+      const breadcrumbPath = document.getElementById('breadcrumb-path');
+      const pageTitle = document.getElementById('page-title');
+      
+      if (currentFolderPath.length === 0) {
+        breadcrumbsEl.classList.add('hidden');
+        pageTitle.textContent = 'Workspaces';
+      } else {
+        breadcrumbsEl.classList.remove('hidden');
+        pageTitle.textContent = currentFolderPath[currentFolderPath.length - 1];
+        
+        let pathHtml = '';
+        currentFolderPath.forEach((name, idx) => {
+          const isLast = idx === currentFolderPath.length - 1;
+          pathHtml += `<span class="text-gray-400">/</span>`;
+          if (isLast) {
+            pathHtml += `<span class="flex items-center gap-1.5 text-gray-900 font-medium"><i data-lucide="folder" class="w-4 h-4 text-gray-400"></i>${name}</span>`;
+          } else {
+            pathHtml += `<button onclick="navigateToLevel(${idx + 1})" class="flex items-center gap-1.5 text-gray-500 hover:text-blue-600"><svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 20a2 2 0 0 0 2-2V8a2 2 0 0 0-2-2h-7.9a2 2 0 0 1-1.69-.9L9.6 3.9A2 2 0 0 0 7.93 3H4a2 2 0 0 0-2 2v13a2 2 0 0 0 2 2Z"/></svg>${name}</button>`;
+          }
+        });
+        breadcrumbPath.innerHTML = pathHtml;
+      }
+      safeCreateIcons();
+    }
+    
+    function renderContent() {
+      const allFolders = getFilteredFolders();
+      const displayWorkspaces = currentDataMode === 'filled' ? filledStandaloneWorkspaces : standaloneWorkspaces;
+      
+      // Update page based on role
+      updatePageTitleForRole();
+      
+      // Location managers should only see their workspace
+      if (userRole === 'location' || userRole === 'workspace') {
+        hubsContainer.classList.add('hidden');
+        hubsEmptyState.classList.add('hidden');
+        workspacesSection.classList.remove('hidden');
+        emptyState.classList.add('hidden');
+        
+        const ws = accessWorkspace || 'UPS New York';
+        const wsUrl = `workspace-detail.html?workspace=${encodeURIComponent(ws)}&role=${userRole}`;
+        workspacesContainer.innerHTML = `
+          <a href="${wsUrl}" class="bg-white rounded-2xl border border-gray-200 p-5 hover:shadow-lg hover:border-blue-200 transition-all group flex items-center gap-4">
+            <div class="w-14 h-14 ${getColor(ws)} rounded-full flex items-center justify-center text-white text-lg font-bold">${getInitials(ws)}</div>
+            <div class="flex-1">
+              <span class="font-semibold text-gray-900 text-lg block group-hover:text-blue-600 transition-colors">${ws}</span>
+              <span class="text-sm text-gray-500">Your workspace</span>
+            </div>
+            <i data-lucide="chevron-right" class="w-5 h-5 text-gray-300 group-hover:text-blue-500"></i>
+          </a>
+          <div class="mt-6 p-4 bg-blue-50 border border-blue-100 rounded-xl">
+            <div class="flex items-start gap-3">
+              <svg class="w-5 h-5 text-blue-500 mt-0.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4"/><path d="M12 8h.01"/></svg>
+              <div>
+                <p class="text-sm font-medium text-blue-800">Need access to another workspace?</p>
+                <p class="text-sm text-blue-700 mt-1">Contact your admin or <a href="settings.html?tab=workspaces" class="underline">request access</a> to collaborate in other workspaces.</p>
+              </div>
+            </div>
+          </div>
+        `;
+        workspaceCountEl.innerHTML = 'Showing <strong>1</strong> workspace (your assigned workspace)';
+        safeCreateIcons();
+        return;
+      }
+      
+      // Reset visibility
+      hubsEmptyState.classList.add('hidden');
+      hubsContainer.classList.add('hidden');
+      workspacesSection.classList.add('hidden');
+      emptyState.classList.add('hidden');
+      
+      let html = '';
+      
+      // If we're inside a folder, show its contents
+      if (currentFolderPath.length > 0 && currentFolder) {
+        hubsContainer.classList.remove('hidden');
+        
+        if (currentFolderPath.length === 1) {
+          // Inside a parent folder - show child folders
+          const childFolders = getFilteredChildFolders(currentFolderPath[0]);
+          
+          if (childFolders.length > 0) {
+            html += `<div class="grid grid-cols-2 gap-4">`;
+            childFolders.forEach(child => {
+              html += `
+                <button onclick="navigateToFolder('${child.name}', '${currentFolderPath[0]}')" class="bg-white rounded-2xl border border-gray-200 p-4 hover:shadow-md hover:border-gray-300 transition-all text-left group">
+                  <div class="flex items-center gap-3 mb-3">
+                    <div class="w-10 h-10 bg-gray-100 rounded-xl flex items-center justify-center text-gray-500 group-hover:bg-gray-200 transition-colors">
+                      <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 20a2 2 0 0 0 2-2V8a2 2 0 0 0-2-2h-7.9a2 2 0 0 1-1.69-.9L9.6 3.9A2 2 0 0 0 7.93 3H4a2 2 0 0 0-2 2v13a2 2 0 0 0 2 2Z"/></svg>
+              </div>
+                    <div class="flex-1 min-w-0">
+                      <span class="font-medium text-gray-900 block truncate group-hover:text-blue-600 transition-colors">${child.name}</span>
+                      <span class="text-xs text-gray-500">${child.workspaces.length} workspaces</span>
+                </div>
+                    <i data-lucide="chevron-right" class="w-5 h-5 text-gray-300 group-hover:text-blue-500"></i>
+                </div>
+                  <div class="flex items-center gap-1">
+                    ${child.workspaces.slice(0, 5).map(ws => `
+                      <div class="w-7 h-7 ${getColor(ws)} rounded-full flex items-center justify-center text-white text-[9px] font-bold" title="${ws}">${getInitials(ws)}</div>
+                    `).join('')}
+                    ${child.workspaces.length > 5 ? `<span class="text-xs text-gray-400 ml-1">+${child.workspaces.length - 5}</span>` : ''}
+              </div>
+                </button>
+              `;
+            });
+            html += `</div>`;
+          }
+        } else if (currentFolderPath.length === 2) {
+          // Inside a child folder - show workspaces
+          const workspaces = currentFolder.workspaces || [];
+          
+          if (workspaces.length > 0) {
+            html += `<div class="grid grid-cols-3 gap-4">`;
+            workspaces.forEach(ws => {
+              const wsUrl = `workspace-detail.html?workspace=${encodeURIComponent(ws)}&folder=${encodeURIComponent(currentFolderPath[1])}`;
+              html += `
+                <a href="${wsUrl}" class="bg-white rounded-2xl border border-gray-200 p-4 hover:shadow-md hover:border-gray-300 transition-all group">
+                  <div class="flex items-center gap-3">
+                    <div class="w-12 h-12 ${getColor(ws)} rounded-full flex items-center justify-center text-white text-sm font-bold">${getInitials(ws)}</div>
+                    <div class="flex-1 min-w-0">
+                      <span class="font-medium text-gray-900 block truncate group-hover:text-blue-600 transition-colors">${ws}</span>
+                      <span class="text-xs text-gray-400">Workspace</span>
+                </div>
+                    <i data-lucide="chevron-right" class="w-5 h-5 text-gray-300 group-hover:text-blue-500"></i>
+              </div>
+            </a>
+          `;
+            });
+            html += `</div>`;
+        } else {
+            html += `
+              <div class="text-center py-12">
+                <div class="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                  <i data-lucide="inbox" class="w-8 h-8 text-gray-400"></i>
+                </div>
+                <h3 class="text-gray-900 font-medium mb-2">No workspaces in this folder</h3>
+                <p class="text-sm text-gray-500">This folder doesn't have any workspaces yet.</p>
+              </div>
+            `;
+          }
+        }
+        
+        hubsContainer.innerHTML = html;
+      } else {
+        // At root level - show only top-level folders (no nested preview)
+        if (allFolders.length > 0 || displayWorkspaces.length > 0) {
+          hubsContainer.classList.remove('hidden');
+          
+          // Render top-level folders as simple cards in a grid
+          html += `<div class="grid grid-cols-2 gap-4">`;
+          allFolders.forEach(folder => {
+            const folderData = typeof folder === 'object' ? folder : { name: folder, workspaces: [] };
+            const isParentHub = folderData.isParentHub || false;
+            const childFolders = childFoldersData[folderData.name] || [];
+            
+            // Calculate total workspaces for parent folders
+            let workspaceCount = folderData.totalWorkspaces || 0;
+            let folderCount = childFolders.length;
+            
+            if (!isParentHub) {
+              workspaceCount = (folderData.workspaces || []).length;
+              folderCount = 0;
+            }
+            
+            const subtitle = folderCount > 0 
+              ? `${folderCount} folders · ${workspaceCount} workspaces`
+              : `${workspaceCount} workspaces`;
+            
+            html += `
+              <button onclick="navigateToFolder('${folderData.name}')" class="bg-white rounded-2xl border border-gray-200 p-5 hover:shadow-lg hover:border-gray-300 transition-all text-left group">
+                <div class="flex items-center gap-4">
+                  <div class="w-12 h-12 bg-gray-100 rounded-xl flex items-center justify-center text-gray-500 group-hover:bg-gray-200 transition-colors">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 20a2 2 0 0 0 2-2V8a2 2 0 0 0-2-2h-7.9a2 2 0 0 1-1.69-.9L9.6 3.9A2 2 0 0 0 7.93 3H4a2 2 0 0 0-2 2v13a2 2 0 0 0 2 2Z"/></svg>
+            </div>
+                  <div class="flex-1 min-w-0">
+                    <span class="font-semibold text-gray-900 text-lg block truncate group-hover:text-blue-600 transition-colors">${folderData.name}</span>
+                    <span class="text-sm text-gray-500">${subtitle}</span>
+                  </div>
+                  <i data-lucide="chevron-right" class="w-5 h-5 text-gray-300 group-hover:text-blue-500 transition-colors"></i>
+                </div>
+              </button>
+            `;
+          });
+          html += `</div>`;
+          
+          // Render standalone workspaces
+          if (displayWorkspaces.length > 0) {
+            html += `
+              <div class="mt-8 pt-6 border-t border-gray-200">
+                <p class="text-xs font-semibold text-gray-400 uppercase tracking-wide mb-4">Standalone workspaces</p>
+                <div class="grid grid-cols-3 gap-4">
+                  ${displayWorkspaces.map(ws => {
+                    const wsName = typeof ws === 'string' ? ws : ws.name;
+                    const wsUrl = `workspace-detail.html?workspace=${encodeURIComponent(wsName)}`;
+                    return `
+                      <a href="${wsUrl}" class="bg-white rounded-2xl border border-gray-200 p-4 hover:shadow-lg hover:border-gray-300 transition-all group">
+                        <div class="flex items-center gap-3">
+                          <div class="w-10 h-10 ${getColor(wsName)} rounded-full flex items-center justify-center text-white text-sm font-bold">${getInitials(wsName)}</div>
+                          <div class="flex-1 min-w-0">
+                            <span class="font-medium text-gray-900 block truncate group-hover:text-blue-600 transition-colors">${wsName}</span>
+                            <span class="text-xs text-gray-400">Workspace</span>
+                </div>
+              </div>
+                      </a>
+                    `;
+                  }).join('')}
+            </div>
+          </div>
+            `;
+          }
+          
+          hubsContainer.innerHTML = html;
+        } else {
+          hubsEmptyState.classList.remove('hidden');
+        }
+      }
+      
+      safeCreateIcons();
+    }
+    
+    
+    // Read URL parameters for initial state (reuse existing urlParams)
+    const urlViewMode = urlParams.get('view');
+    const urlDataMode = urlParams.get('data');
+    
+    // Initial render with URL params or defaults
+    if (urlDataMode === 'empty' || urlDataMode === 'filled' || urlDataMode === 'onboarding') {
+      setDataMode(urlDataMode, false);
+    } else {
+      // Default to 'filled' if no valid mode in sessionStorage
+      setDataMode(currentDataMode || 'filled', false);
+    }
+    
+    // Expand all tree nodes by default for better initial view
+    initExpandedNodes();
+    
+    // Set view mode from URL or default to tree (skip if onboarding mode)
+    if (currentDataMode !== 'onboarding') {
+      const initialViewMode = (urlViewMode === 'grid' || urlViewMode === 'tree') ? urlViewMode : 'tree';
+      setViewMode(initialViewMode, true);
+    }
+    
+    // If folder parameter is in URL, navigate to that folder (for drill-in from breadcrumbs)
+    const urlFolderParam = urlParams.get('folder');
+    if (urlFolderParam && initialViewMode === 'grid') {
+      // Find the folder in our data and navigate to it
+      const allFolders = currentDataMode === 'filled' ? filledFolders : hubs;
+      
+      // Check if it's a parent folder
+      const parentFolder = allFolders.find(f => f.name === urlFolderParam);
+      if (parentFolder) {
+        navigateToFolder(urlFolderParam);
+      } else {
+        // Check if it's a child folder
+        for (const [parentName, children] of Object.entries(childFoldersData)) {
+          const childFolder = children.find(c => c.name === urlFolderParam);
+          if (childFolder) {
+            navigateToFolder(urlFolderParam, parentName);
+            break;
+          }
+        }
+      }
+    }
+
+    // Toggle header dropdowns
+    let activeHeaderDropdown = null;
+    function toggleHeaderDropdown(dropdownId) {
+      const dropdown = document.getElementById(dropdownId);
+      const allDropdowns = ['user-dropdown', 'org-dropdown', 'notifications-dropdown', 'help-dropdown'];
+      
+      allDropdowns.forEach(id => {
+        if (id !== dropdownId) {
+          const el = document.getElementById(id);
+          if (el) el.classList.add('hidden');
+        }
+      });
+      
+      if (dropdown) {
+        dropdown.classList.toggle('hidden');
+        activeHeaderDropdown = dropdown.classList.contains('hidden') ? null : dropdownId;
+        const orgChevron = document.getElementById('org-dropdown-chevron');
+        if (orgChevron) {
+          orgChevron.style.transform = dropdownId === 'org-dropdown' && !dropdown.classList.contains('hidden') ? 'rotate(180deg)' : 'rotate(0deg)';
+        }
+        safeCreateIcons();
+      }
+    }
+    
+    document.addEventListener('click', (e) => {
+      const dropdownButtons = e.target.closest('[onclick^="toggleHeaderDropdown"]');
+      if (!dropdownButtons && activeHeaderDropdown) {
+        const dropdown = document.getElementById(activeHeaderDropdown);
+        if (dropdown && !dropdown.contains(e.target)) {
+          dropdown.classList.add('hidden');
+          activeHeaderDropdown = null;
+          const orgChevron = document.getElementById('org-dropdown-chevron');
+          if (orgChevron) orgChevron.style.transform = 'rotate(0deg)';
+        }
+      }
+    });
+
+    function toggleSection(section) {
+      const items = document.getElementById(section + '-items');
+      const chevron = document.getElementById(section + '-chevron');
+      
+      if (items.classList.contains('hidden')) {
+        items.classList.remove('hidden');
+        chevron.style.transform = 'rotate(0deg)';
+      } else {
+        items.classList.add('hidden');
+        chevron.style.transform = 'rotate(180deg)';
+      }
+    }
+
+    // Modal functions
+    let modalWorkspaceCount = 1;
+
+    function openCreateWorkspaceModal() {
+      document.getElementById('create-workspace-modal').classList.remove('hidden');
+      document.getElementById('modal-create-folder').checked = false;
+      document.getElementById('modal-folder-name-container').classList.add('hidden');
+      document.body.style.overflow = 'hidden';
+      safeCreateIcons();
+    }
+
+    function openCreateHubModal() {
+      document.getElementById('create-folder-modal').classList.remove('hidden');
+      document.body.style.overflow = 'hidden';
+      renderExistingWorkspaces();
+      safeCreateIcons();
+    }
+    
+    function closeCreateHubModal() {
+      document.getElementById('create-folder-modal').classList.add('hidden');
+      document.body.style.overflow = '';
+    }
+    
+    let hubModalWorkspaceCount = 1;
+    
+    function switchFolderTab(tab) {
+      const existingTab = document.getElementById('folder-tab-existing');
+      const createTab = document.getElementById('folder-tab-create');
+      const existingContent = document.getElementById('folder-existing-content');
+      const createContent = document.getElementById('folder-create-content');
+      
+      if (tab === 'existing') {
+        existingTab.className = 'flex-1 py-2 px-4 text-sm font-medium text-center rounded-lg bg-white shadow-sm text-gray-900';
+        createTab.className = 'flex-1 py-2 px-4 text-sm font-medium text-center rounded-lg text-gray-500 hover:text-gray-700';
+        existingContent.classList.remove('hidden');
+        createContent.classList.add('hidden');
+      } else {
+        createTab.className = 'flex-1 py-2 px-4 text-sm font-medium text-center rounded-lg bg-white shadow-sm text-gray-900';
+        existingTab.className = 'flex-1 py-2 px-4 text-sm font-medium text-center rounded-lg text-gray-500 hover:text-gray-700';
+        createContent.classList.remove('hidden');
+        existingContent.classList.add('hidden');
+      }
+    }
+    
+    function renderExistingWorkspaces() {
+      const container = document.getElementById('existing-workspaces-list');
+      const standaloneWorkspaces = JSON.parse(sessionStorage.getItem('workspaces') || '[]');
+      
+      if (standaloneWorkspaces.length === 0) {
+        container.innerHTML = `
+          <div class="text-center py-6 text-gray-500 text-sm">
+            <p>No standalone workspaces available to add.</p>
+            <p class="mt-1">Switch to "Create new" to add workspaces.</p>
+          </div>
+        `;
+      } else {
+        container.innerHTML = standaloneWorkspaces.map((name, i) => `
+          <label class="flex items-center gap-3 p-3 hover:bg-gray-50 rounded-xl cursor-pointer">
+            <input type="checkbox" value="${name}" class="existing-workspace-checkbox w-5 h-5 text-blue-600 border-gray-300 rounded focus:ring-blue-500">
+            <div class="w-9 h-9 ${getColor(name)} rounded-full flex items-center justify-center text-white text-xs font-bold">${getInitials(name)}</div>
+            <span class="text-gray-900">${name}</span>
+          </label>
+        `).join('');
+      }
+    }
+    
+    function addHubWorkspace() {
+      hubModalWorkspaceCount++;
+      const workspaceList = document.getElementById('folder-new-workspace-list');
+      const newItem = document.createElement('div');
+      newItem.className = 'folder-workspace-item flex items-center gap-3';
+      newItem.innerHTML = `
+        <div class="w-10 h-10 bg-blue-50 rounded-xl flex items-center justify-center text-blue-600 text-sm font-semibold">${hubModalWorkspaceCount}</div>
+        <input type="text" placeholder="e.g., New Jersey location" class="flex-1 px-4 py-3 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-blue-600 focus:border-transparent folder-workspace-input">
+        <button onclick="removeHubWorkspace(this)" class="text-gray-400 hover:text-red-500 p-1">
+          <i data-lucide="x" class="w-4 h-4"></i>
+        </button>
+      `;
+      workspaceList.appendChild(newItem);
+      safeCreateIcons();
+      updateHubWorkspaceNumbers();
+    }
+    
+    function removeHubWorkspace(btn) {
+      if (document.querySelectorAll('.folder-workspace-item').length > 1) {
+        btn.closest('.folder-workspace-item').remove();
+        updateHubWorkspaceNumbers();
+      }
+    }
+    
+    function updateHubWorkspaceNumbers() {
+      const items = document.querySelectorAll('.folder-workspace-item');
+      items.forEach((item, index) => {
+        item.querySelector('.bg-blue-50').textContent = index + 1;
+      });
+      hubModalWorkspaceCount = items.length;
+    }
+    
+    function createFolderFromModal() {
+      const hubName = document.getElementById('folder-name-input').value.trim();
+      if (!hubName) {
+        alert('Please enter a folder name');
+        return;
+      }
+      
+      let workspacesToAdd = [];
+      
+      // Check if using existing workspaces tab
+      const existingContent = document.getElementById('folder-existing-content');
+      if (!existingContent.classList.contains('hidden')) {
+        // Get checked existing workspaces
+        const checked = document.querySelectorAll('.existing-workspace-checkbox:checked');
+        workspacesToAdd = Array.from(checked).map(cb => cb.value);
+        
+        // Remove these from standalone workspaces
+        if (workspacesToAdd.length > 0) {
+          let standaloneWorkspaces = JSON.parse(sessionStorage.getItem('workspaces') || '[]');
+          standaloneWorkspaces = standaloneWorkspaces.filter(w => !workspacesToAdd.includes(w));
+          sessionStorage.setItem('workspaces', JSON.stringify(standaloneWorkspaces));
+        }
+      } else {
+        // Get new workspace names
+        const inputs = document.querySelectorAll('.folder-workspace-input');
+        workspacesToAdd = Array.from(inputs).map(input => input.value.trim()).filter(name => name);
+      }
+      
+      // Create folder
+      const hubs = JSON.parse(sessionStorage.getItem('hubs') || '[]');
+      hubs.push({ name: hubName, workspaces: workspacesToAdd });
+      sessionStorage.setItem('hubs', JSON.stringify(hubs));
+      
+      closeCreateHubModal();
+      window.location.reload();
+    }
+
+    function closeCreateWorkspaceModal() {
+      document.getElementById('create-workspace-modal').classList.add('hidden');
+      document.body.style.overflow = '';
+    }
+
+    function addModalWorkspace() {
+      modalWorkspaceCount++;
+      const workspaceList = document.getElementById('modal-workspace-list');
+      const newItem = document.createElement('div');
+      newItem.className = 'modal-workspace-item flex items-center gap-3';
+      newItem.innerHTML = `
+        <div class="w-10 h-10 bg-blue-50 rounded-xl flex items-center justify-center text-blue-600 text-sm font-semibold">${modalWorkspaceCount}</div>
+        <input type="text" placeholder="e.g., Connecticut location" class="flex-1 px-4 py-3 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-blue-600 focus:border-transparent modal-workspace-input">
+        <button onclick="removeModalWorkspace(this)" class="text-gray-400 hover:text-red-500 p-1">
+          <i data-lucide="x" class="w-4 h-4"></i>
+        </button>
+      `;
+      workspaceList.appendChild(newItem);
+      safeCreateIcons();
+      updateModalWorkspaceNumbers();
+    }
+
+    function removeModalWorkspace(btn) {
+      if (document.querySelectorAll('.modal-workspace-item').length > 1) {
+        btn.closest('.modal-workspace-item').remove();
+        modalWorkspaceCount--;
+        updateModalWorkspaceNumbers();
+      }
+    }
+
+    function updateModalWorkspaceNumbers() {
+      const items = document.querySelectorAll('.modal-workspace-item');
+      items.forEach((item, index) => {
+        const numberDiv = item.querySelector('.w-10');
+        numberDiv.textContent = index + 1;
+      });
+    }
+
+    // Folder checkbox toggle - wait for DOM to be ready
+    document.addEventListener('DOMContentLoaded', function() {
+      document.getElementById('modal-create-folder').addEventListener('change', function() {
+        const folderContainer = document.getElementById('modal-folder-name-container');
+        if (this.checked) {
+          folderContainer.classList.remove('hidden');
+        } else {
+          folderContainer.classList.add('hidden');
+        }
+      });
+    });
+
+    function createWorkspacesFromModal() {
+      // Get all workspace names
+      const inputs = document.querySelectorAll('#modal-workspace-list input');
+      const newWorkspaces = [];
+      inputs.forEach(input => {
+        if (input.value.trim()) {
+          newWorkspaces.push(input.value.trim());
+        }
+      });
+
+      const newFolderName = document.getElementById('modal-folder-name-input').value.trim();
+      const createFolder = document.getElementById('modal-create-folder').checked && newFolderName;
+
+      // Save to sessionStorage
+      if (createFolder) {
+        const existingHubs = JSON.parse(sessionStorage.getItem('hubs') || '[]');
+        existingHubs.push({ name: newFolderName, workspaces: newWorkspaces });
+        sessionStorage.setItem('hubs', JSON.stringify(existingHubs));
+      } else {
+        const existingWorkspaces = JSON.parse(sessionStorage.getItem('workspaces') || '[]');
+        sessionStorage.setItem('workspaces', JSON.stringify([...existingWorkspaces, ...newWorkspaces]));
+      }
+      
+      // Reload page to show new data
+      window.location.href = 'workspaces-list.html';
+    }
+
+    // Data mode toggle
+    function setDataMode(mode, updateUrl = true) {
+      currentDataMode = mode;
+      sessionStorage.setItem('dataMode', mode);
+      
+      const emptyBtn = document.getElementById('toggle-empty');
+      const filledBtn = document.getElementById('toggle-filled');
+      const onboardingBtn = document.getElementById('toggle-onboarding');
+      
+      // Reset all buttons
+      emptyBtn.className = 'px-2.5 py-1 text-xs rounded text-gray-400 hover:text-white';
+      filledBtn.className = 'px-2.5 py-1 text-xs rounded text-gray-400 hover:text-white';
+      onboardingBtn.className = 'px-2.5 py-1 text-xs rounded text-gray-400 hover:text-white';
+      
+      // Highlight active button
+      if (mode === 'empty') {
+        emptyBtn.className = 'px-2.5 py-1 text-xs rounded bg-gray-600 text-white';
+      } else if (mode === 'filled') {
+        filledBtn.className = 'px-2.5 py-1 text-xs rounded bg-gray-600 text-white';
+      } else if (mode === 'onboarding') {
+        onboardingBtn.className = 'px-2.5 py-1 text-xs rounded bg-gray-600 text-white';
+        // Reset tooltip dismissed state when entering onboarding mode
+        onboardingTooltipDismissed = false;
+        sessionStorage.removeItem('onboardingTooltipDismissed');
+      }
+      
+      // Update URL with data parameter
+      if (updateUrl) {
+        const url = new URL(window.location);
+        url.searchParams.set('data', mode);
+        window.history.replaceState({}, '', url);
+      }
+      
+      // Re-render based on current view mode
+      if (currentDataMode === 'onboarding') {
+        // Hide tree/grid views for onboarding
+        document.getElementById('tree-view-container').classList.add('hidden');
+        renderOnboardingView();
+      } else {
+        // Hide onboarding elements first
+        hideOnboardingElements();
+        
+        // Show correct view based on viewMode
+        const treeContainer = document.getElementById('tree-view-container');
+        const hubsSection = document.getElementById('hubs-section');
+        
+        if (viewMode === 'tree') {
+          treeContainer.classList.remove('hidden');
+          hubsSection.classList.add('hidden');
+          renderTreeView();
+        } else {
+          treeContainer.classList.add('hidden');
+          hubsSection.classList.remove('hidden');
+          renderContent();
+        }
+      }
+      
+      safeCreateIcons();
+    }
+    
+    // Hide onboarding-specific elements
+    function hideOnboardingElements() {
+      const tooltip = document.getElementById('onboarding-tooltip');
+      if (tooltip) tooltip.classList.add('hidden');
+      
+      const spotlightCard = document.querySelector('.onboarding-spotlight');
+      if (spotlightCard) spotlightCard.classList.remove('onboarding-spotlight');
+      
+      // Clear onboarding content from hubsContainer
+      const hubsContainer = document.getElementById('hubs-container');
+      if (hubsContainer && hubsContainer.querySelector('.onboarding-tooltip')) {
+        hubsContainer.innerHTML = '';
+      }
+    }
+    
+    // Render onboarding view with default workspace and tooltip
+    function renderOnboardingView() {
+      const hubsSection = document.getElementById('hubs-section');
+      const treeContainer = document.getElementById('tree-view-container');
+      const workspacesSection = document.getElementById('workspaces-section');
+      const searchResultsContainer = document.getElementById('search-results-container');
+      
+      // Hide other sections
+      hubsSection.classList.add('hidden');
+      treeContainer.classList.add('hidden');
+      workspacesSection.classList.add('hidden');
+      searchResultsContainer.classList.add('hidden');
+      hubsEmptyState.classList.add('hidden');
+      emptyState.classList.add('hidden');
+      
+      // Show and populate the onboarding container
+      hubsContainer.classList.remove('hidden');
+      hubsSection.classList.remove('hidden');
+      
+      const wsName = onboardingWorkspace.name;
+      const wsUrl = `workspace-detail.html?workspace=${encodeURIComponent(wsName)}`;
+      
+      hubsContainer.innerHTML = `
+        <div class="space-y-6">
+          <!-- Folders Section - Empty State (compact) -->
+          <div class="max-w-lg">
+            <div class="flex items-center justify-between mb-2">
+              <h2 class="text-xs font-semibold text-gray-400 uppercase tracking-wide">Folders</h2>
+              <button onclick="openCreateHubModal()" class="text-xs text-blue-600 hover:text-blue-700 font-medium flex items-center gap-1">
+                <i data-lucide="plus" class="w-3 h-3"></i>
+                Create folder
+              </button>
+            </div>
+            <div class="bg-gray-50 border border-dashed border-gray-200 rounded-lg p-4 flex items-center gap-3">
+              <div class="w-8 h-8 bg-gray-100 rounded-lg flex items-center justify-center flex-shrink-0">
+                <i data-lucide="folder" class="w-4 h-4 text-gray-400"></i>
+              </div>
+              <div>
+                <p class="text-sm text-gray-500">No folders yet</p>
+                <p class="text-xs text-gray-400">Use folders to organize workspaces</p>
+              </div>
+            </div>
+          </div>
+          
+          <!-- Workspaces Section -->
+          <div class="relative">
+            <div class="flex items-center justify-between mb-3">
+              <h2 class="text-xs font-semibold text-gray-400 uppercase tracking-wide">Workspaces</h2>
+            </div>
+            
+            <!-- Single workspace card with spotlight -->
+            <div id="onboarding-workspace-card" class="max-w-lg ${onboardingTooltipDismissed ? '' : 'onboarding-spotlight'}">
+              <a href="${wsUrl}" class="block bg-white rounded-xl border border-gray-200 p-4 hover:shadow-lg hover:border-blue-300 transition-all group">
+                <div class="flex items-center gap-3">
+                  <div class="w-10 h-10 ${getColor(wsName)} rounded-full flex items-center justify-center text-white text-sm font-bold">
+                    ${getInitials(wsName)}
+                  </div>
+                  <div class="flex-1 min-w-0">
+                    <span class="font-medium text-gray-900 block group-hover:text-blue-600 transition-colors">${wsName}</span>
+                    <span class="text-xs text-gray-500">0 contacts · 0 campaigns</span>
+                  </div>
+                  <i data-lucide="chevron-right" class="w-4 h-4 text-gray-300 group-hover:text-blue-500 transition-colors"></i>
+                </div>
+              </a>
+            </div>
+            
+            <!-- Pendo-style tooltip (compact) -->
+            <div id="onboarding-tooltip" class="onboarding-tooltip max-w-lg mt-3 ${onboardingTooltipDismissed ? 'hidden' : ''}">
+              <div class="tooltip-arrow" style="left: 28px;"></div>
+              <div class="bg-blue-800 text-white rounded-xl p-4 shadow-xl">
+                <div class="flex items-start justify-between gap-2 mb-2">
+                  <div class="flex items-center gap-2">
+                    <i data-lucide="info" class="w-4 h-4 text-blue-300"></i>
+                    <span class="font-semibold text-sm">What is a Workspace?</span>
+                  </div>
+                  <button onclick="dismissOnboardingTooltip()" class="text-blue-300 hover:text-white p-0.5 -mt-0.5 -mr-0.5">
+                    <i data-lucide="x" class="w-3.5 h-3.5"></i>
+                  </button>
+                </div>
+                <p class="text-blue-100 text-xs mb-3 leading-relaxed">
+                  A workspace is your team's home base for email marketing. Create campaigns, manage contacts, view reports, and collaborate with teammates.
+                </p>
+                <div class="flex gap-2">
+                  <a href="workspace-detail.html?workspace=${encodeURIComponent(wsName)}&action=invite" class="flex-1 flex items-center justify-center gap-1.5 px-3 py-2 bg-white text-blue-800 rounded-lg font-medium text-xs hover:bg-blue-50 transition-colors">
+                    <i data-lucide="users" class="w-3.5 h-3.5"></i>
+                    Invite team
+                  </a>
+                  <a href="workspace-detail.html?workspace=${encodeURIComponent(wsName)}&action=create" class="flex-1 flex items-center justify-center gap-1.5 px-3 py-2 bg-blue-600 text-white rounded-lg font-medium text-xs hover:bg-blue-500 transition-colors">
+                    <i data-lucide="mail-plus" class="w-3.5 h-3.5"></i>
+                    Create campaign
+                  </a>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      `;
+      
+      safeCreateIcons();
+    }
+    
+    // Dismiss onboarding tooltip
+    function dismissOnboardingTooltip() {
+      onboardingTooltipDismissed = true;
+      sessionStorage.setItem('onboardingTooltipDismissed', 'true');
+      
+      const tooltip = document.getElementById('onboarding-tooltip');
+      if (tooltip) {
+        tooltip.style.animation = 'tooltipFadeIn 0.2s ease-out reverse';
+        setTimeout(() => {
+          tooltip.classList.add('hidden');
+        }, 200);
+      }
+      
+      const card = document.getElementById('onboarding-workspace-card');
+      if (card) {
+        card.classList.remove('onboarding-spotlight');
+      }
+    }
+    
+    // View mode toggle (grid / tree)
+    function setViewMode(mode, updateUrl = true) {
+      // If in onboarding mode, ignore view mode changes
+      if (currentDataMode === 'onboarding') {
+        return;
+      }
+      
+      viewMode = mode;
+      
+      const gridBtn = document.getElementById('view-grid-btn');
+      const treeBtn = document.getElementById('view-tree-btn');
+      const treeContainer = document.getElementById('tree-view-container');
+      const hubsSection = document.getElementById('hubs-section');
+      const workspacesSection = document.getElementById('workspaces-section');
+      
+      if (mode === 'grid') {
+        gridBtn.className = 'flex items-center gap-1.5 px-3 py-1.5 rounded-md text-sm font-medium bg-white shadow-sm text-gray-900';
+        treeBtn.className = 'flex items-center gap-1.5 px-3 py-1.5 rounded-md text-sm font-medium text-gray-500 hover:text-gray-700';
+        treeContainer.classList.add('hidden');
+        hubsSection.classList.remove('hidden');
+        workspacesSection.classList.remove('hidden');
+        renderContent();
+      } else {
+        treeBtn.className = 'flex items-center gap-1.5 px-3 py-1.5 rounded-md text-sm font-medium bg-white shadow-sm text-gray-900';
+        gridBtn.className = 'flex items-center gap-1.5 px-3 py-1.5 rounded-md text-sm font-medium text-gray-500 hover:text-gray-700';
+        hubsSection.classList.add('hidden');
+        workspacesSection.classList.add('hidden');
+        treeContainer.classList.remove('hidden');
+        renderTreeView();
+      }
+      
+      // Update URL with view parameter (without page reload)
+      if (updateUrl) {
+        const url = new URL(window.location);
+        url.searchParams.set('view', mode);
+        window.history.replaceState({}, '', url);
+      }
+      
+      safeCreateIcons();
+    }
+    
+    // Deep search functionality
+    function handleWorkspaceSearch(query) {
+      currentSearchQuery = query.trim().toLowerCase();
+      const searchResultsContainer = document.getElementById('search-results-container');
+      const searchClearBtn = document.getElementById('search-clear-btn');
+      const treeContainer = document.getElementById('tree-view-container');
+      const hubsSection = document.getElementById('hubs-section');
+      const workspacesSection = document.getElementById('workspaces-section');
+      
+      // Show/hide clear button
+      if (currentSearchQuery) {
+        searchClearBtn.classList.remove('hidden');
+      } else {
+        searchClearBtn.classList.add('hidden');
+      }
+      
+      if (!currentSearchQuery) {
+        // Hide search results, show normal view
+        searchResultsContainer.classList.add('hidden');
+        if (viewMode === 'tree') {
+          treeContainer.classList.remove('hidden');
+        } else {
+          hubsSection.classList.remove('hidden');
+          workspacesSection.classList.remove('hidden');
+        }
+        return;
+      }
+      
+      // Hide normal content, show search results
+      treeContainer.classList.add('hidden');
+      hubsSection.classList.add('hidden');
+      workspacesSection.classList.add('hidden');
+      searchResultsContainer.classList.remove('hidden');
+      
+      // Perform deep search
+      const results = performDeepSearch(currentSearchQuery);
+      renderSearchResults(results);
+      safeCreateIcons();
+    }
+    
+    function clearWorkspaceSearch() {
+      document.getElementById('workspace-search').value = '';
+      handleWorkspaceSearch('');
+    }
+    
+    function performDeepSearch(query) {
+      const results = [];
+      const displayFolders = currentDataMode === 'filled' ? filledFolders : hubs;
+      
+      // Search through parent folders
+      displayFolders.forEach(folder => {
+        const folderData = typeof folder === 'object' ? folder : { name: folder, workspaces: [] };
+        const folderName = folderData.name.toLowerCase();
+        
+        // Check if parent folder matches
+        if (folderName.includes(query)) {
+          results.push({
+            type: 'folder',
+            name: folderData.name,
+            path: [folderData.name],
+            isParent: folderData.isParentHub || false,
+            childCount: folderData.childFolders ? folderData.childFolders.length : 0,
+            workspaceCount: folderData.totalWorkspaces || folderData.workspaces?.length || 0
+          });
+        }
+        
+        // Search child folders
+        if (folderData.isParentHub && childFoldersData[folderData.name]) {
+          childFoldersData[folderData.name].forEach(childFolder => {
+            // Check if child folder matches
+            if (childFolder.name.toLowerCase().includes(query)) {
+              results.push({
+                type: 'folder',
+                name: childFolder.name,
+                path: [folderData.name, childFolder.name],
+                isParent: false,
+                childCount: 0,
+                workspaceCount: childFolder.workspaces.length
+              });
+            }
+            
+            // Search workspaces within child folder
+            childFolder.workspaces.forEach(ws => {
+              if (ws.toLowerCase().includes(query)) {
+                results.push({
+                  type: 'workspace',
+                  name: ws,
+                  path: [folderData.name, childFolder.name, ws],
+                  folder: childFolder.name
+                });
+              }
+            });
+          });
+        }
+        
+        // Search direct workspaces in folder
+        if (folderData.workspaces) {
+          folderData.workspaces.forEach(ws => {
+            if (ws.toLowerCase().includes(query)) {
+              results.push({
+                type: 'workspace',
+                name: ws,
+                path: [folderData.name, ws],
+                folder: folderData.name
+              });
+            }
+          });
+        }
+      });
+      
+      // Search standalone workspaces
+      const displayWorkspaces = currentDataMode === 'filled' ? filledStandaloneWorkspaces : standaloneWorkspaces;
+      displayWorkspaces.forEach(ws => {
+        const wsData = typeof ws === 'object' ? ws : { name: ws };
+        if (wsData.name.toLowerCase().includes(query)) {
+          results.push({
+            type: 'workspace',
+            name: wsData.name,
+            path: [wsData.name],
+            folder: null
+          });
+        }
+      });
+      
+      return results;
+    }
+    
+    function renderSearchResults(results) {
+      const container = document.getElementById('search-results-content');
+      const countEl = document.getElementById('search-results-count');
+      const noResultsEl = document.getElementById('no-results-state');
+      
+      countEl.textContent = `${results.length} result${results.length !== 1 ? 's' : ''}`;
+      
+      if (results.length === 0) {
+        container.innerHTML = '';
+        noResultsEl.classList.remove('hidden');
+        return;
+      }
+      
+      noResultsEl.classList.add('hidden');
+      
+      const html = results.map(result => {
+        if (result.type === 'folder') {
+          return `
+            <div class="flex items-center gap-3 p-3 hover:bg-gray-50 rounded-xl group">
+              <div class="w-10 h-10 bg-gray-100 rounded-xl flex items-center justify-center text-gray-500">
+                <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 20a2 2 0 0 0 2-2V8a2 2 0 0 0-2-2h-7.9a2 2 0 0 1-1.69-.9L9.6 3.9A2 2 0 0 0 7.93 3H4a2 2 0 0 0-2 2v13a2 2 0 0 0 2 2Z"/></svg>
+              </div>
+              <div class="flex-1 min-w-0">
+                <span class="font-medium text-gray-900 block">${result.name}</span>
+                <span class="text-xs text-gray-400">${result.path.join(' / ')} • ${result.workspaceCount} workspaces</span>
+              </div>
+            </div>
+          `;
+        } else {
+          const workspaceUrl = result.folder 
+            ? `workspace-detail.html?workspace=${encodeURIComponent(result.name)}&folder=${encodeURIComponent(result.folder)}`
+            : `workspace-detail.html?workspace=${encodeURIComponent(result.name)}`;
+          return `
+            <a href="${workspaceUrl}" class="flex items-center gap-3 p-3 hover:bg-gray-50 rounded-xl group">
+              <div class="w-10 h-10 ${getColor(result.name)} rounded-full flex items-center justify-center text-white text-sm font-bold">
+                ${getInitials(result.name)}
+              </div>
+              <div class="flex-1 min-w-0">
+                <span class="font-medium text-gray-900 block">${result.name}</span>
+                <span class="text-xs text-gray-400">${result.path.join(' / ')}</span>
+              </div>
+              <i data-lucide="chevron-right" class="w-4 h-4 text-gray-300 opacity-0 group-hover:opacity-100"></i>
+            </a>
+          `;
+        }
+      }).join('');
+      
+      container.innerHTML = html;
+    }
+    
+    function toggleTreeNode(nodeId, event) {
+      if (event) {
+        event.preventDefault();
+        event.stopPropagation();
+      }
+      
+      if (expandedNodes.has(nodeId)) {
+        expandedNodes.delete(nodeId);
+      } else {
+        expandedNodes.add(nodeId);
+      }
+      renderTreeView();
+    }
+    
+    function renderTreeView() {
+      const treeContent = document.getElementById('tree-content');
+      const displayFolders = currentDataMode === 'filled' ? filledFolders : hubs;
+      const displayWorkspaces = currentDataMode === 'filled' ? filledStandaloneWorkspaces : standaloneWorkspaces;
+      
+      let html = '';
+      
+      // Render parent folders with children
+      displayFolders.forEach(folder => {
+        const folderData = typeof folder === 'object' ? folder : { name: folder, workspaces: [] };
+        const isParentHub = folderData.isParentHub || false;
+        const nodeId = `folder-${folderData.name.replace(/\s+/g, '-')}`;
+        const isExpanded = expandedNodes.has(nodeId);
+        
+        if (isParentHub) {
+          const totalWorkspaces = folderData.totalWorkspaces || 0;
+          const members = folderData.members || 0;
+          const childFolders = childFoldersData[folderData.name] || [];
+          
+          html += `
+            <div class="tree-node">
+              <div class="flex items-center gap-3 p-3 hover:bg-gray-50 rounded-xl cursor-pointer group" onclick="toggleTreeNode('${nodeId}', event)">
+                <button class="w-6 h-6 flex items-center justify-center text-gray-400 hover:text-gray-600 flex-shrink-0">
+                  <i data-lucide="${isExpanded ? 'chevron-down' : 'chevron-right'}" class="w-4 h-4"></i>
+                </button>
+                <div class="w-10 h-10 bg-gray-100 rounded-xl flex items-center justify-center text-gray-500 flex-shrink-0">
+                  <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 20a2 2 0 0 0 2-2V8a2 2 0 0 0-2-2h-7.9a2 2 0 0 1-1.69-.9L9.6 3.9A2 2 0 0 0 7.93 3H4a2 2 0 0 0-2 2v13a2 2 0 0 0 2 2Z"/></svg>
+                </div>
+                <div class="flex-1 min-w-0">
+                  <span class="font-medium text-gray-900 block">${folderData.name} <span class="text-gray-400 font-normal">Folder</span></span>
+                  <span class="text-xs text-gray-500">${folderData.folders} folders · ${totalWorkspaces} workspaces · ${members} members</span>
+                </div>
+              </div>
+              ${isExpanded ? `
+                <div class="ml-6 pl-6 border-l-2 border-gray-100 space-y-1 mt-1">
+                  ${childFolders.map(childFolder => {
+                    const childNodeId = `hub-${childFolder.name.replace(/\s+/g, '-')}`;
+                    const isChildExpanded = expandedNodes.has(childNodeId);
+                    return `
+                      <div class="tree-node">
+                        <div class="flex items-center gap-3 p-2 hover:bg-gray-50 rounded-lg cursor-pointer group" onclick="toggleTreeNode('${childNodeId}', event)">
+                          <button class="w-5 h-5 flex items-center justify-center text-gray-400 hover:text-gray-600 flex-shrink-0">
+                            <i data-lucide="${isChildExpanded ? 'chevron-down' : 'chevron-right'}" class="w-3.5 h-3.5"></i>
+                          </button>
+                          <div class="w-8 h-8 bg-gray-100 rounded-lg flex items-center justify-center text-gray-500 flex-shrink-0"><svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 20a2 2 0 0 0 2-2V8a2 2 0 0 0-2-2h-7.9a2 2 0 0 1-1.69-.9L9.6 3.9A2 2 0 0 0 7.93 3H4a2 2 0 0 0-2 2v13a2 2 0 0 0 2 2Z"/></svg></div>
+                          <div class="flex-1 min-w-0">
+                            <span class="font-medium text-gray-900 text-sm block">${childFolder.name} <span class="text-gray-400 font-normal">Folder</span></span>
+                            <span class="text-xs text-gray-400">${childFolder.workspaces.length} workspaces · ${childFolder.contacts} contacts</span>
+                          </div>
+                        </div>
+                        ${isChildExpanded ? `
+                          <div class="ml-5 pl-5 border-l-2 border-gray-100 space-y-0.5 mt-1">
+                            ${childFolder.workspaces.map(ws => `
+                              <a href="workspace-detail.html?workspace=${encodeURIComponent(ws)}&folder=${encodeURIComponent(childFolder.name)}" class="flex items-center gap-3 p-2 hover:bg-gray-50 rounded-lg group">
+                                <div class="w-4 h-4"></div>
+                                <div class="w-6 h-6 ${getColor(ws)} rounded-full flex items-center justify-center text-white text-[10px] font-bold flex-shrink-0">${getInitials(ws)}</div>
+                                <span class="text-sm text-gray-700 flex-1">${ws} <span class="text-gray-400">Workspace</span></span>
+                                <i data-lucide="chevron-right" class="w-3.5 h-3.5 text-gray-300 opacity-0 group-hover:opacity-100"></i>
+                              </a>
+                            `).join('')}
+                          </div>
+                        ` : ''}
+                      </div>
+                    `;
+                  }).join('')}
+                </div>
+              ` : ''}
+            </div>
+          `;
+        } else {
+          // Regular folder
+          html += `
+            <div class="tree-node">
+              <div class="flex items-center gap-3 p-3 hover:bg-gray-50 rounded-xl cursor-pointer group" onclick="toggleTreeNode('${nodeId}', event)">
+                <button class="w-6 h-6 flex items-center justify-center text-gray-400 hover:text-gray-600 flex-shrink-0">
+                  <i data-lucide="${isExpanded ? 'chevron-down' : 'chevron-right'}" class="w-4 h-4"></i>
+                </button>
+                <div class="w-10 h-10 bg-gray-100 rounded-xl flex items-center justify-center text-gray-500 flex-shrink-0"><svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 20a2 2 0 0 0 2-2V8a2 2 0 0 0-2-2h-7.9a2 2 0 0 1-1.69-.9L9.6 3.9A2 2 0 0 0 7.93 3H4a2 2 0 0 0-2 2v13a2 2 0 0 0 2 2Z"/></svg></div>
+                <div class="flex-1 min-w-0">
+                  <span class="font-medium text-gray-900 block">${folderData.name} <span class="text-gray-400 font-normal">Folder</span></span>
+                  <span class="text-xs text-gray-500">${folderData.workspaces.length} workspaces</span>
+                </div>
+              </div>
+              ${isExpanded && folderData.workspaces.length > 0 ? `
+                <div class="ml-6 pl-6 border-l-2 border-gray-100 space-y-0.5 mt-1">
+                  ${folderData.workspaces.map(ws => `
+                    <a href="workspace-detail.html?workspace=${encodeURIComponent(ws)}&folder=${encodeURIComponent(folderData.name)}" class="flex items-center gap-3 p-2 hover:bg-gray-50 rounded-lg group">
+                      <div class="w-4 h-4"></div>
+                      <div class="w-6 h-6 ${getColor(ws)} rounded-full flex items-center justify-center text-white text-[10px] font-bold flex-shrink-0">${getInitials(ws)}</div>
+                      <span class="text-sm text-gray-700 flex-1">${ws} <span class="text-gray-400">Workspace</span></span>
+                      <i data-lucide="chevron-right" class="w-3.5 h-3.5 text-gray-300 opacity-0 group-hover:opacity-100"></i>
+                    </a>
+                  `).join('')}
+                </div>
+              ` : ''}
+            </div>
+          `;
+        }
+      });
+      
+      // Render standalone workspaces
+      if (displayWorkspaces.length > 0) {
+        html += `
+          <div class="mt-6 pt-4 border-t border-gray-100">
+            <p class="text-xs font-semibold text-gray-400 uppercase tracking-wide mb-3 px-3">Standalone Workspaces</p>
+            <div class="space-y-0.5">
+              ${displayWorkspaces.map(ws => {
+                const wsName = typeof ws === 'string' ? ws : ws.name;
+                return `
+                  <a href="workspace-detail.html?workspace=${encodeURIComponent(wsName)}" class="flex items-center gap-3 p-2 hover:bg-gray-50 rounded-lg group">
+                    <div class="w-6 h-6"></div>
+                    <div class="w-8 h-8 ${getColor(wsName)} rounded-full flex items-center justify-center text-white text-xs font-bold flex-shrink-0">${getInitials(wsName)}</div>
+                    <span class="text-sm text-gray-700 flex-1">${wsName} <span class="text-gray-400">Workspace</span></span>
+                    <i data-lucide="chevron-right" class="w-4 h-4 text-gray-300 opacity-0 group-hover:opacity-100"></i>
+                  </a>
+                `;
+              }).join('')}
+            </div>
+          </div>
+        `;
+      }
+      
+      // Show empty state if no data
+      if (html === '') {
+        html = `
+          <div class="text-center py-12">
+            <div class="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
+              <i data-lucide="folder-tree" class="w-8 h-8 text-gray-400"></i>
+            </div>
+            <h3 class="text-gray-900 font-medium mb-2">No workspaces or folders yet</h3>
+            <p class="text-sm text-gray-500 mb-4 max-w-md mx-auto">Get started by creating a workspace or organizing your workspaces into folders.</p>
+          </div>
+        `;
+      }
+      
+      treeContent.innerHTML = html;
+      safeCreateIcons();
+    }
+  </script>
+
+  <!-- Create Workspace Modal -->
+  <div id="create-workspace-modal" class="fixed inset-0 z-[100] hidden">
+    <!-- Backdrop -->
+    <div class="absolute inset-0 bg-gradient-to-br from-sky-400/80 via-teal-300/70 to-green-200/80 backdrop-blur-sm" onclick="closeCreateWorkspaceModal()"></div>
+    
+    <!-- Modal Content -->
+    <div class="absolute inset-0 flex items-center justify-center p-8">
+      <div class="bg-white rounded-3xl shadow-2xl p-8 max-w-lg w-full max-h-[90vh] overflow-y-auto">
+        <!-- Header with back button -->
+        <div class="flex items-center gap-3 mb-6">
+          <button onclick="closeCreateWorkspaceModal()" class="text-gray-400 hover:text-gray-600">
+            <i data-lucide="arrow-left" class="w-5 h-5"></i>
+          </button>
+          <h2 class="text-xl font-bold text-gray-900">Set up your workspaces</h2>
+        </div>
+
+        <p class="text-gray-600 mb-6">Add the workspaces you need to get started. You can always add more later.</p>
+
+        <!-- Workspace inputs -->
+        <div id="modal-workspace-list" class="space-y-3 mb-4">
+          <div class="modal-workspace-item flex items-center gap-3">
+            <div class="w-10 h-10 bg-blue-50 rounded-xl flex items-center justify-center text-blue-600 text-sm font-semibold">1</div>
+            <input type="text" placeholder="e.g., New Jersey location" class="flex-1 px-4 py-3 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-blue-600 focus:border-transparent modal-workspace-input">
+          </div>
+        </div>
+
+        <button onclick="addModalWorkspace()" class="flex items-center gap-2 text-blue-600 hover:text-blue-700 font-medium text-sm mb-6">
+          <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="M12 5v14"/></svg>
+          Add another workspace
+        </button>
+
+        <!-- Folder grouping option -->
+        <div class="bg-gray-50 rounded-2xl p-5 mb-6">
+          <label class="flex items-start gap-3 cursor-pointer">
+            <input type="checkbox" id="modal-create-folder" class="w-5 h-5 mt-0.5 text-blue-600 border-gray-300 rounded focus:ring-blue-500">
+            <div>
+              <span class="font-semibold text-gray-900 block">Group these workspaces in a Folder</span>
+              <span class="text-sm text-gray-500">Folders let you see rolled-up reporting across workspaces and manage shared assets.</span>
+            </div>
+          </label>
+          
+          <!-- Folder Name Input (shown when checkbox is checked) -->
+          <div id="modal-folder-name-container" class="mt-4 hidden">
+            <label class="block text-sm font-medium text-gray-700 mb-1.5">Folder name</label>
+            <input type="text" id="modal-folder-name-input" placeholder="e.g., Northeast region" class="w-full px-4 py-3 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-blue-600 focus:border-transparent bg-white">
+          </div>
+        </div>
+
+        <button onclick="createWorkspacesFromModal()" class="w-full py-4 bg-blue-600 text-white rounded-2xl font-semibold text-sm hover:bg-blue-700 transition-colors">
+          Create workspaces
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Create Folder Modal -->
+  <div id="create-folder-modal" class="fixed inset-0 z-[100] hidden">
+    <!-- Backdrop -->
+    <div class="absolute inset-0 bg-gradient-to-br from-sky-400/80 via-teal-300/70 to-green-200/80 backdrop-blur-sm" onclick="closeCreateHubModal()"></div>
+    
+    <!-- Modal Content -->
+    <div class="absolute inset-0 flex items-center justify-center p-8">
+      <div class="bg-white rounded-3xl shadow-2xl p-8 max-w-lg w-full max-h-[90vh] overflow-y-auto">
+        <!-- Header with back button -->
+        <div class="flex items-center gap-3 mb-6">
+          <button onclick="closeCreateHubModal()" class="text-gray-400 hover:text-gray-600">
+            <i data-lucide="arrow-left" class="w-5 h-5"></i>
+          </button>
+          <h2 class="text-xl font-bold text-gray-900">Create a folder</h2>
+        </div>
+
+        <p class="text-gray-600 mb-6">Folders let you organize workspaces together, see rolled-up reporting, and manage shared brand assets.</p>
+
+        <!-- Folder name input -->
+        <div class="mb-6">
+          <label class="block text-sm font-medium text-gray-700 mb-1.5">Folder name</label>
+          <input type="text" id="folder-name-input" placeholder="e.g., Northeast region" class="w-full px-4 py-3 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-blue-600 focus:border-transparent">
+        </div>
+
+        <!-- Tabs -->
+        <div class="mb-4">
+          <label class="block text-sm font-medium text-gray-700 mb-2">Add workspaces to this folder</label>
+          <div class="flex gap-1 p-1 bg-gray-100 rounded-xl">
+            <button id="folder-tab-existing" onclick="switchFolderTab('existing')" class="flex-1 py-2 px-4 text-sm font-medium text-center rounded-lg bg-white shadow-sm text-gray-900">
+              Add existing
+            </button>
+            <button id="folder-tab-create" onclick="switchFolderTab('create')" class="flex-1 py-2 px-4 text-sm font-medium text-center rounded-lg text-gray-500 hover:text-gray-700">
+              Create new
+            </button>
+          </div>
+        </div>
+
+        <!-- Existing workspaces content -->
+        <div id="folder-existing-content" class="mb-6">
+          <div id="existing-workspaces-list" class="border border-gray-200 rounded-xl max-h-48 overflow-y-auto">
+            <!-- Existing workspaces will be rendered here -->
+          </div>
+        </div>
+
+        <!-- Create new workspaces content -->
+        <div id="folder-create-content" class="mb-6 hidden">
+          <div id="folder-new-workspace-list" class="space-y-3 mb-4">
+            <div class="folder-workspace-item flex items-center gap-3">
+              <div class="w-10 h-10 bg-blue-50 rounded-xl flex items-center justify-center text-blue-600 text-sm font-semibold">1</div>
+              <input type="text" placeholder="e.g., New Jersey location" class="flex-1 px-4 py-3 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-blue-600 focus:border-transparent folder-workspace-input">
+            </div>
+          </div>
+          <button onclick="addHubWorkspace()" class="flex items-center gap-2 text-blue-600 hover:text-blue-700 font-medium text-sm">
+            <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="M12 5v14"/></svg>
+            Add another workspace
+          </button>
+        </div>
+
+        <button onclick="createFolderFromModal()" class="w-full py-4 bg-blue-600 text-white rounded-2xl font-semibold text-sm hover:bg-blue-700 transition-colors">
+          Create folder
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Move Workspace Dialog -->
+  <div id="move-dialog" class="fixed inset-0 z-[100] hidden">
+    <!-- Backdrop -->
+    <div class="absolute inset-0 bg-black/50 backdrop-blur-sm" onclick="closeMoveDialog()"></div>
+    
+    <!-- Modal Content -->
+    <div class="absolute inset-0 flex items-center justify-center p-8">
+      <div class="bg-white rounded-2xl shadow-2xl p-6 max-w-md w-full max-h-[80vh] overflow-y-auto" onclick="event.stopPropagation()">
+        <div class="flex items-center justify-between mb-4">
+          <h3 class="text-lg font-bold text-gray-900">Move workspace</h3>
+          <button onclick="closeMoveDialog()" class="text-gray-400 hover:text-gray-600">
+            <i data-lucide="x" class="w-5 h-5"></i>
+          </button>
+        </div>
+        
+        <p class="text-sm text-gray-600 mb-4">
+          Move <strong id="move-workspace-name"></strong> to a different folder or remove from current folder.
+        </p>
+        
+        <div id="move-folder-options" class="border border-gray-200 rounded-xl max-h-60 overflow-y-auto mb-4">
+          <!-- Folder options will be populated dynamically -->
+        </div>
+        
+        <div class="flex gap-3">
+          <button onclick="closeMoveDialog()" class="flex-1 py-3 border border-gray-200 text-gray-700 rounded-xl font-medium text-sm hover:bg-gray-50 transition-colors">
+            Cancel
+          </button>
+          <button onclick="confirmMove()" class="flex-1 py-3 bg-blue-600 text-white rounded-xl font-medium text-sm hover:bg-blue-700 transition-colors">
+            Move
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Global Search Dialog -->
+  <div id="global-search-dialog" class="fixed inset-0 z-[200] hidden">
+    <!-- Backdrop -->
+    <div class="absolute inset-0 bg-black/50 backdrop-blur-sm" onclick="closeGlobalSearchDialog()"></div>
+    
+    <!-- Dialog Content -->
+    <div class="absolute inset-0 flex items-start justify-center pt-24">
+      <div class="bg-white rounded-2xl shadow-2xl w-full max-w-xl overflow-hidden">
+        <!-- Search Input -->
+        <div class="flex items-center gap-3 px-5 py-4 border-b border-gray-100">
+          <svg class="w-5 h-5 text-gray-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
+          <input type="text" id="global-search-input" placeholder="Search folders, workspaces, campaigns..." oninput="handleGlobalSearch(this.value)" onkeydown="handleSearchDialogKeydown(event)" class="flex-1 text-base focus:outline-none" autofocus>
+          <button onclick="closeGlobalSearchDialog()" class="p-1.5 hover:bg-gray-100 rounded-lg transition-colors">
+            <svg class="w-5 h-5 text-gray-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+          </button>
+        </div>
+        
+        <!-- Search Results Container -->
+        <div id="search-results-container" class="max-h-[450px] overflow-y-auto">
+          <!-- Search Results (shown when there's a query) -->
+          <div id="search-results-section" class="hidden">
+            <!-- Dynamic search results will be populated here -->
+          </div>
+          
+          <!-- Recent Activity Section -->
+          <div id="recent-activity-section" class="px-2 pt-3 pb-3">
+            <p class="px-3 text-xs font-semibold text-gray-400 uppercase tracking-wide mb-2">Recently viewed</p>
+            <div class="space-y-0.5">
+              <a href="workspace-detail.html?workspace=UPS%20New%20York" class="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl hover:bg-gray-50 transition-colors">
+                <div class="w-10 h-10 bg-pink-500 rounded-xl flex items-center justify-center text-white text-sm font-bold">UN</div>
+                <div class="flex-1 text-left">
+                  <p class="text-sm font-medium text-gray-900">UPS New York</p>
+                  <p class="text-xs text-gray-400">Workspace • UPS Northeast • 2 min ago</p>
+                </div>
+              </a>
+              <a href="#" class="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl hover:bg-gray-50 transition-colors">
+                <div class="w-10 h-10 bg-blue-100 rounded-xl flex items-center justify-center">
+                  <svg class="w-5 h-5 text-blue-600" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect width="20" height="16" x="2" y="4" rx="2"/><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/></svg>
+                </div>
+                <div class="flex-1 text-left">
+                  <p class="text-sm font-medium text-gray-900">Holiday Shipping Promo</p>
+                  <p class="text-xs text-gray-400">Campaign • UPS New York • 15 min ago</p>
+                </div>
+              </a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // Global Search Data
+    const globalSearchData = {
+      folders: [
+        { name: 'UPS US', type: 'folder', count: '18 workspaces' },
+        { name: 'UPS EU', type: 'folder', count: '14 workspaces' },
+        { name: 'UPS Northeast', type: 'folder', count: '5 workspaces', parent: 'UPS US' },
+        { name: 'UPS Southeast', type: 'folder', count: '5 workspaces', parent: 'UPS US' },
+        { name: 'UPS Southwest', type: 'folder', count: '4 workspaces', parent: 'UPS US' },
+        { name: 'UPS Northwest', type: 'folder', count: '4 workspaces', parent: 'UPS US' }
+      ],
+      workspaces: [
+        { name: 'UPS Foundation', icon: 'UF', color: 'bg-purple-500 text-white' },
+        { name: 'UPS Student Program', icon: 'US', color: 'bg-blue-500 text-white' },
+        { name: 'UPS New York', icon: 'UN', color: 'bg-pink-500 text-white', folder: 'UPS Northeast' },
+        { name: 'UPS Connecticut', icon: 'UC', color: 'bg-teal-500 text-white', folder: 'UPS Northeast' },
+        { name: 'UPS Massachusetts', icon: 'UM', color: 'bg-indigo-500 text-white', folder: 'UPS Northeast' },
+        { name: 'UPS New Jersey', icon: 'UN', color: 'bg-cyan-500 text-white', folder: 'UPS Northeast' },
+        { name: 'UPS Pennsylvania', icon: 'UP', color: 'bg-emerald-500 text-white', folder: 'UPS Northeast' },
+        { name: 'UPS Florida', icon: 'UF', color: 'bg-orange-500 text-white', folder: 'UPS Southeast' },
+        { name: 'UPS Georgia', icon: 'UG', color: 'bg-red-500 text-white', folder: 'UPS Southeast' },
+        { name: 'UPS Texas', icon: 'UT', color: 'bg-rose-500 text-white', folder: 'UPS Southwest' },
+        { name: 'UPS Arizona', icon: 'UA', color: 'bg-yellow-600 text-white', folder: 'UPS Southwest' },
+        { name: 'UPS Washington', icon: 'UW', color: 'bg-sky-500 text-white', folder: 'UPS Northwest' },
+        { name: 'UPS Oregon', icon: 'UO', color: 'bg-green-600 text-white', folder: 'UPS Northwest' }
+      ],
+      campaigns: [
+        { name: 'Holiday Shipping Promo', workspace: 'UPS New York' },
+        { name: 'Express Delivery Update', workspace: 'UPS Texas' },
+        { name: 'Northeast Region Newsletter', workspace: 'UPS Northeast' }
+      ]
+    };
+
+    function openGlobalSearchDialog(query = '') {
+      const dialog = document.getElementById('global-search-dialog');
+      dialog.classList.remove('hidden');
+      document.body.style.overflow = 'hidden';
+      
+      const searchInput = document.getElementById('global-search-input');
+      if (query) {
+        searchInput.value = query;
+        handleGlobalSearch(query);
+      }
+      
+      setTimeout(() => {
+        searchInput.focus();
+        if (query) searchInput.select();
+      }, 100);
+    }
+
+    function closeGlobalSearchDialog() {
+      const dialog = document.getElementById('global-search-dialog');
+      dialog.classList.add('hidden');
+      document.body.style.overflow = '';
+      document.getElementById('global-search-input').value = '';
+      const topbarInput = document.getElementById('topbar-search-input');
+      if (topbarInput) topbarInput.value = '';
+      document.getElementById('search-results-section').classList.add('hidden');
+      document.getElementById('search-results-section').innerHTML = '';
+      document.getElementById('recent-activity-section').classList.remove('hidden');
+    }
+
+    function handleTopbarSearchKeydown(event) {
+      if (event.key === 'Enter') {
+        const query = event.target.value.trim();
+        openGlobalSearchDialog(query);
+      }
+    }
+
+    function handleSearchDialogKeydown(event) {
+      if (event.key === 'Escape') {
+        closeGlobalSearchDialog();
+      }
+    }
+
+    function handleGlobalSearch(query) {
+      const searchResultsSection = document.getElementById('search-results-section');
+      const recentActivitySection = document.getElementById('recent-activity-section');
+      
+      if (!query.trim()) {
+        searchResultsSection.classList.add('hidden');
+        searchResultsSection.innerHTML = '';
+        recentActivitySection.classList.remove('hidden');
+        return;
+      }
+      
+      const lowerQuery = query.toLowerCase();
+      
+      const matchedFolders = globalSearchData.folders.filter(f => f.name.toLowerCase().includes(lowerQuery));
+      const matchedWorkspaces = globalSearchData.workspaces.filter(w => w.name.toLowerCase().includes(lowerQuery));
+      const matchedCampaigns = globalSearchData.campaigns.filter(c => c.name.toLowerCase().includes(lowerQuery));
+      
+      const totalResults = matchedFolders.length + matchedWorkspaces.length + matchedCampaigns.length;
+      
+      let html = '';
+      
+      html += `<div class="px-5 py-3 border-b border-gray-100 bg-gray-50">
+        <p class="text-xs font-semibold text-gray-500">${totalResults} result${totalResults !== 1 ? 's' : ''} for "${query}"</p>
+      </div>`;
+      
+      if (totalResults === 0) {
+        html += `<div class="px-5 py-8 text-center">
+          <div class="w-12 h-12 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-3">
+            <svg class="w-6 h-6 text-gray-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/><line x1="8" y1="11" x2="14" y2="11"/></svg>
+          </div>
+          <p class="text-sm text-gray-600 font-medium">No results found</p>
+          <p class="text-xs text-gray-400 mt-1">Try a different search term</p>
+        </div>`;
+      } else {
+        html += '<div class="px-2 py-2">';
+        
+        if (matchedFolders.length > 0) {
+          html += `<p class="px-3 pt-2 text-xs font-semibold text-gray-400 uppercase tracking-wide mb-2">Folders</p>
+            <div class="space-y-0.5 mb-3">`;
+          matchedFolders.forEach(f => {
+            const parentInfo = f.parent ? ` in ${f.parent}` : '';
+            html += `<a href="workspaces-list.html?folder=${encodeURIComponent(f.name)}" class="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl hover:bg-gray-50 transition-colors block">
+              <div class="w-10 h-10 bg-amber-100 rounded-xl flex items-center justify-center">
+                <svg class="w-5 h-5 text-amber-600" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 20h16a2 2 0 0 0 2-2V8a2 2 0 0 0-2-2h-7.93a2 2 0 0 1-1.66-.9l-.82-1.2A2 2 0 0 0 7.93 3H4a2 2 0 0 0-2 2v13c0 1.1.9 2 2 2Z"/></svg>
+              </div>
+              <div class="text-left">
+                <p class="text-sm font-medium text-gray-900">${f.name}</p>
+                <p class="text-xs text-gray-400">Folder${parentInfo} • ${f.count}</p>
+              </div>
+            </a>`;
+          });
+          html += `</div>`;
+        }
+        
+        if (matchedWorkspaces.length > 0) {
+          html += `<p class="px-3 pt-2 text-xs font-semibold text-gray-400 uppercase tracking-wide mb-2">Workspaces</p>
+            <div class="space-y-0.5 mb-3">`;
+          matchedWorkspaces.forEach(w => {
+            const folderInfo = w.folder ? ` • ${w.folder}` : '';
+            html += `<a href="workspace-detail.html?workspace=${encodeURIComponent(w.name)}" class="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl hover:bg-gray-50 transition-colors block">
+              <div class="w-10 h-10 ${w.color} rounded-xl flex items-center justify-center text-sm font-bold">${w.icon}</div>
+              <div class="text-left">
+                <p class="text-sm font-medium text-gray-900">${w.name}</p>
+                <p class="text-xs text-gray-400">Workspace${folderInfo}</p>
+              </div>
+            </a>`;
+          });
+          html += `</div>`;
+        }
+        
+        if (matchedCampaigns.length > 0) {
+          html += `<p class="px-3 pt-2 text-xs font-semibold text-gray-400 uppercase tracking-wide mb-2">Campaigns</p>
+            <div class="space-y-0.5 mb-3">`;
+          matchedCampaigns.forEach(c => {
+            html += `<a href="#" class="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl hover:bg-gray-50 transition-colors block">
+              <div class="w-10 h-10 bg-blue-100 rounded-xl flex items-center justify-center">
+                <svg class="w-5 h-5 text-blue-600" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect width="20" height="16" x="2" y="4" rx="2"/><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/></svg>
+              </div>
+              <div class="text-left">
+                <p class="text-sm font-medium text-gray-900">${c.name}</p>
+                <p class="text-xs text-gray-400">Campaign • ${c.workspace}</p>
+              </div>
+            </a>`;
+          });
+          html += `</div>`;
+        }
+        
+        html += '</div>';
+      }
+      
+      searchResultsSection.innerHTML = html;
+      searchResultsSection.classList.remove('hidden');
+      recentActivitySection.classList.add('hidden');
+    }
+
+    // Keyboard shortcut for search
+    document.addEventListener('keydown', function(e) {
+      if ((e.metaKey || e.ctrlKey) && e.key === 'k') {
+        e.preventDefault();
+        openGlobalSearchDialog();
+      }
+      if (e.key === 'Escape') {
+        closeGlobalSearchDialog();
+      }
+    });
+  </script>
+</body>

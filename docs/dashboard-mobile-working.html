@@ -1,0 +1,383 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+  <title>Dashboard Mobile</title>
+  
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js"></script>
+  
+  <style>
+    * { 
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      -webkit-tap-highlight-color: transparent;
+    }
+    
+    body { 
+      overscroll-behavior: none;
+      background: #f7f9fd;
+    }
+    
+    .bottom-sheet {
+      transform: translateY(100%);
+      transition: transform 0.3s ease-out;
+    }
+    
+    .bottom-sheet.show {
+      transform: translateY(0);
+    }
+    
+    .hide-scroll::-webkit-scrollbar { display: none; }
+  </style>
+</head>
+
+<body>
+
+  <!-- Top Bar -->
+  <div style="position: fixed; top: 0; left: 0; right: 0; z-index: 30; background: white; border-bottom: 1px solid #e5e7eb;">
+    <div style="padding: 0 16px; height: 56px; display: flex; align-items: center; justify-content: space-between;">
+      <h1 style="font-size: 20px; font-weight: 700; margin: 0;">Dashboard</h1>
+      <div style="display: flex; gap: 8px;">
+        <button onclick="showSearch()" style="padding: 8px; border: none; background: transparent; border-radius: 50%; cursor: pointer;">
+          <i data-lucide="search" style="width: 20px; height: 20px;"></i>
+        </button>
+        <button style="padding: 8px; border: none; background: transparent; border-radius: 50%; cursor: pointer; position: relative;">
+          <i data-lucide="bell" style="width: 20px; height: 20px;"></i>
+          <span style="position: absolute; top: 8px; right: 8px; width: 8px; height: 8px; background: #f04438; border-radius: 50%;"></span>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Main Content -->
+  <main style="padding-top: 56px; padding-bottom: 80px;">
+    
+    <!-- Hero Card -->
+    <div style="padding: 24px 16px;">
+      <div style="background: linear-gradient(135deg, #186ded 0%, #085fe2 100%); border-radius: 24px; padding: 24px; color: white;">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;">
+          <div>
+            <p style="margin: 0 0 4px 0; font-size: 14px; opacity: 0.9;">Welcome back,</p>
+            <h2 style="margin: 0; font-size: 24px; font-weight: 700;">John Doe</h2>
+          </div>
+          <div style="width: 48px; height: 48px; background: rgba(255,255,255,0.2); border-radius: 50%; display: flex; align-items: center; justify-content: center;">
+            <i data-lucide="sparkles" style="width: 24px; height: 24px;"></i>
+          </div>
+        </div>
+        <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin-top: 24px;">
+          <div style="background: rgba(255,255,255,0.15); border-radius: 16px; padding: 12px;">
+            <div style="font-size: 24px; font-weight: 700;">12</div>
+            <div style="font-size: 12px; opacity: 0.9; margin-top: 4px;">Active</div>
+          </div>
+          <div style="background: rgba(255,255,255,0.15); border-radius: 16px; padding: 12px;">
+            <div style="font-size: 24px; font-weight: 700;">48</div>
+            <div style="font-size: 12px; opacity: 0.9; margin-top: 4px;">Total</div>
+          </div>
+          <div style="background: rgba(255,255,255,0.15); border-radius: 16px; padding: 12px;">
+            <div style="font-size: 24px; font-weight: 700;">5</div>
+            <div style="font-size: 12px; opacity: 0.9; margin-top: 4px;">Teams</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Quick Actions -->
+    <div style="padding: 0 16px; margin-bottom: 24px;">
+      <h3 style="font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; margin: 0 0 12px 0;">Quick Actions</h3>
+      <div style="display: flex; gap: 12px; overflow-x: auto; margin: 0 -16px; padding: 0 16px;" class="hide-scroll">
+        
+        <button onclick="addWidget('campaign')" style="flex-shrink: 0; width: 144px; background: white; border: 1px solid #e5e7eb; border-radius: 16px; padding: 16px; cursor: pointer; text-align: left;">
+          <div style="width: 40px; height: 40px; background: #e6f8ff; border-radius: 12px; display: flex; align-items: center; justify-content: center; margin-bottom: 12px;">
+            <i data-lucide="bar-chart-2" style="width: 20px; height: 20px; color: #186ded;"></i>
+          </div>
+          <div style="font-size: 14px; font-weight: 600; color: #111;">Campaign Stats</div>
+          <div style="font-size: 12px; color: #6b7492; margin-top: 4px;">View metrics</div>
+        </button>
+        
+        <button onclick="addWidget('team')" style="flex-shrink: 0; width: 144px; background: white; border: 1px solid #e5e7eb; border-radius: 16px; padding: 16px; cursor: pointer; text-align: left;">
+          <div style="width: 40px; height: 40px; background: #ecfdf3; border-radius: 12px; display: flex; align-items: center; justify-content: center; margin-bottom: 12px;">
+            <i data-lucide="users" style="width: 20px; height: 20px; color: #17b26a;"></i>
+          </div>
+          <div style="font-size: 14px; font-weight: 600; color: #111;">Team Activity</div>
+          <div style="font-size: 12px; color: #6b7492; margin-top: 4px;">Who's online</div>
+        </button>
+        
+        <button onclick="addWidget('recent')" style="flex-shrink: 0; width: 144px; background: white; border: 1px solid #e5e7eb; border-radius: 16px; padding: 16px; cursor: pointer; text-align: left;">
+          <div style="width: 40px; height: 40px; background: #fff8eb; border-radius: 12px; display: flex; align-items: center; justify-content: center; margin-bottom: 12px;">
+            <i data-lucide="mail" style="width: 20px; height: 20px; color: #f79009;"></i>
+          </div>
+          <div style="font-size: 14px; font-weight: 600; color: #111;">Recent Sends</div>
+          <div style="font-size: 12px; color: #6b7492; margin-top: 4px;">Latest emails</div>
+        </button>
+        
+        <button onclick="showBottomSheet()" style="flex-shrink: 0; width: 144px; background: #f0f4fa; border: 1px solid #e5e7eb; border-radius: 16px; padding: 16px; cursor: pointer; text-align: left;">
+          <div style="width: 40px; height: 40px; background: white; border-radius: 12px; display: flex; align-items: center; justify-content: center; margin-bottom: 12px;">
+            <i data-lucide="plus" style="width: 20px; height: 20px; color: #6b7492;"></i>
+          </div>
+          <div style="font-size: 14px; font-weight: 600; color: #111;">More Widgets</div>
+          <div style="font-size: 12px; color: #6b7492; margin-top: 4px;">Browse all</div>
+        </button>
+        
+      </div>
+    </div>
+
+    <!-- Widgets -->
+    <div id="widgets" style="padding: 0 16px;">
+      <div id="empty" style="text-align: center; padding: 48px 0;">
+        <div style="width: 80px; height: 80px; background: #f0f4fa; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 16px;">
+          <i data-lucide="layout-grid" style="width: 40px; height: 40px; color: #8d9bb6;"></i>
+        </div>
+        <h3 style="font-size: 18px; font-weight: 700; margin: 0 0 8px 0;">No widgets yet</h3>
+        <p style="font-size: 14px; color: #6b7492; margin: 0;">Tap a quick action to add widgets</p>
+      </div>
+    </div>
+
+  </main>
+
+  <!-- Bottom Nav -->
+  <nav style="position: fixed; bottom: 0; left: 0; right: 0; background: white; border-top: 1px solid #e5e7eb; z-index: 40;">
+    <div style="display: flex; height: 64px;">
+      <button id="tab-dashboard" onclick="switchTab('dashboard')" style="flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 4px; border: none; background: transparent; color: #186ded; cursor: pointer;">
+        <i data-lucide="layout-dashboard" style="width: 24px; height: 24px;"></i>
+        <span style="font-size: 12px; font-weight: 600;">Dashboard</span>
+      </button>
+      <button id="tab-workspaces" onclick="switchTab('workspaces')" style="flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 4px; border: none; background: transparent; color: #8d9bb6; cursor: pointer;">
+        <i data-lucide="folder" style="width: 24px; height: 24px;"></i>
+        <span style="font-size: 12px;">Workspaces</span>
+      </button>
+      <button id="tab-reports" onclick="switchTab('reports')" style="flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 4px; border: none; background: transparent; color: #8d9bb6; cursor: pointer;">
+        <i data-lucide="bar-chart-3" style="width: 24px; height: 24px;"></i>
+        <span style="font-size: 12px;">Reports</span>
+      </button>
+      <button id="tab-settings" onclick="switchTab('settings')" style="flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 4px; border: none; background: transparent; color: #8d9bb6; cursor: pointer;">
+        <i data-lucide="settings" style="width: 24px; height: 24px;"></i>
+        <span style="font-size: 12px;">Settings</span>
+      </button>
+    </div>
+  </nav>
+
+  <!-- Bottom Sheet Overlay -->
+  <div id="overlay" onclick="hideBottomSheet()" style="position: fixed; inset: 0; background: rgba(0,0,0,0.6); z-index: 50; display: none;"></div>
+
+  <!-- Bottom Sheet -->
+  <div id="sheet" class="bottom-sheet" style="position: fixed; left: 0; right: 0; bottom: 0; background: white; border-radius: 24px 24px 0 0; z-index: 51; max-height: 85vh; display: flex; flex-direction: column;">
+    <div style="display: flex; justify-content: center; padding: 12px 0 8px;">
+      <div style="width: 40px; height: 4px; background: #dce2ec; border-radius: 2px;"></div>
+    </div>
+    
+    <div style="padding: 16px 24px; border-bottom: 1px solid #e5e7eb;">
+      <div style="display: flex; align-items: center; justify-content: space-between;">
+        <h2 style="font-size: 20px; font-weight: 700; margin: 0;">Add Widget</h2>
+        <button onclick="hideBottomSheet()" style="padding: 8px; border: none; background: transparent; border-radius: 50%; cursor: pointer;">
+          <i data-lucide="x" style="width: 20px; height: 20px;"></i>
+        </button>
+      </div>
+    </div>
+    
+    <div style="flex: 1; overflow-y: auto; padding: 16px 24px;">
+      <div style="display: flex; flex-direction: column; gap: 12px;">
+        
+        <button onclick="addWidget('campaign'); hideBottomSheet();" style="width: 100%; display: flex; align-items: center; gap: 16px; padding: 16px; background: white; border: 2px solid #e5e7eb; border-radius: 16px; cursor: pointer; text-align: left;">
+          <div style="width: 48px; height: 48px; background: #e6f8ff; border-radius: 16px; display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
+            <i data-lucide="bar-chart-2" style="width: 24px; height: 24px; color: #186ded;"></i>
+          </div>
+          <div style="flex: 1;">
+            <div style="font-size: 16px; font-weight: 600; margin-bottom: 4px;">Campaign Performance</div>
+            <div style="font-size: 14px; color: #6b7492;">Track email metrics</div>
+          </div>
+        </button>
+        
+        <button onclick="addWidget('team'); hideBottomSheet();" style="width: 100%; display: flex; align-items: center; gap: 16px; padding: 16px; background: white; border: 2px solid #e5e7eb; border-radius: 16px; cursor: pointer; text-align: left;">
+          <div style="width: 48px; height: 48px; background: #ecfdf3; border-radius: 16px; display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
+            <i data-lucide="users" style="width: 24px; height: 24px; color: #17b26a;"></i>
+          </div>
+          <div style="flex: 1;">
+            <div style="font-size: 16px; font-weight: 600; margin-bottom: 4px;">Team Activity</div>
+            <div style="font-size: 14px; color: #6b7492;">See who's online</div>
+          </div>
+        </button>
+        
+        <button onclick="addWidget('recent'); hideBottomSheet();" style="width: 100%; display: flex; align-items: center; gap: 16px; padding: 16px; background: white; border: 2px solid #e5e7eb; border-radius: 16px; cursor: pointer; text-align: left;">
+          <div style="width: 48px; height: 48px; background: #fff8eb; border-radius: 16px; display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
+            <i data-lucide="mail" style="width: 24px; height: 24px; color: #f79009;"></i>
+          </div>
+          <div style="flex: 1;">
+            <div style="font-size: 16px; font-weight: 600; margin-bottom: 4px;">Recent Campaigns</div>
+            <div style="font-size: 14px; color: #6b7492;">Latest sends</div>
+          </div>
+        </button>
+        
+      </div>
+    </div>
+  </div>
+
+  <!-- Search Overlay -->
+  <div id="search" style="position: fixed; inset: 0; background: white; z-index: 60; display: none;">
+    <div style="padding: 12px 16px; display: flex; align-items: center; gap: 12px; border-bottom: 1px solid #e5e7eb;">
+      <button onclick="hideSearch()" style="padding: 8px; border: none; background: transparent; cursor: pointer;">
+        <i data-lucide="arrow-left" style="width: 24px; height: 24px;"></i>
+      </button>
+      <input type="text" placeholder="Search..." style="flex: 1; padding: 12px 16px; background: #f0f4fa; border: none; border-radius: 24px; font-size: 16px;">
+    </div>
+    <div style="padding: 48px 0; text-align: center;">
+      <i data-lucide="search" style="width: 48px; height: 48px; color: #dce2ec; margin: 0 auto 12px;"></i>
+      <p style="font-size: 14px; color: #8d9bb6;">Start typing to search</p>
+    </div>
+  </div>
+
+  <script>
+    // Initialize Lucide icons
+    lucide.createIcons();
+    
+    // Tab switching
+    function switchTab(tab) {
+      const tabs = ['dashboard', 'workspaces', 'reports', 'settings'];
+      tabs.forEach(t => {
+        const btn = document.getElementById('tab-' + t);
+        if (t === tab) {
+          btn.style.color = '#186ded';
+          btn.querySelector('span').style.fontWeight = '600';
+        } else {
+          btn.style.color = '#8d9bb6';
+          btn.querySelector('span').style.fontWeight = '400';
+        }
+      });
+      
+      if (tab !== 'dashboard') {
+        alert('Navigation to ' + tab + ' page');
+      }
+    }
+    
+    // Bottom sheet
+    function showBottomSheet() {
+      document.getElementById('overlay').style.display = 'block';
+      setTimeout(() => {
+        document.getElementById('sheet').classList.add('show');
+      }, 10);
+      document.body.style.overflow = 'hidden';
+    }
+    
+    function hideBottomSheet() {
+      document.getElementById('sheet').classList.remove('show');
+      setTimeout(() => {
+        document.getElementById('overlay').style.display = 'none';
+      }, 300);
+      document.body.style.overflow = '';
+    }
+    
+    // Search
+    function showSearch() {
+      document.getElementById('search').style.display = 'block';
+    }
+    
+    function hideSearch() {
+      document.getElementById('search').style.display = 'none';
+    }
+    
+    // Add widget
+    function addWidget(type) {
+      const empty = document.getElementById('empty');
+      const container = document.getElementById('widgets');
+      
+      if (empty) {
+        empty.style.display = 'none';
+      }
+      
+      const widget = document.createElement('div');
+      widget.style.cssText = 'background: white; border: 1px solid #e5e7eb; border-radius: 24px; padding: 20px; margin-bottom: 16px;';
+      
+      const content = {
+        campaign: `
+          <div style="display: flex; justify-content: space-between; margin-bottom: 16px;">
+            <h3 style="font-size: 18px; font-weight: 700; margin: 0;">Campaign Performance</h3>
+            <button onclick="this.closest('div').remove()" style="padding: 8px; border: none; background: transparent; cursor: pointer;">
+              <i data-lucide="x" style="width: 20px; height: 20px; color: #8d9bb6;"></i>
+            </button>
+          </div>
+          <div style="padding: 16px; background: #e6f8ff; border-radius: 16px; margin-bottom: 12px;">
+            <div style="font-size: 24px; font-weight: 700;">12.5K</div>
+            <div style="font-size: 14px; color: #6b7492; margin-top: 4px;">Total Sends</div>
+          </div>
+          <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px;">
+            <div style="text-align: center; padding: 12px; background: #f0f4fa; border-radius: 12px;">
+              <div style="font-size: 20px; font-weight: 700;">24%</div>
+              <div style="font-size: 12px; color: #6b7492; margin-top: 4px;">Opens</div>
+            </div>
+            <div style="text-align: center; padding: 12px; background: #ecfdf3; border-radius: 12px;">
+              <div style="font-size: 20px; font-weight: 700;">3.8%</div>
+              <div style="font-size: 12px; color: #6b7492; margin-top: 4px;">Clicks</div>
+            </div>
+            <div style="text-align: center; padding: 12px; background: #f0f4fa; border-radius: 12px;">
+              <div style="font-size: 20px; font-weight: 700;">0.4%</div>
+              <div style="font-size: 12px; color: #6b7492; margin-top: 4px;">Bounces</div>
+            </div>
+          </div>
+        `,
+        team: `
+          <div style="display: flex; justify-between; margin-bottom: 16px;">
+            <h3 style="font-size: 18px; font-weight: 700; margin: 0;">Team Activity</h3>
+            <button onclick="this.closest('div').remove()" style="padding: 8px; border: none; background: transparent; cursor: pointer;">
+              <i data-lucide="x" style="width: 20px; height: 20px; color: #8d9bb6;"></i>
+            </button>
+          </div>
+          <div style="display: flex; flex-direction: column; gap: 12px;">
+            <div style="display: flex; align-items: center; gap: 12px; padding: 12px; background: #f0f4fa; border-radius: 16px;">
+              <div style="width: 40px; height: 40px; border-radius: 50%; background: linear-gradient(135deg, #186ded, #468af1); display: flex; align-items: center; justify-content: center; color: white; font-weight: 700; flex-shrink: 0;">AM</div>
+              <div style="flex: 1;">
+                <div style="font-size: 14px; font-weight: 600;">Alice Murphy</div>
+                <div style="font-size: 12px; color: #6b7492;">Editing campaign</div>
+              </div>
+              <span style="width: 8px; height: 8px; background: #17b26a; border-radius: 50%; flex-shrink: 0;"></span>
+            </div>
+            <div style="display: flex; align-items: center; gap: 12px; padding: 12px; background: #f0f4fa; border-radius: 16px;">
+              <div style="width: 40px; height: 40px; border-radius: 50%; background: linear-gradient(135deg, #17b26a, #47cd89); display: flex; align-items: center; justify-content: center; color: white; font-weight: 700; flex-shrink: 0;">BJ</div>
+              <div style="flex: 1;">
+                <div style="font-size: 14px; font-weight: 600;">Bob Johnson</div>
+                <div style="font-size: 12px; color: #6b7492;">Reviewing reports</div>
+              </div>
+              <span style="width: 8px; height: 8px; background: #17b26a; border-radius: 50%; flex-shrink: 0;"></span>
+            </div>
+          </div>
+        `,
+        recent: `
+          <div style="display: flex; justify-between; margin-bottom: 16px;">
+            <h3 style="font-size: 18px; font-weight: 700; margin: 0;">Recent Campaigns</h3>
+            <button onclick="this.closest('div').remove()" style="padding: 8px; border: none; background: transparent; cursor: pointer;">
+              <i data-lucide="x" style="width: 20px; height: 20px; color: #8d9bb6;"></i>
+            </button>
+          </div>
+          <div style="display: flex; align-items: center; gap: 12px; padding: 12px; background: #f0f4fa; border-radius: 16px; margin-bottom: 8px;">
+            <div style="width: 40px; height: 40px; background: #e6f8ff; border-radius: 12px; display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
+              <i data-lucide="mail" style="width: 20px; height: 20px; color: #186ded;"></i>
+            </div>
+            <div style="flex: 1;">
+              <div style="font-size: 14px; font-weight: 600;">Spring Sale</div>
+              <div style="font-size: 12px; color: #6b7492;">2 hours ago</div>
+            </div>
+            <div style="font-size: 14px; font-weight: 700; color: #17b26a; flex-shrink: 0;">28%</div>
+          </div>
+          <div style="display: flex; align-items: center; gap: 12px; padding: 12px; background: #f0f4fa; border-radius: 16px;">
+            <div style="width: 40px; height: 40px; background: #fff8eb; border-radius: 12px; display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
+              <i data-lucide="mail" style="width: 20px; height: 20px; color: #f79009;"></i>
+            </div>
+            <div style="flex: 1;">
+              <div style="font-size: 14px; font-weight: 600;">Newsletter</div>
+              <div style="font-size: 12px; color: #6b7492;">Yesterday</div>
+            </div>
+            <div style="font-size: 14px; font-weight: 700; color: #17b26a; flex-shrink: 0;">24%</div>
+          </div>
+        `
+      };
+      
+      widget.innerHTML = content[type] || content.campaign;
+      container.appendChild(widget);
+      
+      // Re-initialize icons for new content
+      lucide.createIcons();
+    }
+  </script>
+
+</body>
+</html>
+

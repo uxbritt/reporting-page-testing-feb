@@ -1,0 +1,618 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Contacts & Segments - CTCT for Teams</title>
+  <link rel="stylesheet" href="mobile-responsive.css">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://unpkg.com/lucide@0.263.1/dist/umd/lucide.js"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Source+Sans+3:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <script>
+    // Safe lucide helper
+    function safeCreateIcons() {
+      if (typeof lucide !== 'undefined' && lucide.createIcons) {
+        lucide.createIcons();
+      }
+    }
+
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            'ctct-blue': '#0070EB',
+            'main': {
+              50: '#eff6ff', 100: '#dbeafe', 200: '#bfdbfe', 300: '#93c5fd',
+              400: '#60a5fa', 500: '#0070EB', 600: '#2563eb', 700: '#1d4ed8'
+            },
+            'neutral': {
+              50: '#fafafa', 100: '#f4f4f5', 200: '#e4e4e7', 300: '#d4d4d8',
+              400: '#a1a1aa', 500: '#71717a', 600: '#52525b', 700: '#3f3f46',
+              800: '#27272a', 900: '#18181b'
+            }
+          }
+        }
+      }
+    }
+  </script>
+  <style>
+    body { font-family: 'Source Sans 3', sans-serif; }
+    .ai-gradient-text {
+      background: linear-gradient(135deg, #8B5CF6 0%, #3B82F6 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+  </style>
+</head>
+<body class="bg-neutral-50 min-h-screen">
+
+  <!-- Author Mode Bar -->
+  <div id="author-bar" class="fixed bottom-0 left-0 right-0 bg-neutral-900 text-neutral-400 py-2.5 px-6 flex items-center justify-between z-[60]">
+    <div class="flex items-center gap-3">
+      <i data-lucide="shapes" class="w-4 h-4"></i>
+      <span class="text-sm">CTCT for Teams Prototype</span>
+    </div>
+    <div class="flex items-center gap-6">
+      <a href="teams-signup-flow.html" onclick="sessionStorage.clear()" class="text-sm hover:text-white transition-colors flex items-center gap-2">
+        <i data-lucide="rotate-ccw" class="w-4 h-4"></i> Reset & Start Over
+      </a>
+      <a href="index.html" class="text-sm hover:text-white transition-colors flex items-center gap-2">
+        <i data-lucide="arrow-left" class="w-4 h-4"></i> Back to Prototypes
+      </a>
+    </div>
+  </div>
+
+  <!-- TOP BAR -->
+  <header class="fixed top-0 left-0 right-0 h-16 bg-white border-b border-neutral-100 flex items-center px-6 z-50">
+    <!-- Logo -->
+    <div class="flex items-center">
+      <img src="assets/ctctLogo.png" alt="Constant Contact" class="w-8 h-8 object-contain">
+    </div>
+
+    <!-- Center - Search and Create -->
+    <div class="flex items-center gap-3 mx-auto">
+      <div class="relative">
+        <input type="text" placeholder="Search" class="w-48 pl-4 pr-10 py-2 border border-neutral-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-ctct-blue focus:border-transparent">
+        <i data-lucide="search" class="w-4 h-4 text-neutral-400 absolute right-3 top-1/2 -translate-y-1/2"></i>
+      </div>
+      <button class="px-6 py-2 bg-ctct-blue hover:opacity-90 text-white rounded-lg font-medium text-sm">
+        Create
+      </button>
+    </div>
+
+    <!-- Right side -->
+    <div class="flex items-center gap-3">
+      <button class="flex items-center gap-2 px-4 py-2 hover:bg-blue-50 rounded-full text-sm">
+        <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="url(#ai-gradient)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <defs>
+            <linearGradient id="ai-gradient" x1="0%" y1="0%" x2="100%" y2="100%">
+              <stop offset="0%" style="stop-color:#8B5CF6"/>
+              <stop offset="100%" style="stop-color:#3B82F6"/>
+            </linearGradient>
+          </defs>
+          <path d="m12 3-1.912 5.813a2 2 0 0 1-1.275 1.275L3 12l5.813 1.912a2 2 0 0 1 1.275 1.275L12 21l1.912-5.813a2 2 0 0 1 1.275-1.275L21 12l-5.813-1.912a2 2 0 0 1-1.275-1.275L12 3Z"/>
+          <path d="M5 3v4"/><path d="M19 17v4"/><path d="M3 5h4"/><path d="M17 19h4"/>
+        </svg>
+        <span class="font-medium ai-gradient-text">AI assistant</span>
+      </button>
+      
+      <button class="flex items-center gap-2 px-2 py-1 hover:bg-neutral-50 rounded-lg text-sm">
+        <div class="w-6 h-6 bg-amber-800 rounded flex items-center justify-center">
+          <span class="text-amber-400 text-xs font-bold">u</span>
+        </div>
+        <span class="text-neutral-700">UPS Global</span>
+        <i data-lucide="chevron-down" class="w-4 h-4 text-neutral-400"></i>
+      </button>
+      
+      <button class="p-2 text-neutral-400 hover:text-neutral-600">
+        <i data-lucide="help-circle" class="w-5 h-5"></i>
+      </button>
+    </div>
+  </header>
+
+  <div class="flex h-screen pt-16 pb-10">
+    <!-- Left Sidebar -->
+    <aside class="w-64 bg-white flex flex-col pt-3">
+      <!-- Navigation -->
+      <div class="flex-1 overflow-y-auto px-3">
+        <nav>
+          <!-- Org Dashboard -->
+          <a href="option-b-northstar-empty.html" class="block py-3 px-4 text-sm text-slate-600 hover:bg-sky-50 rounded-xl mb-1 transition-colors">Org Dashboard</a>
+
+          <!-- Workspaces -->
+          <a href="workspaces-list.html" class="block py-3 px-4 text-sm text-slate-600 hover:bg-sky-50 rounded-xl mb-1 transition-colors">Workspaces</a>
+
+          <!-- Reporting -->
+          <a href="folder-reporting.html" class="block py-3 px-4 text-sm text-slate-600 hover:bg-sky-50 rounded-xl mb-1 transition-colors">Reporting</a>
+
+          <!-- Campaigns -->
+          <a href="campaigns-list.html" class="block py-3 px-4 text-sm text-slate-600 hover:bg-sky-50 rounded-xl mb-1 transition-colors">Campaigns</a>
+
+          <!-- Contacts - Active -->
+          <a href="contacts-list.html" class="block py-3 px-4 text-sm font-semibold text-slate-700 bg-sky-50 rounded-xl mb-1">Contacts</a>
+
+          <!-- Brands -->
+          <a href="brands.html" class="block py-3 px-4 text-sm text-slate-600 hover:bg-sky-50 rounded-xl mb-1 transition-colors">Brands</a>
+
+          <!-- Automations -->
+          <a href="#" class="block py-3 px-4 text-sm text-slate-600 hover:bg-sky-50 rounded-xl transition-colors">Automations</a>
+        </nav>
+      </div>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="flex-1 overflow-y-auto px-8 py-6">
+      <div class="max-w-5xl">
+      <!-- Breadcrumb -->
+      <div class="flex items-center gap-2 text-sm mb-6">
+        <a href="option-b-northstar-empty.html" class="flex items-center gap-1.5 text-neutral-500 hover:text-blue-600">
+          <i data-lucide="home" class="w-4 h-4"></i>
+          Org dashboard
+        </a>
+        <span class="text-neutral-400">/</span>
+        <span class="text-neutral-900 font-medium">Audience</span>
+      </div>
+
+      <!-- Page Header -->
+      <div class="flex items-center justify-between mb-8">
+        <h1 class="text-2xl font-semibold text-gray-900">Audience</h1>
+        <div class="flex items-center gap-3">
+          <button class="px-4 py-2 border border-blue-200 text-blue-600 rounded-full text-sm font-medium hover:bg-blue-50 transition-colors flex items-center gap-2">
+            <i data-lucide="upload" class="w-4 h-4"></i>
+            Import contacts
+          </button>
+          <button class="px-4 py-2 bg-blue-600 text-white rounded-full text-sm font-medium hover:bg-blue-700 transition-colors flex items-center gap-2">
+            <i data-lucide="plus" class="w-4 h-4"></i>
+            Add contact
+          </button>
+          <button class="p-2 text-gray-400 hover:text-gray-600 hover:bg-gray-100 rounded-full">
+            <i data-lucide="search" class="w-5 h-5"></i>
+          </button>
+        </div>
+      </div>
+
+      <!-- Contacts Section -->
+      <section class="mb-10">
+        <div class="flex items-center justify-between mb-4">
+          <div class="flex items-center gap-3">
+            <h2 class="text-sm font-semibold text-gray-500 uppercase tracking-wider">CONTACTS</h2>
+            <span class="px-2 py-0.5 bg-gray-100 text-gray-600 text-xs font-medium rounded-full" id="contacts-count">1,247</span>
+          </div>
+          <div class="flex items-center gap-2 text-sm text-gray-400">
+            <button class="p-1 hover:bg-gray-100 rounded" onclick="prevContactsSlide()">
+              <i data-lucide="chevron-left" class="w-4 h-4"></i>
+            </button>
+            <span id="contacts-page">1/3</span>
+            <button class="p-1 hover:bg-gray-100 rounded" onclick="nextContactsSlide()">
+              <i data-lucide="chevron-right" class="w-4 h-4"></i>
+            </button>
+          </div>
+        </div>
+
+        <!-- Contact Cards Carousel -->
+        <div class="relative overflow-hidden">
+          <div id="contacts-carousel" class="flex gap-4 transition-transform duration-300" style="transform: translateX(0)">
+            <!-- Contact Card 1 -->
+            <div class="flex-shrink-0 w-80 bg-white rounded-2xl border border-gray-100 p-5 hover:shadow-md transition-shadow">
+              <div class="flex items-center gap-3 mb-4">
+                <img src="https://i.pravatar.cc/150?img=1" class="w-12 h-12 rounded-full object-cover">
+                <div class="flex-1 min-w-0">
+                  <p class="font-medium text-gray-900 truncate">Sarah Johnson</p>
+                  <p class="text-sm text-gray-400 truncate">sarah.johnson@email.com</p>
+                </div>
+              </div>
+              <div class="grid grid-cols-3 gap-2 mb-4">
+                <div class="text-center p-2 bg-gray-50 rounded-lg">
+                  <p class="text-lg font-bold text-gray-900">2</p>
+                  <p class="text-xs text-gray-400">Hubs</p>
+                </div>
+                <div class="text-center p-2 bg-gray-50 rounded-lg">
+                  <p class="text-lg font-bold text-gray-900">5</p>
+                  <p class="text-xs text-gray-400">Workspaces</p>
+                </div>
+                <div class="text-center p-2 bg-gray-50 rounded-lg">
+                  <p class="text-lg font-bold text-teal-600">Admin</p>
+                  <p class="text-xs text-gray-400">Role</p>
+                </div>
+              </div>
+              <div class="flex items-center justify-between">
+                <span class="flex items-center gap-2 px-2 py-1 bg-blue-50 text-blue-600 text-xs rounded-full">
+                  <span class="w-4 h-4 bg-blue-500 rounded-full flex items-center justify-center text-white text-[10px] font-bold">NJ</span>
+                  UPS New Jersey
+                </span>
+                <i data-lucide="chevron-right" class="w-4 h-4 text-gray-400"></i>
+              </div>
+            </div>
+
+            <!-- Contact Card 2 -->
+            <div class="flex-shrink-0 w-80 bg-white rounded-2xl border border-gray-100 p-5 hover:shadow-md transition-shadow">
+              <div class="flex items-center gap-3 mb-4">
+                <img src="https://i.pravatar.cc/150?img=3" class="w-12 h-12 rounded-full object-cover">
+                <div class="flex-1 min-w-0">
+                  <p class="font-medium text-gray-900 truncate">Michael Chen</p>
+                  <p class="text-sm text-gray-400 truncate">m.chen@company.org</p>
+                </div>
+              </div>
+              <div class="grid grid-cols-3 gap-2 mb-4">
+                <div class="text-center p-2 bg-gray-50 rounded-lg">
+                  <p class="text-lg font-bold text-gray-900">1</p>
+                  <p class="text-xs text-gray-400">Hubs</p>
+                </div>
+                <div class="text-center p-2 bg-gray-50 rounded-lg">
+                  <p class="text-lg font-bold text-gray-900">3</p>
+                  <p class="text-xs text-gray-400">Workspaces</p>
+                </div>
+                <div class="text-center p-2 bg-gray-50 rounded-lg">
+                  <p class="text-lg font-bold text-blue-600">Editor</p>
+                  <p class="text-xs text-gray-400">Role</p>
+                </div>
+              </div>
+              <div class="flex items-center justify-between">
+                <span class="flex items-center gap-2 px-2 py-1 bg-green-50 text-green-600 text-xs rounded-full">
+                  <span class="w-4 h-4 bg-green-500 rounded-full flex items-center justify-center text-white text-[10px] font-bold">NY</span>
+                  UPS New York
+                </span>
+                <i data-lucide="chevron-right" class="w-4 h-4 text-gray-400"></i>
+              </div>
+            </div>
+
+            <!-- Contact Card 3 -->
+            <div class="flex-shrink-0 w-80 bg-white rounded-2xl border border-gray-100 p-5 hover:shadow-md transition-shadow">
+              <div class="flex items-center gap-3 mb-4">
+                <img src="https://i.pravatar.cc/150?img=5" class="w-12 h-12 rounded-full object-cover">
+                <div class="flex-1 min-w-0">
+                  <p class="font-medium text-gray-900 truncate">Emily Rodriguez</p>
+                  <p class="text-sm text-gray-400 truncate">emily.r@business.net</p>
+                </div>
+              </div>
+              <div class="grid grid-cols-3 gap-2 mb-4">
+                <div class="text-center p-2 bg-gray-50 rounded-lg">
+                  <p class="text-lg font-bold text-gray-900">1</p>
+                  <p class="text-xs text-gray-400">Hubs</p>
+                </div>
+                <div class="text-center p-2 bg-gray-50 rounded-lg">
+                  <p class="text-lg font-bold text-gray-900">2</p>
+                  <p class="text-xs text-gray-400">Workspaces</p>
+                </div>
+                <div class="text-center p-2 bg-gray-50 rounded-lg">
+                  <p class="text-lg font-bold text-teal-600">Admin</p>
+                  <p class="text-xs text-gray-400">Role</p>
+                </div>
+              </div>
+              <div class="flex items-center justify-between">
+                <span class="flex items-center gap-2 px-2 py-1 bg-purple-50 text-purple-600 text-xs rounded-full">
+                  <span class="w-4 h-4 bg-purple-500 rounded-full flex items-center justify-center text-white text-[10px] font-bold">CT</span>
+                  UPS Connecticut
+                </span>
+                <i data-lucide="chevron-right" class="w-4 h-4 text-gray-400"></i>
+              </div>
+            </div>
+
+            <!-- Contact Card 4 -->
+            <div class="flex-shrink-0 w-80 bg-white rounded-2xl border border-gray-100 p-5 hover:shadow-md transition-shadow">
+              <div class="flex items-center gap-3 mb-4">
+                <img src="https://i.pravatar.cc/150?img=8" class="w-12 h-12 rounded-full object-cover">
+                <div class="flex-1 min-w-0">
+                  <p class="font-medium text-gray-900 truncate">David Kim</p>
+                  <p class="text-sm text-gray-400 truncate">d.kim@enterprise.com</p>
+                </div>
+              </div>
+              <div class="grid grid-cols-3 gap-2 mb-4">
+                <div class="text-center p-2 bg-gray-50 rounded-lg">
+                  <p class="text-lg font-bold text-gray-900">0</p>
+                  <p class="text-xs text-gray-400">Hubs</p>
+                </div>
+                <div class="text-center p-2 bg-gray-50 rounded-lg">
+                  <p class="text-lg font-bold text-gray-900">1</p>
+                  <p class="text-xs text-gray-400">Workspaces</p>
+                </div>
+                <div class="text-center p-2 bg-gray-50 rounded-lg">
+                  <p class="text-lg font-bold text-gray-500">Viewer</p>
+                  <p class="text-xs text-gray-400">Role</p>
+                </div>
+              </div>
+              <div class="flex items-center justify-between">
+                <span class="flex items-center gap-2 px-2 py-1 bg-amber-50 text-amber-600 text-xs rounded-full">
+                  <span class="w-4 h-4 bg-amber-500 rounded-full flex items-center justify-center text-white text-[10px] font-bold">MA</span>
+                  UPS Massachusetts
+                </span>
+                <i data-lucide="chevron-right" class="w-4 h-4 text-gray-400"></i>
+              </div>
+            </div>
+
+            <!-- Contact Card 5 -->
+            <div class="flex-shrink-0 w-80 bg-white rounded-2xl border border-gray-100 p-5 hover:shadow-md transition-shadow">
+              <div class="flex items-center gap-3 mb-4">
+                <img src="https://i.pravatar.cc/150?img=9" class="w-12 h-12 rounded-full object-cover">
+                <div class="flex-1 min-w-0">
+                  <p class="font-medium text-gray-900 truncate">Amanda Foster</p>
+                  <p class="text-sm text-gray-400 truncate">a.foster@startup.io</p>
+                </div>
+              </div>
+              <div class="grid grid-cols-3 gap-2 mb-4">
+                <div class="text-center p-2 bg-gray-50 rounded-lg">
+                  <p class="text-lg font-bold text-gray-900">3</p>
+                  <p class="text-xs text-gray-400">Hubs</p>
+                </div>
+                <div class="text-center p-2 bg-gray-50 rounded-lg">
+                  <p class="text-lg font-bold text-gray-900">8</p>
+                  <p class="text-xs text-gray-400">Workspaces</p>
+                </div>
+                <div class="text-center p-2 bg-gray-50 rounded-lg">
+                  <p class="text-lg font-bold text-teal-600">Admin</p>
+                  <p class="text-xs text-gray-400">Role</p>
+                </div>
+              </div>
+              <div class="flex items-center justify-between">
+                <span class="flex items-center gap-2 px-2 py-1 bg-rose-50 text-rose-600 text-xs rounded-full">
+                  <span class="w-4 h-4 bg-rose-500 rounded-full flex items-center justify-center text-white text-[10px] font-bold">PA</span>
+                  UPS Pennsylvania
+                </span>
+                <i data-lucide="chevron-right" class="w-4 h-4 text-gray-400"></i>
+              </div>
+            </div>
+
+            <!-- Contact Card 6 -->
+            <div class="flex-shrink-0 w-80 bg-white rounded-2xl border border-gray-100 p-5 hover:shadow-md transition-shadow">
+              <div class="flex items-center gap-3 mb-4">
+                <img src="https://i.pravatar.cc/150?img=11" class="w-12 h-12 rounded-full object-cover">
+                <div class="flex-1 min-w-0">
+                  <p class="font-medium text-gray-900 truncate">James Wilson</p>
+                  <p class="text-sm text-gray-400 truncate">jwilson@corp.com</p>
+                </div>
+              </div>
+              <div class="grid grid-cols-3 gap-2 mb-4">
+                <div class="text-center p-2 bg-gray-50 rounded-lg">
+                  <p class="text-lg font-bold text-gray-900">1</p>
+                  <p class="text-xs text-gray-400">Hubs</p>
+                </div>
+                <div class="text-center p-2 bg-gray-50 rounded-lg">
+                  <p class="text-lg font-bold text-gray-900">4</p>
+                  <p class="text-xs text-gray-400">Workspaces</p>
+                </div>
+                <div class="text-center p-2 bg-gray-50 rounded-lg">
+                  <p class="text-lg font-bold text-blue-600">Editor</p>
+                  <p class="text-xs text-gray-400">Role</p>
+                </div>
+              </div>
+              <div class="flex items-center justify-between">
+                <span class="flex items-center gap-2 px-2 py-1 bg-blue-50 text-blue-600 text-xs rounded-full">
+                  <span class="w-4 h-4 bg-blue-500 rounded-full flex items-center justify-center text-white text-[10px] font-bold">NJ</span>
+                  UPS New Jersey
+                </span>
+                <i data-lucide="chevron-right" class="w-4 h-4 text-gray-400"></i>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Segments Section -->
+      <section>
+        <div class="flex items-center justify-between mb-4">
+          <div class="flex items-center gap-3">
+            <h2 class="text-sm font-semibold text-gray-500 uppercase tracking-wider">SEGMENTS</h2>
+            <span class="px-2 py-0.5 bg-gray-100 text-gray-600 text-xs font-medium rounded-full">24</span>
+          </div>
+        </div>
+
+        <!-- Segments List -->
+        <div class="bg-white rounded-2xl border border-gray-100 overflow-hidden">
+          <!-- Segment Row 1 -->
+          <div class="flex items-center justify-between px-5 py-4 hover:bg-gray-50 transition-colors border-b border-gray-50">
+            <div class="flex items-center gap-4">
+              <div class="w-10 h-10 bg-gradient-to-br from-blue-400 to-blue-600 rounded-xl flex items-center justify-center">
+                <i data-lucide="users" class="w-5 h-5 text-white"></i>
+              </div>
+              <div>
+                <p class="font-medium text-gray-900">VIP Customers</p>
+                <p class="text-sm text-gray-400">High-value repeat purchasers</p>
+              </div>
+            </div>
+            <div class="flex items-center gap-6">
+              <div class="text-right">
+                <p class="font-semibold text-gray-900">2,341</p>
+                <p class="text-xs text-gray-400">contacts</p>
+              </div>
+              <span class="flex items-center gap-2 px-2 py-1 bg-blue-50 text-blue-600 text-xs rounded-full">
+                <span class="w-4 h-4 bg-blue-500 rounded-full flex items-center justify-center text-white text-[10px] font-bold">NJ</span>
+                UPS New Jersey
+              </span>
+              <i data-lucide="chevron-right" class="w-5 h-5 text-gray-400"></i>
+            </div>
+          </div>
+
+          <!-- Segment Row 2 -->
+          <div class="flex items-center justify-between px-5 py-4 hover:bg-gray-50 transition-colors border-b border-gray-50">
+            <div class="flex items-center gap-4">
+              <div class="w-10 h-10 bg-gradient-to-br from-teal-400 to-teal-600 rounded-xl flex items-center justify-center">
+                <i data-lucide="mail" class="w-5 h-5 text-white"></i>
+              </div>
+              <div>
+                <p class="font-medium text-gray-900">Newsletter Subscribers</p>
+                <p class="text-sm text-gray-400">Opted-in for weekly updates</p>
+              </div>
+            </div>
+            <div class="flex items-center gap-6">
+              <div class="text-right">
+                <p class="font-semibold text-gray-900">8,924</p>
+                <p class="text-xs text-gray-400">contacts</p>
+              </div>
+              <span class="flex items-center gap-2 px-2 py-1 bg-green-50 text-green-600 text-xs rounded-full">
+                <span class="w-4 h-4 bg-green-500 rounded-full flex items-center justify-center text-white text-[10px] font-bold">NY</span>
+                UPS New York
+              </span>
+              <i data-lucide="chevron-right" class="w-5 h-5 text-gray-400"></i>
+            </div>
+          </div>
+
+          <!-- Segment Row 3 -->
+          <div class="flex items-center justify-between px-5 py-4 hover:bg-gray-50 transition-colors border-b border-gray-50">
+            <div class="flex items-center gap-4">
+              <div class="w-10 h-10 bg-gradient-to-br from-amber-400 to-orange-500 rounded-xl flex items-center justify-center">
+                <i data-lucide="clock" class="w-5 h-5 text-white"></i>
+              </div>
+              <div>
+                <p class="font-medium text-gray-900">Inactive 30 Days</p>
+                <p class="text-sm text-gray-400">No engagement in last month</p>
+              </div>
+            </div>
+            <div class="flex items-center gap-6">
+              <div class="text-right">
+                <p class="font-semibold text-gray-900">456</p>
+                <p class="text-xs text-gray-400">contacts</p>
+              </div>
+              <span class="flex items-center gap-2 px-2 py-1 bg-purple-50 text-purple-600 text-xs rounded-full">
+                <span class="w-4 h-4 bg-purple-500 rounded-full flex items-center justify-center text-white text-[10px] font-bold">CT</span>
+                UPS Connecticut
+              </span>
+              <i data-lucide="chevron-right" class="w-5 h-5 text-gray-400"></i>
+            </div>
+          </div>
+
+          <!-- Segment Row 4 -->
+          <div class="flex items-center justify-between px-5 py-4 hover:bg-gray-50 transition-colors border-b border-gray-50">
+            <div class="flex items-center gap-4">
+              <div class="w-10 h-10 bg-gradient-to-br from-purple-400 to-purple-600 rounded-xl flex items-center justify-center">
+                <i data-lucide="star" class="w-5 h-5 text-white"></i>
+              </div>
+              <div>
+                <p class="font-medium text-gray-900">Recent Signups</p>
+                <p class="text-sm text-gray-400">Joined in last 7 days</p>
+              </div>
+            </div>
+            <div class="flex items-center gap-6">
+              <div class="text-right">
+                <p class="font-semibold text-gray-900">127</p>
+                <p class="text-xs text-gray-400">contacts</p>
+              </div>
+              <span class="flex items-center gap-2 px-2 py-1 bg-amber-50 text-amber-600 text-xs rounded-full">
+                <span class="w-4 h-4 bg-amber-500 rounded-full flex items-center justify-center text-white text-[10px] font-bold">MA</span>
+                UPS Massachusetts
+              </span>
+              <i data-lucide="chevron-right" class="w-5 h-5 text-gray-400"></i>
+            </div>
+          </div>
+
+          <!-- Segment Row 5 -->
+          <div class="flex items-center justify-between px-5 py-4 hover:bg-gray-50 transition-colors border-b border-gray-50">
+            <div class="flex items-center gap-4">
+              <div class="w-10 h-10 bg-gradient-to-br from-rose-400 to-rose-600 rounded-xl flex items-center justify-center">
+                <i data-lucide="heart" class="w-5 h-5 text-white"></i>
+              </div>
+              <div>
+                <p class="font-medium text-gray-900">Loyal Customers</p>
+                <p class="text-sm text-gray-400">5+ purchases in last year</p>
+              </div>
+            </div>
+            <div class="flex items-center gap-6">
+              <div class="text-right">
+                <p class="font-semibold text-gray-900">892</p>
+                <p class="text-xs text-gray-400">contacts</p>
+              </div>
+              <span class="flex items-center gap-2 px-2 py-1 bg-rose-50 text-rose-600 text-xs rounded-full">
+                <span class="w-4 h-4 bg-rose-500 rounded-full flex items-center justify-center text-white text-[10px] font-bold">PA</span>
+                UPS Pennsylvania
+              </span>
+              <i data-lucide="chevron-right" class="w-5 h-5 text-gray-400"></i>
+            </div>
+          </div>
+
+          <!-- Segment Row 6 -->
+          <div class="flex items-center justify-between px-5 py-4 hover:bg-gray-50 transition-colors">
+            <div class="flex items-center gap-4">
+              <div class="w-10 h-10 bg-gradient-to-br from-green-400 to-emerald-600 rounded-xl flex items-center justify-center">
+                <i data-lucide="shopping-cart" class="w-5 h-5 text-white"></i>
+              </div>
+              <div>
+                <p class="font-medium text-gray-900">Cart Abandoners</p>
+                <p class="text-sm text-gray-400">Left items in cart</p>
+              </div>
+            </div>
+            <div class="flex items-center gap-6">
+              <div class="text-right">
+                <p class="font-semibold text-gray-900">234</p>
+                <p class="text-xs text-gray-400">contacts</p>
+              </div>
+              <span class="flex items-center gap-2 px-2 py-1 bg-blue-50 text-blue-600 text-xs rounded-full">
+                <span class="w-4 h-4 bg-blue-500 rounded-full flex items-center justify-center text-white text-[10px] font-bold">NJ</span>
+                UPS New Jersey
+              </span>
+              <i data-lucide="chevron-right" class="w-5 h-5 text-neutral-400"></i>
+            </div>
+          </div>
+        </div>
+      </section>
+      </div>
+    </main>
+  </div>
+
+  <!-- Footer Bar -->
+  <footer class="fixed bottom-0 left-0 right-0 bg-gray-900 h-12 flex items-center justify-between px-6 z-50 shadow-lg">
+    <div class="flex items-center gap-3">
+      <i data-lucide="shapes" class="w-4 h-4 text-gray-400"></i>
+      <span class="text-sm text-gray-400">CTCT for Teams Prototype</span>
+    </div>
+    <div class="flex items-center gap-4">
+      <a href="teams-signup-flow.html" onclick="sessionStorage.clear()" class="text-sm text-gray-400 hover:text-white transition-colors flex items-center gap-2">
+        <i data-lucide="rotate-ccw" class="w-4 h-4"></i>
+        Reset & Start Over
+      </a>
+      <a href="index.html" class="text-sm text-gray-400 hover:text-white transition-colors flex items-center gap-2">
+        <i data-lucide="arrow-left" class="w-4 h-4"></i>
+        Back to Prototypes
+      </a>
+    </div>
+  </footer>
+
+  <script>
+    // Safe lucide helper
+    function safeCreateIcons() {
+      if (typeof lucide !== 'undefined' && lucide.createIcons) {
+        lucide.createIcons();
+      }
+    }
+
+    // Initialize Lucide icons
+    safeCreateIcons();
+    
+    // Toggle expandable sections
+    function toggleSection(section) {
+      const items = document.getElementById(`${section}-items`);
+      const chevron = document.getElementById(`${section}-chevron`);
+      if (items && chevron) {
+        items.classList.toggle('hidden');
+        chevron.classList.toggle('rotate-180');
+      }
+    }
+    
+    // Carousel state
+    let contactsSlide = 0;
+    const totalContactsSlides = 3;
+    
+    function updateContactsCarousel() {
+      const carousel = document.getElementById('contacts-carousel');
+      const slideWidth = 320 + 16; // card width + gap
+      carousel.style.transform = `translateX(-${contactsSlide * slideWidth * 3}px)`;
+      document.getElementById('contacts-page').textContent = `${contactsSlide + 1}/${totalContactsSlides}`;
+    }
+    
+    function nextContactsSlide() {
+      if (contactsSlide < totalContactsSlides - 1) {
+        contactsSlide++;
+        updateContactsCarousel();
+      }
+    }
+    
+    function prevContactsSlide() {
+      if (contactsSlide > 0) {
+        contactsSlide--;
+        updateContactsCarousel();
+      }
+    }
+  </script>
+  <script src="mobile-nav.js"></script>
+</body>
+</html>
